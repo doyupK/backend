@@ -12,7 +12,6 @@ import com.tutti.backend.dto.user.request.FollowRequestDto;
 import com.tutti.backend.repository.FollowRepository;
 import com.tutti.backend.repository.UserRepository;
 import com.tutti.backend.security.UserDetailsImpl;
-import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;

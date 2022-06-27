@@ -20,17 +20,28 @@ public class FeedController {
 
 
     @GetMapping("/")
-    public ResponseEntity getMainPage(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<?> getMainPage(@AuthenticationPrincipal UserDetailsImpl userDetails){
         if(userDetails.getUser()!=null){
             return ResponseEntity.ok().body(feedService.getMainPageByUser(userDetails.getUser()));
         }
 
-
-        return ResponseEntity.ok().body(feedService.getMainPage());
+        return feedService.getMainPage();
     }
 
+    @GetMapping("/feeds")
+    public ResponseEntity<?> getFeedPage(){
+        return feedService.getFeedPage();
+    }
+    @GetMapping("/feeds/{genre}")
+    public ResponseEntity<?> getFeedByGenrePage(@PathVariable String genre){
+        return feedService.getFeedByGenrePage(genre);
+    }
+
+
+
+
     @PostMapping("/feeds/upload")
-    public ResponseEntity createFeed(
+    public ResponseEntity<?> createFeed(
             @RequestPart FeedRequestDto feedRequestDto,
             @RequestPart MultipartFile albumImage,
             @RequestPart MultipartFile song,
@@ -41,7 +52,7 @@ public class FeedController {
     }
 
     @PutMapping("/feeds/{feedId}")
-    public ResponseEntity updateFeed(
+    public ResponseEntity<?> updateFeed(
             @PathVariable Long feedId,
             @RequestBody FeedUpdateRequestDto feedUpdateRequestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -52,15 +63,15 @@ public class FeedController {
     }
 
     @GetMapping("/feeds/{feedId}")
-    public ResponseEntity getFeed(
+    public ResponseEntity<?> getFeed(
             @PathVariable Long feedId
     ){
-        return ResponseEntity.ok().body(feedService.getFeed(feedId));
+        return feedService.getFeed(feedId);
 
     }
 
     @DeleteMapping("/feeds/{feedId}")
-    public ResponseEntity deleteFeed(
+    public ResponseEntity<?> deleteFeed(
             @PathVariable Long feedId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ){

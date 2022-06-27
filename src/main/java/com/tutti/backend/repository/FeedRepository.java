@@ -5,7 +5,6 @@ import com.tutti.backend.domain.User;
 import com.tutti.backend.dto.Feed.SearchArtistDtoMapping;
 import com.tutti.backend.dto.Feed.SearchTitleDtoMapping;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +18,14 @@ public interface FeedRepository extends JpaRepository<Feed,Long> {
     List<SearchTitleDtoMapping> findAllByTitleLike(String keyword);
 
     List<SearchArtistDtoMapping> findAllByUser(User user);
+
+    List<SearchTitleDtoMapping> findAllByOrderByCreatedAtDesc();
+
+
+    List<SearchTitleDtoMapping> findAllByGenre(String genre);
+
+    List<SearchTitleDtoMapping> findAllByGenreOrderByCreatedAtDesc(String genre);
+
 
 
 
