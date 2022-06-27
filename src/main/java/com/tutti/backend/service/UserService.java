@@ -5,7 +5,11 @@ import com.tutti.backend.domain.ConfirmationToken;
 import com.tutti.backend.domain.User;
 import com.tutti.backend.domain.UserConfirmEnum;
 import com.tutti.backend.dto.user.*;
+import com.tutti.backend.dto.user.request.ArtistRequestDto;
+import com.tutti.backend.dto.user.request.EmailRequestDto;
 import com.tutti.backend.repository.UserRepository;
+import com.tutti.backend.security.UserDetailsImpl;
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -62,6 +66,30 @@ public class UserService {
         return ResponseEntity.ok().body(signupResponseDto);
     }
 
+    public ResponseEntity<?> getUserEmailCheck(EmailRequestDto emailRequestDto) {
+        ResponseDto signupResponseDto = new ResponseDto();
+        Optional<User> user = userRepository.findByEmail(emailRequestDto.getEmail());
+        if(!user.isPresent()){
+            throw new NullPointerException("사용자 정보가 없습니다.");
+        }
+
+        signupResponseDto.setSuccess(200);
+        signupResponseDto.setMessage("사용할 수 있는 이메일입니다.");
+        return ResponseEntity.ok().body(signupResponseDto);
+    }
+
+    public ResponseEntity<?> getUserArtistCheck(ArtistRequestDto artistRequestDto) {
+        ResponseDto signupResponseDto = new ResponseDto();
+        Optional<User> user = userRepository.findByArtist(artistRequestDto.getArtist());
+        if(!user.isPresent()){
+            throw new NullPointerException("사용자 정보가 없습니다.");
+        }
+
+        signupResponseDto.setSuccess(200);
+        signupResponseDto.setMessage("사용할 수 있는 아티스트명입니다.");
+        return ResponseEntity.ok().body(signupResponseDto);
+    }
+
     @Transactional
     public void confirmEmail(String token) {
         ConfirmationToken findConfirmationToken = confirmationTokenService.findByIdAndExpirationDateAfterAndExpired(token);
@@ -75,4 +103,16 @@ public class UserService {
 //      User Confirm 정보 'OK' 로 변경
         findUserInfo.get().setUserConfirmEnum(UserConfirmEnum.OK_CONFIRM);
     }
+
+    public ResponseEntity<?> getUserDetail(UserDetailsImpl userDetails) {
+        Optional<User> user = userRepository.findByEmail(userDetails.getUser().getEmail());
+        if(!user.isPresent()){
+            throw new NullPointerException("사용자 정보가 없습니다.");
+        }
+
+        return null;
+    }
+
+
+
 }

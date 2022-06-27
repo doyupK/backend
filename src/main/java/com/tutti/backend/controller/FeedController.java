@@ -29,13 +29,13 @@ public class FeedController {
         return ResponseEntity.ok().body("등록 완료");
     }
 
-    @PutMapping("/feeds/{feedId}")
-    public ResponseEntity updateFeed(
-            @PathVariable Long feedId,
-            @RequestBody FeedUpdateRequestDto feedUpdateRequestDto
-            ){
-        feedService.updateFeed(feedId,feedUpdateRequestDto);
-        return ResponseEntity.ok().body("수정 완료");
-    }
+//    @PutMapping("/feeds/{feedId}")
+//    public ResponseEntity updateFeed(
+//            @PathVariable Long feedId,
+//            @RequestBody FeedUpdateRequestDto feedUpdateRequestDto
+//            ){
+//        feedService.updateFeed(feedId,feedUpdateRequestDto);
+//        return ResponseEntity.ok().body("수정 완료");
+//    }
 
 }

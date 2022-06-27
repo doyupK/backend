@@ -42,10 +42,10 @@ public class FeedService {
 
         feedRepository.save(feed);
     }
-    @Transactional
-    public void updateFeed(Long feedId, FeedUpdateRequestDto feedUpdateRequestDto) {
-        Feed fedd = feedRepository.findById(feedId).orElseThrow(new CustomException(ErrorCode.NOT_FOUND_FEED));
-
-
-    }
+//    @Transactional
+//    public void updateFeed(Long feedId, FeedUpdateRequestDto feedUpdateRequestDto) {
+//        Feed fedd = feedRepository.findById(feedId).orElseThrow(new CustomException(ErrorCode.NOT_FOUND_FEED));
+//
+//
+//    }
 }

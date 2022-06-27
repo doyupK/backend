@@ -1,6 +1,8 @@
 package com.tutti.backend.exception;
 
-public class CustomException extends RuntimeException {
+
+
+public abstract class CustomException extends RuntimeException{
 
     private final ErrorCode errorCode;
 
