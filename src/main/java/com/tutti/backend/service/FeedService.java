@@ -12,6 +12,7 @@ import com.tutti.backend.repository.CommentRepository;
 import com.tutti.backend.repository.FeedRepository;
 import com.tutti.backend.repository.HeartRepository;
 import com.tutti.backend.repository.UserRepository;
+import jdk.tools.jaotc.Main;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -105,16 +106,27 @@ public class FeedService {
 
     public ResponseEntity<?> getMainPage() {
         List<SearchTitleDtoMapping> lastestList = feedRepository.findAllByOrderByCreatedAtDesc();
-        List<SearchTitleDtoMapping> randomList = feedRepository.findAll();
 
-        List<SearchTitleDtoMapping> likes = feedRepository.findAll();
+        List<Feed> randomList = feedRepository.findAll();
 
-        List<SearchTitleDtoMapping> likeList = new ArrayList<>();
+        List<MainPageFeedDto> feedDtos = new ArrayList<>();
 
-        Map<Long,SearchTitleDtoMapping> sortMap = new HashMap<>();
+        List<MainPageFeedDto> feedDtoList = new ArrayList<>();
 
-        for(SearchTitleDtoMapping feed : likes) {
-            Long Hearts = heartRepository.countByFeedIdAndIsHeartTrue(feed.getId());
+        for(Feed feed: randomList){
+            MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(feed,feed.getUser());
+            feedDtos.add(mainPageFeedDto);
+            feedDtoList.add(mainPageFeedDto);
+        }
+
+
+
+        List<MainPageFeedDto> likeList = new ArrayList<>();
+
+        Map<Long,MainPageFeedDto> sortMap = new HashMap<>();
+
+        for(MainPageFeedDto feed : feedDtoList) {
+            Long Hearts = heartRepository.countByFeedIdAndIsHeartTrue(feed.getFeedId());
             sortMap.put(Hearts,feed);
         }
 
@@ -126,7 +138,7 @@ public class FeedService {
         {
             likeList.add(sortMap.get(nKey));
         }
-        MainPageListDto mainPageListDto = new MainPageListDto(lastestList,likeList,randomList);
+        MainPageListDto mainPageListDto = new MainPageListDto(lastestList,likeList,feedDtos);
 
         FeedAllDto feedAllDto = new FeedAllDto();
 
@@ -144,14 +156,18 @@ public class FeedService {
 
         List<SearchTitleDtoMapping> interestedList = feedRepository.findAllByGenre(user.getFavoriteGenre1());
 
-        List<SearchTitleDtoMapping> likes = feedRepository.findAll();
 
-        List<SearchTitleDtoMapping> likeList = new ArrayList<>();
+        List<MainPageFeedDto> likeList = new ArrayList<>();
+        List<Feed> likes = feedRepository.findAll();
+        for(Feed feed: likes){
+            MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(feed,feed.getUser());
+            likeList.add(mainPageFeedDto);
+        }
 
-        Map<Long,SearchTitleDtoMapping> sortMap = new HashMap<>();
+        Map<Long,MainPageFeedDto> sortMap = new HashMap<>();
 
-        for(SearchTitleDtoMapping feed : likes) {
-            Long Hearts = heartRepository.countByFeedIdAndIsHeartTrue(feed.getId());
+        for(MainPageFeedDto feed : likeList) {
+            Long Hearts = heartRepository.countByFeedIdAndIsHeartTrue(feed.getFeedId());
             sortMap.put(Hearts,feed);
         }
 
