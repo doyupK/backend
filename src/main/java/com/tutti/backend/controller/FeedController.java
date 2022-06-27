@@ -18,6 +18,23 @@ public class FeedController {
     private final FeedService feedService;
 
 
+
+    @GetMapping("/")
+    public ResponseEntity getMainPage(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        if(userDetails.getUser()!=null){
+            return ResponseEntity.ok().body(feedService.getMainPageByUser(userDetails.getUser()));
+        }
+
+
+        return ResponseEntity.ok().body(feedService.getMainPage());
+    }
+
+
+
+
+
+
+
     @PostMapping("/feeds/upload")
     public ResponseEntity createFeed(
             @RequestPart FeedRequestDto feedRequestDto,
@@ -32,10 +49,31 @@ public class FeedController {
     @PutMapping("/feeds/{feedId}")
     public ResponseEntity updateFeed(
             @PathVariable Long feedId,
-            @RequestBody FeedUpdateRequestDto feedUpdateRequestDto
+            @RequestBody FeedUpdateRequestDto feedUpdateRequestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
             ){
-        feedService.updateFeed(feedId,feedUpdateRequestDto);
+        User user = userDetails.getUser();
+        feedService.updateFeed(feedId,feedUpdateRequestDto,user);
         return ResponseEntity.ok().body("수정 완료");
     }
+
+    @GetMapping("/feeds/{feedId}")
+    public ResponseEntity getFeed(
+            @PathVariable Long feedId
+    ){
+        return ResponseEntity.ok().body(feedService.getFeed(feedId));
+
+    }
+
+    @DeleteMapping("/feeds/{feedId}")
+    public ResponseEntity deleteFeed(
+            @PathVariable Long feedId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ){
+        User user = userDetails.getUser();
+        feedService.deleteFeed(feedId,user);
+        return ResponseEntity.ok().body("삭제 완료");
+    }
+
 
 }
