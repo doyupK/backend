@@ -12,7 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Feed {
+public class Feed extends Timestamped{
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
