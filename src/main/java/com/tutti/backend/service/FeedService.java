@@ -14,6 +14,7 @@ import com.tutti.backend.repository.CommentRepository;
 import com.tutti.backend.repository.FeedRepository;
 import com.tutti.backend.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,8 +51,11 @@ public class FeedService {
         feedRepository.save(feed);
     }
     @Transactional
-    public void updateFeed(Long feedId, FeedUpdateRequestDto feedUpdateRequestDto) {
+    public void updateFeed(Long feedId, FeedUpdateRequestDto feedUpdateRequestDto,User user) {
         Feed feed = feedRepository.findById(feedId).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEED));
+        if(user!=feed.getUser()){
+            throw new CustomException(ErrorCode.WRONG_USER);
+        }
         feed.update(feedUpdateRequestDto);
     }
 
@@ -65,13 +69,28 @@ public class FeedService {
 
     }
     @Transactional
-    public void deleteFeed(Long feedId) {
+    public void deleteFeed(Long feedId,User user) {
         Feed feed = feedRepository.findById(feedId).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEED));
+        if(user!=feed.getUser()){
+            throw new CustomException(ErrorCode.WRONG_USER);
+        }
+
         String albumImgUrl = feed.getAlbumImageUrl();
         String songUrl = feed.getSongUrl();
         service.deleteImageUrl(albumImgUrl);
         service.deleteImageUrl(songUrl);
 
         feedRepository.delete(feed);
+    }
+
+    public Object getMainPage() {
+        List<Feed> lastestList = feedRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+        List <Feed> randomList = feedRepository.findAll();
+
+
+
+    }
+
+    public Object getMainPageByUser(User user) {
     }
 }
