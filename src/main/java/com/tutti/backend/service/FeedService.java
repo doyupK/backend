@@ -2,16 +2,15 @@ package com.tutti.backend.service;
 
 import com.tutti.backend.domain.Comment;
 import com.tutti.backend.domain.Feed;
+import com.tutti.backend.domain.Heart;
 import com.tutti.backend.domain.User;
-import com.tutti.backend.dto.Feed.FeedDetailResponseDto;
-import com.tutti.backend.dto.Feed.FeedRequestDto;
-import com.tutti.backend.dto.Feed.FeedUpdateRequestDto;
-import com.tutti.backend.dto.Feed.SearchFeedResponseDto;
+import com.tutti.backend.dto.Feed.*;
 import com.tutti.backend.dto.user.FileRequestDto;
 import com.tutti.backend.exception.CustomException;
 import com.tutti.backend.exception.ErrorCode;
 import com.tutti.backend.repository.CommentRepository;
 import com.tutti.backend.repository.FeedRepository;
+import com.tutti.backend.repository.HeartRepository;
 import com.tutti.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class FeedService {
@@ -33,12 +32,15 @@ public class FeedService {
 
     private final CommentRepository commentRepository;
 
+    private final HeartRepository heartRepository;
+
     @Autowired
-    public FeedService(FeedRepository feedRepository, UserRepository userRepository, S3Service service, CommentRepository commentRepository) {
+    public FeedService(FeedRepository feedRepository, UserRepository userRepository, S3Service service, CommentRepository commentRepository,HeartRepository heartRepository) {
         this.feedRepository = feedRepository;
         this.userRepository = userRepository;
         this.service = service;
         this.commentRepository = commentRepository;
+        this. heartRepository = heartRepository;
     }
 
     @Transactional
@@ -70,12 +72,20 @@ public class FeedService {
     }
 
     @Transactional(readOnly = true)
-    public Object getFeed(Long feedId) {
+    public ResponseEntity<?> getFeed(Long feedId) {
         Feed feed = feedRepository.findById(feedId).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEED));
         String artist = feed.getUser().getArtist();
         List<Comment> commentList = commentRepository.findAllByFeed(feed);
 
-        return new FeedDetailResponseDto(feed,artist,commentList);
+        FeedDetailResponseDto feedDetailResponseDto =  new FeedDetailResponseDto(feed,artist,commentList);
+
+        FeedAll3Dto feedAll3Dto = new FeedAll3Dto();
+
+        feedAll3Dto.setSuccess(200);
+        feedAll3Dto.setMessage("성공");
+        feedAll3Dto.setData(feedDetailResponseDto);
+
+        return  ResponseEntity.ok().body(feedAll3Dto);
 
     }
     @Transactional
@@ -93,17 +103,78 @@ public class FeedService {
         feedRepository.delete(feed);
     }
 
-    public Object getMainPage() {
-        List<Feed> lastestList = feedRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
-        List<Feed> randomList = feedRepository.findAll();
+    public ResponseEntity<?> getMainPage() {
+        List<SearchTitleDtoMapping> lastestList = feedRepository.findAllByOrderByCreatedAtDesc();
+        List<SearchTitleDtoMapping> randomList = feedRepository.findAll();
 
+        List<SearchTitleDtoMapping> likes = feedRepository.findAll();
 
-        return null;
+        List<SearchTitleDtoMapping> likeList = new ArrayList<>();
+
+        Map<Long,SearchTitleDtoMapping> sortMap = new HashMap<>();
+
+        for(SearchTitleDtoMapping feed : likes) {
+            Long Hearts = heartRepository.countByFeedIdAndIsHeartTrue(feed.getId());
+            sortMap.put(Hearts,feed);
+        }
+
+        // 키로 정렬
+        Object[] mapkey = sortMap.keySet().toArray();
+        Arrays.sort(mapkey);
+        // 결과 출력
+        for (Long nKey : sortMap.keySet())
+        {
+            likeList.add(sortMap.get(nKey));
+        }
+        MainPageListDto mainPageListDto = new MainPageListDto(lastestList,likeList,randomList);
+
+        FeedAllDto feedAllDto = new FeedAllDto();
+
+        feedAllDto.setSuccess(200);
+        feedAllDto.setMessage("성공");
+        feedAllDto.setData(mainPageListDto);
+
+        return ResponseEntity.ok().body(feedAllDto);
 
     }
 
-    public Object getMainPageByUser(User user) {
-    return null;
+    public ResponseEntity<?> getMainPageByUser(User user) {
+
+        List<SearchTitleDtoMapping> lastestList = feedRepository.findAllByOrderByCreatedAtDesc();
+
+        List<SearchTitleDtoMapping> interestedList = feedRepository.findAllByGenre(user.getFavoriteGenre1());
+
+        List<SearchTitleDtoMapping> likes = feedRepository.findAll();
+
+        List<SearchTitleDtoMapping> likeList = new ArrayList<>();
+
+        Map<Long,SearchTitleDtoMapping> sortMap = new HashMap<>();
+
+        for(SearchTitleDtoMapping feed : likes) {
+            Long Hearts = heartRepository.countByFeedIdAndIsHeartTrue(feed.getId());
+            sortMap.put(Hearts,feed);
+        }
+
+        // 키로 정렬
+        Object[] mapkey = sortMap.keySet().toArray();
+        Arrays.sort(mapkey);
+        // 결과 출력
+        for (Long nKey : sortMap.keySet())
+        {
+            likeList.add(sortMap.get(nKey));
+        }
+
+
+        MainPageListUserDto mainPageListUserDto = new MainPageListUserDto(lastestList,likeList,interestedList);
+
+        FeedAll2Dto feedAll2Dto = new FeedAll2Dto();
+
+        feedAll2Dto.setSuccess(200);
+        feedAll2Dto.setMessage("성공");
+        feedAll2Dto.setData(mainPageListUserDto);
+
+        return ResponseEntity.ok().body(feedAll2Dto);
+
     }
 
     public ResponseEntity<?> searchFeed(String keyword) {
@@ -115,5 +186,50 @@ public class FeedService {
         searchFeedResponseDto.setSuccess(200);
         searchFeedResponseDto.setMessage("성공");
         return ResponseEntity.ok().body(searchFeedResponseDto);
+    }
+
+    public ResponseEntity<?> getFeedPage() {
+        List<SearchTitleDtoMapping> lastestList = feedRepository.findAllByOrderByCreatedAtDesc();
+
+        FeedAll4Dto feedAll4Dto = new FeedAll4Dto();
+
+        feedAll4Dto.setSuccess(200);
+        feedAll4Dto.setMessage("성공");
+        feedAll4Dto.setData(lastestList);
+
+        return ResponseEntity.ok().body(feedAll4Dto);
+    }
+
+    public ResponseEntity<?> getFeedByGenrePage(String genre) {
+        List<SearchTitleDtoMapping> genreList = feedRepository.findAllByGenreOrderByCreatedAtDesc(genre);
+
+        FeedAll5Dto feedAll5Dto = new FeedAll5Dto();
+
+        List<SearchTitleDtoMapping> likes = feedRepository.findAllByGenre(genre);
+
+        List<SearchTitleDtoMapping> likeList = new ArrayList<>();
+
+        Map<Long,SearchTitleDtoMapping> sortMap = new HashMap<>();
+
+        for(SearchTitleDtoMapping feed : likes) {
+            Long Hearts = heartRepository.countByFeedIdAndIsHeartTrue(feed.getId());
+            sortMap.put(Hearts,feed);
+        }
+
+        // 키로 정렬
+        Object[] mapkey = sortMap.keySet().toArray();
+        Arrays.sort(mapkey);
+        // 결과 출력
+        for (Long nKey : sortMap.keySet())
+        {
+            likeList.add(sortMap.get(nKey));
+        }
+
+        feedAll5Dto.setSuccess(200);
+        feedAll5Dto.setMessage("성공");
+        feedAll5Dto.setData(genreList);
+        feedAll5Dto.setLike(likeList);
+
+        return ResponseEntity.ok().body(feedAll5Dto);
     }
 }

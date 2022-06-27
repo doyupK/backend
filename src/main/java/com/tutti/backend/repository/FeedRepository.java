@@ -14,11 +14,19 @@ public interface FeedRepository extends JpaRepository<Feed,Long> {
 
     Optional<Feed> findById(Long feedId);
 
-    List<Feed> findAll();
+    List<SearchTitleDtoMapping> findAll();
 
     List<SearchTitleDtoMapping> findAllByTitleLike(String keyword);
 
     List<SearchArtistDtoMapping> findAllByUser(User user);
+
+    List<SearchTitleDtoMapping> findAllByOrderByCreatedAtDesc();
+
+
+    List<SearchTitleDtoMapping> findAllByGenre(String genre);
+
+    List<SearchTitleDtoMapping> findAllByGenreOrderByCreatedAtDesc(String genre);
+
 
 
 
