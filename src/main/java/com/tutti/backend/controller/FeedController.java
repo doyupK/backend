@@ -29,12 +29,6 @@ public class FeedController {
         return ResponseEntity.ok().body(feedService.getMainPage());
     }
 
-
-
-
-
-
-
     @PostMapping("/feeds/upload")
     public ResponseEntity createFeed(
             @RequestPart FeedRequestDto feedRequestDto,
@@ -75,5 +69,9 @@ public class FeedController {
         return ResponseEntity.ok().body("삭제 완료");
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<?> searchFeed(@RequestParam String keyword){
+        return feedService.searchFeed(keyword);
+    }
 
 }
