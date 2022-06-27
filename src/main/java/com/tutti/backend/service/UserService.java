@@ -2,15 +2,19 @@ package com.tutti.backend.service;
 
 
 import com.tutti.backend.domain.ConfirmationToken;
+import com.tutti.backend.domain.Follow;
 import com.tutti.backend.domain.User;
 import com.tutti.backend.domain.UserConfirmEnum;
 import com.tutti.backend.dto.user.*;
 import com.tutti.backend.dto.user.request.ArtistRequestDto;
 import com.tutti.backend.dto.user.request.EmailRequestDto;
+import com.tutti.backend.dto.user.request.FollowRequestDto;
+import com.tutti.backend.repository.FollowRepository;
 import com.tutti.backend.repository.UserRepository;
 import com.tutti.backend.security.UserDetailsImpl;
-import org.apache.http.HttpStatus;
+import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,14 +30,20 @@ public class UserService {
 
     private final S3Service s3Service;
     private final UserRepository userRepository;
+    private final FollowRepository followRepository;
     private final PasswordEncoder passwordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
 
 
     @Autowired
-    public UserService(S3Service s3Service, UserRepository userRepository, PasswordEncoder passwordEncoder, ConfirmationTokenService confirmationTokenService) {
+    public UserService(S3Service s3Service,
+                       UserRepository userRepository,
+                       FollowRepository followRepository,
+                       PasswordEncoder passwordEncoder,
+                       ConfirmationTokenService confirmationTokenService) {
         this.s3Service = s3Service;
         this.userRepository = userRepository;
+        this.followRepository = followRepository;
         this.passwordEncoder = passwordEncoder;
         this.confirmationTokenService = confirmationTokenService;
     }
@@ -41,11 +51,9 @@ public class UserService {
     @Transactional
     public ResponseEntity<?> registerUser(SignupRequestDto signupRequestDto, MultipartFile file) {
         ResponseDto signupResponseDto = new ResponseDto();
-
-
-//      ID 중복 체크
-        if (userRepository.findByEmail(signupRequestDto.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("중복된 아이디가 포함되어 있습니다.");
+        Optional<User> findUser = userRepository.findByEmail(signupRequestDto.getEmail());
+        if(findUser.isPresent()){
+            throw new DuplicateKeyException("이메일이 중복되었습니다");
         }
         FileRequestDto fileRequestDto = s3Service.upload(file);
 //      PW Hash
@@ -69,8 +77,8 @@ public class UserService {
     public ResponseEntity<?> getUserEmailCheck(EmailRequestDto emailRequestDto) {
         ResponseDto signupResponseDto = new ResponseDto();
         Optional<User> user = userRepository.findByEmail(emailRequestDto.getEmail());
-        if(!user.isPresent()){
-            throw new NullPointerException("사용자 정보가 없습니다.");
+        if(user.isPresent()){
+            throw new IllegalArgumentException("이메일이 중복되었습니다.");
         }
 
         signupResponseDto.setSuccess(200);
@@ -81,8 +89,8 @@ public class UserService {
     public ResponseEntity<?> getUserArtistCheck(ArtistRequestDto artistRequestDto) {
         ResponseDto signupResponseDto = new ResponseDto();
         Optional<User> user = userRepository.findByArtist(artistRequestDto.getArtist());
-        if(!user.isPresent()){
-            throw new NullPointerException("사용자 정보가 없습니다.");
+        if(user.isPresent()){
+            throw new NullPointerException("아티스트명 중복");
         }
 
         signupResponseDto.setSuccess(200);
@@ -104,15 +112,36 @@ public class UserService {
         findUserInfo.get().setUserConfirmEnum(UserConfirmEnum.OK_CONFIRM);
     }
 
-    public ResponseEntity<?> getUserDetail(UserDetailsImpl userDetails) {
-        Optional<User> user = userRepository.findByEmail(userDetails.getUser().getEmail());
-        if(!user.isPresent()){
-            throw new NullPointerException("사용자 정보가 없습니다.");
+    public ResponseEntity<?> followArtist(String artist, UserDetailsImpl userDetails) {
+        ResponseDto responseDto = new ResponseDto();
+        Optional<User> findLoginUser = userRepository.findByEmail(userDetails.getUser().getEmail());
+        Optional<User> findArtist = userRepository.findByArtist(artist);
+        if(!findLoginUser.isPresent()){
+            throw new IllegalArgumentException("로그인 정보 오류");
         }
+        if(!findArtist.isPresent()){
+            throw new IllegalArgumentException("아티스트 정보가 없습니다.");
+        }
+        User user = findLoginUser.get();
+        User findArtistResult = findArtist.get();
+        Follow follow = new Follow(user, findArtistResult);
 
-        return null;
+        followRepository.save(follow);
+
+        responseDto.setSuccess(200);
+        responseDto.setMessage("완료!");
+
+        return ResponseEntity.ok().body(responseDto);
     }
 
-
-
+//    public ResponseEntity<?> getUserDetail(UserDetailsImpl userDetails) {
+//        Optional<User> user = userRepository.findByEmail(userDetails.getUser().getEmail());
+//        if(!user.isPresent()){
+//            throw new NullPointerException("사용자 정보가 없습니다.");
+//        }
+//
+//
+//
+//        return null;
+//    }
 }

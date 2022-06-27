@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentRepository extends JpaRepository <Comment, Long> {
 
-    void deleteByIdAndUser_UserId(Long commentId, Long userId);
+//    void deleteByIdAndUser_UserId(Long commentId, Long userId);
 }
