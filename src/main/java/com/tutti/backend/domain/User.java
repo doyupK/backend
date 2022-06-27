@@ -72,14 +72,6 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserConfirmEnum userConfirmEnum;
 
-    public User(SignupRequestDto signupRequestDto, String password) {
-        this.email = signupRequestDto.getEmail();
-        this.artist = signupRequestDto.getArtist();
-        this.password = password;
-        this.kakaoId = null;
-        this.userConfirmEnum = UserConfirmEnum.BEFORE_CONFIRM;
-
-    }
 
     public User(SignupRequestDto signupRequestDto, String password, FileRequestDto fileRequestDto) {
         this.email = signupRequestDto.getEmail();

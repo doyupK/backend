@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository <Comment, Long> {
 
-    void deleteByIdAndUser_UserId(Long commentId, Long userId);
+//    void deleteByIdAndUser_UserId(Long commentId, Long userId);
 
     List<Comment> findAllByFeed(Feed feed);
 

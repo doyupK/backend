@@ -1,14 +1,16 @@
 package com.tutti.backend.controller;
 
-
 import com.tutti.backend.dto.user.SignupRequestDto;
+import com.tutti.backend.dto.user.request.ArtistRequestDto;
+import com.tutti.backend.dto.user.request.EmailRequestDto;
+import com.tutti.backend.dto.user.request.FollowRequestDto;
+import com.tutti.backend.security.UserDetailsImpl;
 import com.tutti.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -31,6 +33,26 @@ public class UserController {
         return userService.registerUser(signupData, file);
     }
 
+    @PostMapping("/user/email")
+    public ResponseEntity<?> emailCheck(@RequestBody EmailRequestDto emailRequestDto){
+        return userService.getUserEmailCheck(emailRequestDto);
+    }
+    @PostMapping("/user/artist")
+    public ResponseEntity<?> artistCheck(@RequestBody ArtistRequestDto artistRequestDto){
+        return userService.getUserArtistCheck(artistRequestDto);
+    }
 
+//    @GetMapping("/user/mypage")
+//    public ResponseEntity<?> getUserData(@AuthenticationPrincipal UserDetailsImpl userDetails){
+//        return userService.getUserDetail(userDetails);
+//    }
+
+
+    @GetMapping("/follow")
+    public ResponseEntity<?> followArtist(
+                                    @RequestParam(required = false) String artist,
+                                    @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.followArtist(artist, userDetails);
+    }
 
 }

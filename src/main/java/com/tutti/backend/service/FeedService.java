@@ -1,20 +1,22 @@
 package com.tutti.backend.service;
 
-import com.sun.org.apache.xpath.internal.operations.Mult;
 import com.tutti.backend.domain.Comment;
 import com.tutti.backend.domain.Feed;
 import com.tutti.backend.domain.User;
 import com.tutti.backend.dto.Feed.FeedDetailResponseDto;
 import com.tutti.backend.dto.Feed.FeedRequestDto;
 import com.tutti.backend.dto.Feed.FeedUpdateRequestDto;
+import com.tutti.backend.dto.Feed.SearchFeedResponseDto;
 import com.tutti.backend.dto.user.FileRequestDto;
 import com.tutti.backend.exception.CustomException;
 import com.tutti.backend.exception.ErrorCode;
 import com.tutti.backend.repository.CommentRepository;
 import com.tutti.backend.repository.FeedRepository;
-import com.tutti.backend.security.UserDetailsImpl;
+import com.tutti.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,14 +24,22 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class FeedService {
     
     private final FeedRepository feedRepository;
+    private final UserRepository userRepository;
 
     private final S3Service service;
 
     private final CommentRepository commentRepository;
+
+    @Autowired
+    public FeedService(FeedRepository feedRepository, UserRepository userRepository, S3Service service, CommentRepository commentRepository) {
+        this.feedRepository = feedRepository;
+        this.userRepository = userRepository;
+        this.service = service;
+        this.commentRepository = commentRepository;
+    }
 
     @Transactional
     public void createFeed(FeedRequestDto feedRequestDto, MultipartFile albumImage, MultipartFile song, User user) {
@@ -94,5 +104,16 @@ public class FeedService {
 
     public Object getMainPageByUser(User user) {
     return null;
+    }
+
+    public ResponseEntity<?> searchFeed(String keyword) {
+        SearchFeedResponseDto searchFeedResponseDto = new SearchFeedResponseDto();
+        User user = userRepository.findByArtistLike(keyword);
+
+        searchFeedResponseDto.setTitle(feedRepository.findAllByTitleLike(keyword));
+        searchFeedResponseDto.setArtist(feedRepository.findAllByUser(user));
+        searchFeedResponseDto.setSuccess(200);
+        searchFeedResponseDto.setMessage("성공");
+        return ResponseEntity.ok().body(searchFeedResponseDto);
     }
 }

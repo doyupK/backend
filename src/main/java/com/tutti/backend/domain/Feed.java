@@ -41,7 +41,8 @@ public class Feed extends Timestamped{
     @Column(nullable = false)
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
     private User user;
 
     public Feed (String title,
