@@ -1,14 +1,12 @@
 package com.tutti.backend.domain;
 
 import com.tutti.backend.dto.Feed.FeedUpdateRequestDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 
+@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -43,7 +41,7 @@ public class Feed {
     @Column(nullable = false)
     private String color;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private User user;
 
     public Feed (String title,
@@ -65,7 +63,7 @@ public class Feed {
         this.user=user;
     }
 
-    public Feed(FeedUpdateRequestDto feedUpdateRequestDto){
+    public void update(FeedUpdateRequestDto feedUpdateRequestDto){
         this.title = feedUpdateRequestDto.getTitle();
         this.description = feedUpdateRequestDto.getDescription();
         this.color = feedUpdateRequestDto.getColor();
