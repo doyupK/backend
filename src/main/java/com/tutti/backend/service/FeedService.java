@@ -85,12 +85,14 @@ public class FeedService {
 
     public Object getMainPage() {
         List<Feed> lastestList = feedRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
-        List <Feed> randomList = feedRepository.findAll();
+        List<Feed> randomList = feedRepository.findAll();
 
 
+        return null;
 
     }
 
     public Object getMainPageByUser(User user) {
+    return null;
     }
 }

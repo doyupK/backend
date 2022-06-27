@@ -7,12 +7,19 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface FeedRepository extends JpaRepository<Feed,Long> {
+public interface FeedRepository extends JpaRepository<Feed,Long>,Feed {
 
     Optional<Feed> findById(Long feedId);
 
     List<Feed> findAll();
 
-    @Query(value = "SELECT * FROM  order by RAND() limit 1",nativeQuery = true)
-    List<Feed> findAll();
+
+
+
+
+
+
+
+/*    @Query(value = "SELECT * FROM  order by RAND() limit 1",nativeQuery = true)
+    List<Feed> findAll();*/
 }
