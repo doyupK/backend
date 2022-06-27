@@ -17,4 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByArtist(String artist);
 
     User findByArtistLike(String keyword);
+
+
 }
