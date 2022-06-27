@@ -114,14 +114,18 @@ public class UserService {
 
     public ResponseEntity<?> followArtist(String artist, UserDetailsImpl userDetails) {
         ResponseDto responseDto = new ResponseDto();
+        //로그인 정보에서 User객체 추출
         Optional<User> findLoginUser = userRepository.findByEmail(userDetails.getUser().getEmail());
+        //artist User 객체 추출
         Optional<User> findArtist = userRepository.findByArtist(artist);
+
         if(!findLoginUser.isPresent()){
             throw new IllegalArgumentException("로그인 정보 오류");
         }
         if(!findArtist.isPresent()){
             throw new IllegalArgumentException("아티스트 정보가 없습니다.");
         }
+
         User user = findLoginUser.get();
         User findArtistResult = findArtist.get();
         Follow follow = new Follow(user, findArtistResult);
