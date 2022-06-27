@@ -1,4 +1,4 @@
 package com.tutti.backend.controller;
 
-public class userConrtoller {
+public class UserConrtoller {
 }

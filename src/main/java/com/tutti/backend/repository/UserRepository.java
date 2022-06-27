@@ -1,4 +1,4 @@
 package com.tutti.backend.repository;
 
-public interface userRepository {
+public interface UserRepository {
 }
