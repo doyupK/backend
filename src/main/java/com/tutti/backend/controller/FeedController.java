@@ -38,4 +38,21 @@ public class FeedController {
 //        return ResponseEntity.ok().body("수정 완료");
 //    }
 
+    @GetMapping("/feeds/{feedId}")
+    public ResponseEntity getFeed(
+            @PathVariable Long feedId
+    ){
+        return ResponseEntity.ok().body(feedService.getFeed(feedId));
+
+    }
+
+    @DeleteMapping("/feeds/{feedId}")
+    public ResponseEntity deleteFeed(
+            @PathVariable Long feedId
+    ){
+        feedService.deleteFeed(feedId);
+        return ResponseEntity.ok().body("삭제 완료");
+    }
+
+
 }
