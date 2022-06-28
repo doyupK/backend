@@ -4,8 +4,10 @@ package com.tutti.backend.dto.Feed;
 import com.tutti.backend.domain.Feed;
 import com.tutti.backend.domain.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class MainPageFeedDto {
 
     private Long feedId;

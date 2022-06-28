@@ -32,8 +32,8 @@ public class FeedController {
     public ResponseEntity<?> getFeedPage(){
         return feedService.getFeedPage();
     }
-    @GetMapping("/feeds/{genre}")
-    public ResponseEntity<?> getFeedByGenrePage(@PathVariable String genre){
+    @GetMapping("/feeds/search")
+    public ResponseEntity<?> getFeedByGenrePage(@RequestParam String genre){
         return feedService.getFeedByGenrePage(genre);
     }
 

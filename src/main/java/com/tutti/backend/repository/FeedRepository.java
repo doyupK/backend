@@ -2,6 +2,7 @@ package com.tutti.backend.repository;
 
 import com.tutti.backend.domain.Feed;
 import com.tutti.backend.domain.User;
+import com.tutti.backend.dto.Feed.MainPageFeedDto;
 import com.tutti.backend.dto.Feed.SearchArtistDtoMapping;
 import com.tutti.backend.dto.Feed.SearchTitleDtoMapping;
 import org.springframework.data.jpa.repository.JpaRepository;

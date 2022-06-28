@@ -61,10 +61,6 @@ public class UserController {
         return userService.getUserArtistCheck(artistRequestDto);
     }
 
-//    @GetMapping("/user/mypage")
-//    public ResponseEntity<?> getUserData(@AuthenticationPrincipal UserDetailsImpl userDetails){
-//        return userService.getUserDetail(userDetails);
-//    }
 
 
     @GetMapping("/follow")
@@ -74,6 +70,10 @@ public class UserController {
         return userService.followArtist(artist, userDetails);
     }
 
+    @GetMapping("/user/mypage")
+    public ResponseEntity<?> infoRead (@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.getUserInfo(userDetails);
+    }
     @PutMapping("/user/mypage")
     public ResponseEntity<?> updateUser(@RequestBody UserUpdateRequestDto userUpdateRequestDto,@AuthenticationPrincipal UserDetailsImpl userDetails){
         if(userDetails.getUser()==null){

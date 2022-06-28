@@ -2,7 +2,6 @@ package com.tutti.backend.service;
 
 import com.tutti.backend.domain.Comment;
 import com.tutti.backend.domain.Feed;
-import com.tutti.backend.domain.Heart;
 import com.tutti.backend.domain.User;
 import com.tutti.backend.dto.Feed.*;
 import com.tutti.backend.dto.user.FileRequestDto;
@@ -12,10 +11,7 @@ import com.tutti.backend.repository.CommentRepository;
 import com.tutti.backend.repository.FeedRepository;
 import com.tutti.backend.repository.HeartRepository;
 import com.tutti.backend.repository.UserRepository;
-import jdk.tools.jaotc.Main;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,9 +72,10 @@ public class FeedService {
     public ResponseEntity<?> getFeed(Long feedId) {
         Feed feed = feedRepository.findById(feedId).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEED));
         String artist = feed.getUser().getArtist();
-        List<Comment> commentList = commentRepository.findAllByFeed(feed);
+        List<FeedCommentDtoMapping> commentList = commentRepository.findAllByFeed(feed);
 
-        FeedDetailResponseDto feedDetailResponseDto =  new FeedDetailResponseDto(feed,artist,commentList);
+        FeedDetailDto feedDetailDto = new FeedDetailDto(feed, artist);
+        FeedDetailResponseDto feedDetailResponseDto =  new FeedDetailResponseDto(feedDetailDto,commentList);
 
         FeedAll3Dto feedAll3Dto = new FeedAll3Dto();
 
