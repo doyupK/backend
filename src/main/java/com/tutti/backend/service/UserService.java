@@ -238,14 +238,5 @@ public class UserService {
         return ResponseEntity.ok().body(userInfoResponseDto);
     }
 
-//    public ResponseEntity<?> getUserDetail(UserDetailsImpl userDetails) {
-//        Optional<User> user = userRepository.findByEmail(userDetails.getUser().getEmail());
-//        if(!user.isPresent()){
-//            throw new NullPointerException("사용자 정보가 없습니다.");
-//        }
-//
-//
-//
-//        return null;
-//    }
+
 }

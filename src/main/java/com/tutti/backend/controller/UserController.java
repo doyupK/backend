@@ -25,7 +25,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -37,6 +36,8 @@ public class UserController {
     private final KakaoUserService kakaoUserService;
 
     private final GoogleUserService googleUserService;
+
+
 
     //    USER service DI
     @Autowired
@@ -75,6 +76,7 @@ public class UserController {
     public ResponseEntity<?> infoRead (@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.getUserInfo(userDetails);
     }
+
     @PutMapping("/user/mypage")
     public ResponseEntity<?> updateUser(@RequestBody UserUpdateRequestDto userUpdateRequestDto,@AuthenticationPrincipal UserDetailsImpl userDetails){
         if(userDetails.getUser()==null){
@@ -93,11 +95,6 @@ public class UserController {
         }
         return userService.getOthersUser(artist);
     }
-
-
-
-
-
 
     @GetMapping("/user/kakao/callback")
     public ResponseEntity<KakaoUserResponseDto> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
