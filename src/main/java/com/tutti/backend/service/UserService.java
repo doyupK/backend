@@ -1,15 +1,17 @@
 package com.tutti.backend.service;
 
 
-import com.tutti.backend.domain.ConfirmationToken;
-import com.tutti.backend.domain.Follow;
-import com.tutti.backend.domain.User;
-import com.tutti.backend.domain.UserConfirmEnum;
+import com.tutti.backend.domain.*;
+import com.tutti.backend.dto.Feed.MainPageFeedDto;
 import com.tutti.backend.dto.user.*;
 import com.tutti.backend.dto.user.request.ArtistRequestDto;
 import com.tutti.backend.dto.user.request.EmailRequestDto;
 import com.tutti.backend.dto.user.request.FollowRequestDto;
+import com.tutti.backend.dto.user.response.UserInfo;
+import com.tutti.backend.dto.user.response.UserInfoResponseDto;
+import com.tutti.backend.repository.FeedRepository;
 import com.tutti.backend.repository.FollowRepository;
+import com.tutti.backend.repository.HeartRepository;
 import com.tutti.backend.repository.UserRepository;
 import com.tutti.backend.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -32,6 +36,7 @@ public class UserService {
     private final FollowRepository followRepository;
     private final PasswordEncoder passwordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
+    private final HeartRepository heartRepository;
 
 
     @Autowired
@@ -39,12 +44,14 @@ public class UserService {
                        UserRepository userRepository,
                        FollowRepository followRepository,
                        PasswordEncoder passwordEncoder,
-                       ConfirmationTokenService confirmationTokenService) {
+                       ConfirmationTokenService confirmationTokenService,
+                       HeartRepository heartRepository) {
         this.s3Service = s3Service;
         this.userRepository = userRepository;
         this.followRepository = followRepository;
         this.passwordEncoder = passwordEncoder;
         this.confirmationTokenService = confirmationTokenService;
+        this.heartRepository = heartRepository;
     }
 
     @Transactional
@@ -135,6 +142,46 @@ public class UserService {
         responseDto.setMessage("완료!");
 
         return ResponseEntity.ok().body(responseDto);
+    }
+
+    @Transactional
+    public ResponseEntity<?> getUserInfo(UserDetailsImpl userDetails) {
+        UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto();
+        User user = userDetails.getUser();
+        Long followingCount = followRepository.countByUser(user);
+        Long followerCount = followRepository.countByFollowingUser(user);
+        String[] genre = {
+                user.getFavoriteGenre1(),
+                user.getFavoriteGenre2(),
+                user.getFavoriteGenre3(),
+                user.getFavoriteGenre4()
+        };
+        List<Heart> heartList = heartRepository.findAllByUserAndIsHeartTrue(user);
+
+        List<MainPageFeedDto> likeListDto = new ArrayList<>();
+
+
+        UserInfo userInfo = new UserInfo(user.getArtist()
+                , genre, user.getProfileUrl(), followerCount,
+                followingCount, user.getProfileText(),
+                user.getInstagramUrl(), user.getYoutubeUrl());
+        for(Heart heart : heartList) {
+            MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(heart.getFeed(),user);
+            likeListDto.add(mainPageFeedDto);
+        }
+
+        List<FollowingDtoMapping> followingList = followRepository.findByUser(user);
+
+
+
+
+
+        userInfoResponseDto.setSuccess(200);
+        userInfoResponseDto.setMessage("성공");
+        userInfoResponseDto.setUserInfo(userInfo);
+        userInfoResponseDto.setLikeList(likeListDto);
+        userInfoResponseDto.setFollowingList(followingList);
+        return ResponseEntity.ok().body(userInfoResponseDto);
     }
 
 //    public ResponseEntity<?> getUserDetail(UserDetailsImpl userDetails) {

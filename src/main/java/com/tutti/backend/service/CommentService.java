@@ -45,7 +45,7 @@ public class CommentService {
     public Object updateComment(Long feedId,Long commentId, CommentRequestDto commentRequestDto, UserDetailsImpl userDetails) {
         ResponseDto commentResponseDto = new ResponseDto();
 
-        Comment comment = commentRepository.findById(feedId).orElseThrow(
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new NullPointerException("해당 댓글이 존재하지 않습니다.") // 커스텀으로 바꿀 부분
         );
         if (!comment.getUser().getId().equals(userDetails.getUser().getId())) {

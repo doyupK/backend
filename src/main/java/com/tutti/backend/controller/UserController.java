@@ -55,4 +55,8 @@ public class UserController {
         return userService.followArtist(artist, userDetails);
     }
 
+    @GetMapping("/user/mypage")
+    public ResponseEntity<?> infoRead (@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.getUserInfo(userDetails);
+    }
 }

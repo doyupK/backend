@@ -10,17 +10,12 @@ import java.util.List;
 @Setter
 @Getter
 public class FeedDetailResponseDto {
-
-    private Feed feed;
-
-    private String artist;
-
-    private List<Comment> comment;
+    FeedDetailDto feed;
+    private List<FeedCommentDtoMapping> comment;
 
 
-    public FeedDetailResponseDto(Feed feed,String artist,List<Comment> comment){
-        this.feed = feed;
-        this.artist = artist;
+    public FeedDetailResponseDto(FeedDetailDto feedDetailDto,List<FeedCommentDtoMapping> comment){
+        this.feed = feedDetailDto;
         this.comment = comment;
     }
 
