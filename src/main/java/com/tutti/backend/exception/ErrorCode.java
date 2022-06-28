@@ -43,6 +43,8 @@ public enum ErrorCode {
     // 404 Not Found
     NOT_FOUND_FEED(HttpStatus.NOT_FOUND, "404_1", "해당 피드가 존재하지 않습니다."),
     NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "404_2", "해당 댓글이 존재하지 않습니다."),
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND, "404_3", "로그인을 해주세요."),
+
     ;
 
     private final HttpStatus httpStatus;
