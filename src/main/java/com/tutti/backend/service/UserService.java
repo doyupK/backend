@@ -7,17 +7,17 @@ import com.tutti.backend.dto.Feed.UserinfoResponseFeedDto;
 import com.tutti.backend.dto.user.*;
 import com.tutti.backend.dto.user.request.ArtistRequestDto;
 import com.tutti.backend.dto.user.request.EmailRequestDto;
-import com.tutti.backend.dto.user.request.FollowRequestDto;
 import com.tutti.backend.dto.user.request.UserUpdateRequestDto;
 import com.tutti.backend.exception.CustomException;
 import com.tutti.backend.exception.ErrorCode;
 import com.tutti.backend.dto.user.response.UserInfo;
 import com.tutti.backend.dto.user.response.UserInfoResponseDto;
-import com.tutti.backend.repository.FeedRepository;
 import com.tutti.backend.repository.FollowRepository;
 import com.tutti.backend.repository.HeartRepository;
 import com.tutti.backend.repository.UserRepository;
 import com.tutti.backend.security.UserDetailsImpl;
+import com.tutti.backend.security.jwt.HeaderTokenExtractor;
+import com.tutti.backend.security.jwt.JwtDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
     private final HeartRepository heartRepository;
+    private final HeaderTokenExtractor headerTokenExtractor;
+    private final JwtDecoder jwtDecoder;
 
 
     @Autowired
@@ -49,13 +52,17 @@ public class UserService {
                        FollowRepository followRepository,
                        PasswordEncoder passwordEncoder,
                        ConfirmationTokenService confirmationTokenService,
-                       HeartRepository heartRepository) {
+                       HeartRepository heartRepository,
+                       HeaderTokenExtractor headerTokenExtractor,
+                       JwtDecoder jwtDecoder) {
         this.s3Service = s3Service;
         this.userRepository = userRepository;
         this.followRepository = followRepository;
         this.passwordEncoder = passwordEncoder;
         this.confirmationTokenService = confirmationTokenService;
         this.heartRepository = heartRepository;
+        this.headerTokenExtractor = headerTokenExtractor;
+        this.jwtDecoder = jwtDecoder;
     }
 
     @Transactional
@@ -194,7 +201,22 @@ public class UserService {
         return ResponseEntity.ok().body(userInfoResponseDto);
     }
 
-    public ResponseEntity<?> getOthersUser(String artist) {
+    public ResponseEntity<?> getOthersUser(String artist, HttpServletRequest httpServletRequest) {
+
+        String jwtToken = httpServletRequest.getHeader("Authorization");
+        if(jwtToken!=null){
+            // user 찾기
+            String userEmail = jwtDecoder.decodeUsername(headerTokenExtractor.extract(jwtToken, httpServletRequest));
+            User findUser = userRepository.findByEmail(userEmail).orElseThrow(
+                    ()->new CustomException(ErrorCode.NOT_FOUND_USER)
+            );
+
+            if(findUser.getArtist().equals(artist)) {
+                throw new CustomException(ErrorCode.MOVED_TEMPORARILY);
+            }
+
+        }
+
         UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto();
         UserinfoResponseFeedDto userinfoResponseFeedDto = new UserinfoResponseFeedDto();
 
@@ -237,6 +259,4 @@ public class UserService {
 
         return ResponseEntity.ok().body(userInfoResponseDto);
     }
-
-
 }
