@@ -9,13 +9,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
+@Builder
 @Getter
 @Setter
-@Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity(name = "user_table")
 public class User {
 
@@ -62,10 +60,12 @@ public class User {
     @Column
     private String favoriteGenre4;
 
+    @Builder.Default
     @CreationTimestamp // INSERT 시 자동으로 값을 채워줌
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Builder.Default
     @Column(name = "updated_at")
     @UpdateTimestamp // UPDATE 시 자동으로 값을 채워줌
     private LocalDateTime updatedAt = LocalDateTime.now();

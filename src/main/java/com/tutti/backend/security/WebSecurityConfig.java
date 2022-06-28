@@ -114,7 +114,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("POST,/h2-console/**");
 
 //         회원 관리 API 허용
-//        skipPathList.add("GET,/user/**");
+        skipPathList.add("GET,/user/profile/**");
         skipPathList.add("POST,/user/signup");
         skipPathList.add("POST,/user/email");
         skipPathList.add("POST,/user/artist");
@@ -128,7 +128,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         skipPathList.add("POST,/user/login");
 
-        skipPathList.add("GET,/");
+//        skipPathList.add("GET,/");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(skipPathList,"/**");
 
