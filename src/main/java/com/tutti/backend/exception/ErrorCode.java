@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @Getter
 public enum ErrorCode {
+    // 3xx Redirection
+    MOVED_TEMPORARILY(HttpStatus.FOUND, "302_01","마이페이지로 이동해주세요"),
     // 400 Bad Request
     NULL_TITLE(HttpStatus.BAD_REQUEST, "400_1","제목을 입력해 주세요"),
     NULL_ADDRESS(HttpStatus.BAD_REQUEST, "400_2","장소를 입력해 주세요"),

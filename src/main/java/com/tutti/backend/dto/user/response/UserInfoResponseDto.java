@@ -1,6 +1,7 @@
 package com.tutti.backend.dto.user.response;
 
 import com.tutti.backend.dto.Feed.MainPageFeedDto;
+import com.tutti.backend.dto.Feed.UserinfoResponseFeedDto;
 import com.tutti.backend.dto.user.FollowingDtoMapping;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,5 @@ import java.util.List;
 public class UserInfoResponseDto {
     int success;
     String message;
-    UserInfo userInfo;
-    List<MainPageFeedDto> likeList;
-    List<FollowingDtoMapping> followingList;
+    UserinfoResponseFeedDto data;
 }

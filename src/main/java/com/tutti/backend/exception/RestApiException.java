@@ -15,7 +15,7 @@ public class RestApiException { // http 본문에 담아서 보내줄 형태
 
     public RestApiException(ErrorCode code){
         this.httpStatus = code.getHttpStatus();
-        this.code = getCode();
+        this.code = code.getErrorCode();
         this.errorMessage = getErrorMessage();
     }
     public static RestApiException of(ErrorCode code) {

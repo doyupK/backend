@@ -3,6 +3,7 @@ package com.tutti.backend.service;
 
 import com.tutti.backend.domain.*;
 import com.tutti.backend.dto.Feed.MainPageFeedDto;
+import com.tutti.backend.dto.Feed.UserinfoResponseFeedDto;
 import com.tutti.backend.dto.user.*;
 import com.tutti.backend.dto.user.request.ArtistRequestDto;
 import com.tutti.backend.dto.user.request.EmailRequestDto;
@@ -157,6 +158,8 @@ public class UserService {
     @Transactional
     public ResponseEntity<?> getUserInfo(UserDetailsImpl userDetails) {
         UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto();
+        UserinfoResponseFeedDto userinfoResponseFeedDto = new UserinfoResponseFeedDto();
+
         User user = userDetails.getUser();
         Long followingCount = followRepository.countByUser(user);
         Long followerCount = followRepository.countByFollowingUser(user);
@@ -182,15 +185,56 @@ public class UserService {
 
         List<FollowingDtoMapping> followingList = followRepository.findByUser(user);
 
-
-
-
-
+        userinfoResponseFeedDto.setUserInfo(userInfo);
+        userinfoResponseFeedDto.setLikeList(likeListDto);
+        userinfoResponseFeedDto.setFollowingList(followingList);
         userInfoResponseDto.setSuccess(200);
         userInfoResponseDto.setMessage("성공");
-        userInfoResponseDto.setUserInfo(userInfo);
-        userInfoResponseDto.setLikeList(likeListDto);
-        userInfoResponseDto.setFollowingList(followingList);
+        userInfoResponseDto.setData(userinfoResponseFeedDto);
+        return ResponseEntity.ok().body(userInfoResponseDto);
+    }
+
+    public ResponseEntity<?> getOthersUser(String artist) {
+        UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto();
+        UserinfoResponseFeedDto userinfoResponseFeedDto = new UserinfoResponseFeedDto();
+
+
+        User user = userRepository.findByArtist(artist).orElseThrow(
+                ()-> new NullPointerException("해당 유저를 찾을 수 없습니다.") // 커스텀 에러로 바꿀거
+        );
+
+
+        Long followingCount = followRepository.countByUser(user);
+        Long followerCount = followRepository.countByFollowingUser(user);
+        String[] genre = {
+                user.getFavoriteGenre1(),
+                user.getFavoriteGenre2(),
+                user.getFavoriteGenre3(),
+                user.getFavoriteGenre4()
+        };
+        List<Heart> heartList = heartRepository.findAllByUserAndIsHeartTrue(user);
+
+        List<MainPageFeedDto> likeListDto = new ArrayList<>();
+
+
+        UserInfo userInfo = new UserInfo(user.getArtist()
+                , genre, user.getProfileUrl(), followerCount,
+                followingCount, user.getProfileText(),
+                user.getInstagramUrl(), user.getYoutubeUrl());
+        for(Heart heart : heartList) {
+            MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(heart.getFeed(),user);
+            likeListDto.add(mainPageFeedDto);
+        }
+
+        List<FollowingDtoMapping> followingList = followRepository.findByUser(user);
+
+        userinfoResponseFeedDto.setUserInfo(userInfo);
+        userinfoResponseFeedDto.setLikeList(likeListDto);
+        userinfoResponseFeedDto.setFollowingList(followingList);
+        userInfoResponseDto.setSuccess(200);
+        userInfoResponseDto.setMessage("성공");
+        userInfoResponseDto.setData(userinfoResponseFeedDto);
+
         return ResponseEntity.ok().body(userInfoResponseDto);
     }
 

@@ -25,6 +25,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -82,6 +83,15 @@ public class UserController {
         User user = userDetails.getUser();
         userService.updateUser(userUpdateRequestDto,user);
         return ResponseEntity.ok().body("마이 페이지 수정 완료");
+    }
+
+    // 로그인 Artist는 로컬스토리지에 저장해서 RequestBody로 보내준다는 가정하에 작성함.
+    @GetMapping("/user/profile/{artist}")
+    public ResponseEntity<?> othersUser(@PathVariable String artist, @RequestBody(required = false) String loginArtist) {
+        if(loginArtist.equals(artist)) {
+            throw new CustomException(ErrorCode.MOVED_TEMPORARILY);
+        }
+        return userService.getOthersUser(artist);
     }
 
 
