@@ -1,6 +1,5 @@
 package com.tutti.backend.service;
 
-import com.tutti.backend.domain.Comment;
 import com.tutti.backend.domain.Feed;
 import com.tutti.backend.domain.User;
 import com.tutti.backend.dto.Feed.*;
@@ -147,11 +146,15 @@ public class FeedService {
 
     }
 
-    public ResponseEntity<?> getMainPageByUser(User user) {
+    public ResponseEntity<?> getMainPageByUser(String user) {
+        User findUser = userRepository.findByEmail(user).orElseThrow(
+                ()-> new CustomException(ErrorCode.NOT_FOUND_USER)
+        );
 
         List<SearchTitleDtoMapping> lastestList = feedRepository.findAllByOrderByCreatedAtDesc();
 
-        List<SearchTitleDtoMapping> interestedList = feedRepository.findAllByGenre(user.getFavoriteGenre1());
+        List<SearchTitleDtoMapping> interestedList = feedRepository.findAllByGenre(findUser.getFavoriteGenre1());
+
 
 
         List<MainPageFeedDto> likeList = new ArrayList<>();
@@ -176,9 +179,29 @@ public class FeedService {
         {
             likeList.add(sortMap.get(nKey));
         }
-
+//        if(interestedList.size() < 1){
+//            List<Feed> randomList = feedRepository.findAll();
+//            List<MainPageFeedDto> feedDtos = new ArrayList<>();
+//            for(Feed feed: randomList){
+//
+//                MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(feed,feed.getUser());
+//                feedDtos.add(mainPageFeedDto);
+//            }
+//
+//            MainPageListDto mainPageListDto = new MainPageListDto(lastestList,likeList,feedDtos);
+//            FeedAll1Dto feedAll1Dto = new FeedAll1Dto();
+//
+//            feedAll1Dto.setSuccess(200);
+//            feedAll1Dto.setMessage("성공");
+//            feedAll1Dto.setData(mainPageListDto);
+//
+//            return ResponseEntity.ok().body(feedAll1Dto);
+//        }
 
         MainPageListUserDto mainPageListUserDto = new MainPageListUserDto(lastestList,likeList,interestedList);
+
+
+
 
         FeedAll2Dto feedAll2Dto = new FeedAll2Dto();
 
