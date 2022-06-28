@@ -48,7 +48,7 @@ public class FeedController {
             @AuthenticationPrincipal UserDetailsImpl userDetails){
         User user = userDetails.getUser();
         feedService.createFeed(feedRequestDto,albumImage,song,user);
-        return ResponseEntity.ok().body("등록 완료");
+        return ResponseEntity.ok().body("피드 등록 완료");
     }
 
     @PutMapping("/feeds/{feedId}")
@@ -59,7 +59,7 @@ public class FeedController {
             ){
         User user = userDetails.getUser();
         feedService.updateFeed(feedId,feedUpdateRequestDto,user);
-        return ResponseEntity.ok().body("수정 완료");
+        return ResponseEntity.ok().body("피드 수정 완료");
     }
 
     @GetMapping("/feeds/{feedId}")
@@ -77,7 +77,7 @@ public class FeedController {
     ){
         User user = userDetails.getUser();
         feedService.deleteFeed(feedId,user);
-        return ResponseEntity.ok().body("삭제 완료");
+        return ResponseEntity.ok().body("피드 삭제 완료");
     }
 
     @GetMapping("/search")

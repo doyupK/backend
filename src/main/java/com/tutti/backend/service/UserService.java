@@ -7,6 +7,9 @@ import com.tutti.backend.dto.user.*;
 import com.tutti.backend.dto.user.request.ArtistRequestDto;
 import com.tutti.backend.dto.user.request.EmailRequestDto;
 import com.tutti.backend.dto.user.request.FollowRequestDto;
+import com.tutti.backend.dto.user.request.UserUpdateRequestDto;
+import com.tutti.backend.exception.CustomException;
+import com.tutti.backend.exception.ErrorCode;
 import com.tutti.backend.dto.user.response.UserInfo;
 import com.tutti.backend.dto.user.response.UserInfoResponseDto;
 import com.tutti.backend.repository.FeedRepository;
@@ -142,6 +145,13 @@ public class UserService {
         responseDto.setMessage("완료!");
 
         return ResponseEntity.ok().body(responseDto);
+    }
+    @Transactional
+    public void updateUser(UserUpdateRequestDto userUpdateRequestDto, User currentUser) {
+        User user = userRepository.findById(currentUser.getId()).orElseThrow(()->new CustomException(ErrorCode.WRONG_USER));
+
+        user.updateUser(userUpdateRequestDto);
+
     }
 
     @Transactional

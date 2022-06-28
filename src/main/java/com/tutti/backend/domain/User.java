@@ -2,9 +2,8 @@ package com.tutti.backend.domain;
 
 import com.tutti.backend.dto.user.FileRequestDto;
 import com.tutti.backend.dto.user.SignupRequestDto;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import com.tutti.backend.dto.user.request.UserUpdateRequestDto;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -13,7 +12,10 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Builder
 @RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name = "user_table")
 public class User {
 
@@ -68,7 +70,7 @@ public class User {
     @UpdateTimestamp // UPDATE 시 자동으로 값을 채워줌
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @Column(nullable = false)
+    @Column
     @Enumerated(value = EnumType.STRING)
     private UserConfirmEnum userConfirmEnum;
 
@@ -88,4 +90,27 @@ public class User {
         this.kakaoId = null;
         this.userConfirmEnum = UserConfirmEnum.BEFORE_CONFIRM;
     }
+    public User(String email, String password,String nickname, Long kakaoId) {
+        this.email = email;
+        this.password = password;
+        this.artist = nickname;
+        this.kakaoId = kakaoId;
+    }
+    public User(String email,String password,String artist){
+        this.email = email;
+        this.password = password;
+        this.artist = artist;
+
+    }
+    public void updateUser(UserUpdateRequestDto userUpdateRequestDto){
+        this.profileText = userUpdateRequestDto.getProfileText();
+        this.instagramUrl = userUpdateRequestDto.getInstagramUrl();
+        this.youtubeUrl = userUpdateRequestDto.getYoutubeUrl();
+        this.favoriteGenre1 = userUpdateRequestDto.getGenre()[0];
+        this.favoriteGenre2 = userUpdateRequestDto.getGenre()[1];
+        this.favoriteGenre3 = userUpdateRequestDto.getGenre()[2];
+        this.favoriteGenre4 = userUpdateRequestDto.getGenre()[3];
+    }
+
+
 }
