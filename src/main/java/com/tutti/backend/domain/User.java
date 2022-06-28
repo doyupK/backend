@@ -2,6 +2,7 @@ package com.tutti.backend.domain;
 
 import com.tutti.backend.dto.user.FileRequestDto;
 import com.tutti.backend.dto.user.SignupRequestDto;
+import com.tutti.backend.dto.user.request.UserUpdateRequestDto;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -100,6 +101,15 @@ public class User {
         this.password = password;
         this.artist = artist;
 
+    }
+    public void updateUser(UserUpdateRequestDto userUpdateRequestDto){
+        this.profileText = userUpdateRequestDto.getProfileText();
+        this.instagramUrl = userUpdateRequestDto.getInstagramUrl();
+        this.youtubeUrl = userUpdateRequestDto.getYoutubeUrl();
+        this.favoriteGenre1 = userUpdateRequestDto.getGenre()[0];
+        this.favoriteGenre2 = userUpdateRequestDto.getGenre()[1];
+        this.favoriteGenre3 = userUpdateRequestDto.getGenre()[2];
+        this.favoriteGenre4 = userUpdateRequestDto.getGenre()[3];
     }
 
 
