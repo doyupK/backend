@@ -1,12 +1,11 @@
 package com.tutti.backend.controller;
 
-import com.tutti.backend.dto.CommentRequestDto;
+import com.tutti.backend.dto.comment.CommentRequestDto;
 import com.tutti.backend.security.UserDetailsImpl;
 import com.tutti.backend.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor

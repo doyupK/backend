@@ -10,7 +10,7 @@ import com.tutti.backend.dto.user.request.EmailRequestDto;
 import com.tutti.backend.dto.user.request.UserUpdateRequestDto;
 import com.tutti.backend.exception.CustomException;
 import com.tutti.backend.exception.ErrorCode;
-import com.tutti.backend.dto.user.response.UserInfo;
+import com.tutti.backend.dto.user.response.UserInfoDto;
 import com.tutti.backend.dto.user.response.UserInfoResponseDto;
 import com.tutti.backend.repository.FollowRepository;
 import com.tutti.backend.repository.HeartRepository;
@@ -19,7 +19,6 @@ import com.tutti.backend.security.UserDetailsImpl;
 import com.tutti.backend.security.jwt.HeaderTokenExtractor;
 import com.tutti.backend.security.jwt.JwtDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -70,21 +69,16 @@ public class UserService {
         ResponseDto signupResponseDto = new ResponseDto();
         Optional<User> findUser = userRepository.findByEmail(signupRequestDto.getEmail());
         if(findUser.isPresent()){
-            throw new DuplicateKeyException("이메일이 중복되었습니다");
+            throw new CustomException(ErrorCode.EXIST_EMAIL);
         }
         FileRequestDto fileRequestDto = s3Service.upload(file);
 //      PW Hash
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
-
-
         User user = new User(signupRequestDto, password, fileRequestDto);
-
 //      Email 전송
         confirmationTokenService.createEmailConfirmationToken(signupRequestDto.getEmail());
-
 //      DB 저장
         userRepository.save(user);
-
 
         signupResponseDto.setSuccess(200);
         signupResponseDto.setMessage("회원가입 성공");
@@ -95,7 +89,7 @@ public class UserService {
         ResponseDto signupResponseDto = new ResponseDto();
         Optional<User> user = userRepository.findByEmail(emailRequestDto.getEmail());
         if(user.isPresent()){
-            throw new IllegalArgumentException("이메일이 중복되었습니다.");
+            throw new CustomException(ErrorCode.EXIST_EMAIL);
         }
 
         signupResponseDto.setSuccess(200);
@@ -107,7 +101,7 @@ public class UserService {
         ResponseDto signupResponseDto = new ResponseDto();
         Optional<User> user = userRepository.findByArtist(artistRequestDto.getArtist());
         if(user.isPresent()){
-            throw new NullPointerException("아티스트명 중복");
+            throw new CustomException(ErrorCode.EXIST_ARTIST);
         }
 
         signupResponseDto.setSuccess(200);
@@ -122,7 +116,7 @@ public class UserService {
         findConfirmationToken.useToken();    // 토큰 만료
 
         if (!findUserInfo.isPresent()) {
-            throw new IllegalArgumentException("잘못된 토큰값");
+            throw new CustomException(ErrorCode.NOT_FOUND_TOKEN);
         }
 
 //      User Confirm 정보 'OK' 로 변경
@@ -137,10 +131,10 @@ public class UserService {
         Optional<User> findArtist = userRepository.findByArtist(artist);
 
         if(!findLoginUser.isPresent()){
-            throw new IllegalArgumentException("로그인 정보 오류");
+            throw new CustomException(ErrorCode.WRONG_USER);
         }
         if(!findArtist.isPresent()){
-            throw new IllegalArgumentException("아티스트 정보가 없습니다.");
+            throw new CustomException(ErrorCode.NOT_EXISTS_USERNAME);
         }
 
         User user = findLoginUser.get();
@@ -181,7 +175,7 @@ public class UserService {
         List<MainPageFeedDto> likeListDto = new ArrayList<>();
 
 
-        UserInfo userInfo = new UserInfo(user.getArtist()
+        UserInfoDto userInfoDto = new UserInfoDto(user.getArtist()
                 , genre, user.getProfileUrl(), followerCount,
                 followingCount, user.getProfileText(),
                 user.getInstagramUrl(), user.getYoutubeUrl());
@@ -192,7 +186,7 @@ public class UserService {
 
         List<FollowingDtoMapping> followingList = followRepository.findByUser(user);
 
-        userinfoResponseFeedDto.setUserInfo(userInfo);
+        userinfoResponseFeedDto.setUserInfoDto(userInfoDto);
         userinfoResponseFeedDto.setLikeList(likeListDto);
         userinfoResponseFeedDto.setFollowingList(followingList);
         userInfoResponseDto.setSuccess(200);
@@ -216,13 +210,11 @@ public class UserService {
             }
 
         }
-
         UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto();
         UserinfoResponseFeedDto userinfoResponseFeedDto = new UserinfoResponseFeedDto();
 
-
         User user = userRepository.findByArtist(artist).orElseThrow(
-                ()-> new NullPointerException("해당 유저를 찾을 수 없습니다.") // 커스텀 에러로 바꿀거
+                ()-> new CustomException(ErrorCode.TEMPORARY_SERVER_ERROR) // 커스텀 에러로 바꿀거
         );
 
 
@@ -239,7 +231,7 @@ public class UserService {
         List<MainPageFeedDto> likeListDto = new ArrayList<>();
 
 
-        UserInfo userInfo = new UserInfo(user.getArtist()
+        UserInfoDto userInfoDto = new UserInfoDto(user.getArtist()
                 , genre, user.getProfileUrl(), followerCount,
                 followingCount, user.getProfileText(),
                 user.getInstagramUrl(), user.getYoutubeUrl());
@@ -250,7 +242,7 @@ public class UserService {
 
         List<FollowingDtoMapping> followingList = followRepository.findByUser(user);
 
-        userinfoResponseFeedDto.setUserInfo(userInfo);
+        userinfoResponseFeedDto.setUserInfoDto(userInfoDto);
         userinfoResponseFeedDto.setLikeList(likeListDto);
         userinfoResponseFeedDto.setFollowingList(followingList);
         userInfoResponseDto.setSuccess(200);

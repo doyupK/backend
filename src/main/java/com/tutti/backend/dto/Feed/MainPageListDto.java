@@ -8,15 +8,15 @@ import java.util.List;
 @Getter
 public class MainPageListDto {
 
-    private List<SearchTitleDtoMapping> lastestList;
+    private final List<SearchTitleDtoMapping> lastestList;
 
-    private List<MainPageFeedDto> likeList;
+    private final List<MainPageFeedDto> likeList;
 
-    private List<MainPageFeedDto> randomList;
+    private final List<MainPageFeedDto> genreList;
 
     public MainPageListDto(List<SearchTitleDtoMapping> lastestList, List<MainPageFeedDto> likeList, List<MainPageFeedDto> randomList) {
         this.lastestList = lastestList;
         this.likeList = likeList;
-        this.randomList = randomList;
+        this.genreList = randomList;
     }
 }

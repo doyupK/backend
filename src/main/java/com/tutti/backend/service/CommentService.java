@@ -4,8 +4,10 @@ package com.tutti.backend.service;
 import com.tutti.backend.domain.Comment;
 import com.tutti.backend.domain.Feed;
 import com.tutti.backend.domain.User;
-import com.tutti.backend.dto.CommentRequestDto;
+import com.tutti.backend.dto.comment.CommentRequestDto;
 import com.tutti.backend.dto.user.ResponseDto;
+import com.tutti.backend.exception.CustomException;
+import com.tutti.backend.exception.ErrorCode;
 import com.tutti.backend.repository.CommentRepository;
 import com.tutti.backend.repository.FeedRepository;
 import com.tutti.backend.repository.UserRepository;
@@ -25,12 +27,13 @@ public class CommentService {
 
     public Object writeComment(Long feedId,  CommentRequestDto commentRequestDto, UserDetailsImpl userDetails) {
         ResponseDto commentResponseDto = new ResponseDto();
-
+        // 로그인 정보 확인
         User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
-                ()-> new NullPointerException("해당 유저가 존재하지 않습니다.") // 커스텀으로 바꿀 부분
+                ()-> new CustomException(ErrorCode.NOT_EXISTS_USERNAME)
         );
+        // 코멘트 작성 할 게시글 확인
         Feed feed = feedRepository.findById(feedId).orElseThrow(
-                ()-> new NullPointerException("해당 피드가 존재하지 않습니다.") // 커스텀으로 바꿀 부분
+                ()-> new CustomException(ErrorCode.NOT_FOUND_FEED)
         );
         Comment comment = new Comment(user, feed, commentRequestDto);
         commentRepository.save(comment);
@@ -44,12 +47,13 @@ public class CommentService {
     @Transactional
     public Object updateComment(Long feedId,Long commentId, CommentRequestDto commentRequestDto, UserDetailsImpl userDetails) {
         ResponseDto commentResponseDto = new ResponseDto();
-
+        // 코멘트 검색
         Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new NullPointerException("해당 댓글이 존재하지 않습니다.") // 커스텀으로 바꿀 부분
+                () -> new CustomException(ErrorCode.NOT_FOUND_COMMENT)
         );
+        // 작성자 != 로그인
         if (!comment.getUser().getId().equals(userDetails.getUser().getId())) {
-            throw new IllegalArgumentException("해당 댓글의 작성자가 아닙니다."); // 커스텀으로 바꿀 부분
+            throw new CustomException(ErrorCode.WRONG_USER);
         }
         // 둘 중에 어떤방식으로 해야될지??
         // comment.setComment(commentRequestDto.getComment());
@@ -57,7 +61,6 @@ public class CommentService {
 
         commentResponseDto.setSuccess(200);
         commentResponseDto.setMessage("수정 완료!");
-
         return commentResponseDto;
     }
 
@@ -67,10 +70,10 @@ public class CommentService {
 
         // 댓글을 삭제할 꺼면 해당 유저인지 검사하자
         Comment comment = commentRepository.findById(feedId).orElseThrow(
-                () -> new NullPointerException("해당 댓글이 존재하지 않습니다.") // 커스텀으로 바꿀 부분
+                () -> new CustomException(ErrorCode.NOT_FOUND_COMMENT) // 커스텀으로 바꿀 부분
         );
         if (!comment.getUser().getId().equals(userDetails.getUser().getId())) {
-            throw new IllegalArgumentException("해당 댓글의 작성자가 아닙니다."); // 커스텀으로 바꿀 부분
+            throw new CustomException(ErrorCode.WRONG_USER); // 커스텀으로 바꿀 부분
         }
         commentRepository.deleteById(commentId);
 

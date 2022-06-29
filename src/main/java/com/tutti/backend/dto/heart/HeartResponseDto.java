@@ -1,4 +1,4 @@
-package com.tutti.backend.dto;
+package com.tutti.backend.dto.heart;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
