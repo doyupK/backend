@@ -5,10 +5,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FeedAll3Dto {
+public class FeedMainLoginResponseDto {
+
     int success;
 
     String message;
 
-    FeedDetailResponseDto data;
+    MainPageListUserDto data;
 }

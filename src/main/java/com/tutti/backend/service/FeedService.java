@@ -76,13 +76,12 @@ public class FeedService {
         FeedDetailDto feedDetailDto = new FeedDetailDto(feed, artist);
         FeedDetailResponseDto feedDetailResponseDto =  new FeedDetailResponseDto(feedDetailDto,commentList);
 
-        FeedAll3Dto feedAll3Dto = new FeedAll3Dto();
+        FeedDatailResponseDto feedDatailResponseDto = new FeedDatailResponseDto();
 
-        feedAll3Dto.setSuccess(200);
-        feedAll3Dto.setMessage("성공");
-        feedAll3Dto.setData(feedDetailResponseDto);
-
-        return  ResponseEntity.ok().body(feedAll3Dto);
+        feedDatailResponseDto.setSuccess(200);
+        feedDatailResponseDto.setMessage("성공");
+        feedDatailResponseDto.setData(feedDetailResponseDto);
+        return  ResponseEntity.ok().body(feedDatailResponseDto);
 
     }
     @Transactional
@@ -100,13 +99,11 @@ public class FeedService {
         feedRepository.delete(feed);
     }
 
+    // 비 로그인 Main 페이지 로딩
     public ResponseEntity<?> getMainPage() {
         List<SearchTitleDtoMapping> lastestList = feedRepository.findAllByOrderByCreatedAtDesc();
-
         List<Feed> randomList = feedRepository.findAll();
-
         List<MainPageFeedDto> feedDtos = new ArrayList<>();
-
         List<MainPageFeedDto> feedDtoList = new ArrayList<>();
 
         for(Feed feed: randomList){
@@ -115,10 +112,7 @@ public class FeedService {
             feedDtoList.add(mainPageFeedDto);
         }
 
-
-
         List<MainPageFeedDto> likeList = new ArrayList<>();
-
         Map<Long,MainPageFeedDto> sortMap = new HashMap<>();
 
         for(MainPageFeedDto feed : feedDtoList) {
@@ -130,35 +124,30 @@ public class FeedService {
         Object[] mapkey = sortMap.keySet().toArray();
         Arrays.sort(mapkey);
         // 결과 출력
-        for (Long nKey : sortMap.keySet())
-        {
+        for (Long nKey : sortMap.keySet()){
             likeList.add(sortMap.get(nKey));
         }
+
         MainPageListDto mainPageListDto = new MainPageListDto(lastestList,likeList,feedDtos);
-
-        FeedAllDto feedAllDto = new FeedAllDto();
-
-        feedAllDto.setSuccess(200);
-        feedAllDto.setMessage("성공");
-        feedAllDto.setData(mainPageListDto);
-
-        return ResponseEntity.ok().body(feedAllDto);
+        FeedMainNotLoginResponseDto feedMainNotLoginResponseDto = new FeedMainNotLoginResponseDto();
+        feedMainNotLoginResponseDto.setSuccess(200);
+        feedMainNotLoginResponseDto.setMessage("성공");
+        feedMainNotLoginResponseDto.setData(mainPageListDto);
+        return ResponseEntity.ok().body(feedMainNotLoginResponseDto);
 
     }
 
+    // 로그인 Main 페이지 (3번째 리스트 User Genre 1 출력 )
     public ResponseEntity<?> getMainPageByUser(String user) {
         User findUser = userRepository.findByEmail(user).orElseThrow(
                 ()-> new CustomException(ErrorCode.NOT_FOUND_USER)
         );
-
         List<SearchTitleDtoMapping> lastestList = feedRepository.findAllByOrderByCreatedAtDesc();
-
         List<SearchTitleDtoMapping> interestedList = feedRepository.findAllByGenre(findUser.getFavoriteGenre1());
-
-
 
         List<MainPageFeedDto> likeList = new ArrayList<>();
         List<Feed> likes = feedRepository.findAll();
+
         for(Feed feed: likes){
             MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(feed,feed.getUser());
             likeList.add(mainPageFeedDto);
@@ -179,37 +168,15 @@ public class FeedService {
         {
             likeList.add(sortMap.get(nKey));
         }
-//        if(interestedList.size() < 1){
-//            List<Feed> randomList = feedRepository.findAll();
-//            List<MainPageFeedDto> feedDtos = new ArrayList<>();
-//            for(Feed feed: randomList){
-//
-//                MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(feed,feed.getUser());
-//                feedDtos.add(mainPageFeedDto);
-//            }
-//
-//            MainPageListDto mainPageListDto = new MainPageListDto(lastestList,likeList,feedDtos);
-//            FeedAll1Dto feedAll1Dto = new FeedAll1Dto();
-//
-//            feedAll1Dto.setSuccess(200);
-//            feedAll1Dto.setMessage("성공");
-//            feedAll1Dto.setData(mainPageListDto);
-//
-//            return ResponseEntity.ok().body(feedAll1Dto);
-//        }
 
         MainPageListUserDto mainPageListUserDto = new MainPageListUserDto(lastestList,likeList,interestedList);
 
+        FeedMainLoginResponseDto feedMainLoginResponseDto = new FeedMainLoginResponseDto();
 
-
-
-        FeedAll2Dto feedAll2Dto = new FeedAll2Dto();
-
-        feedAll2Dto.setSuccess(200);
-        feedAll2Dto.setMessage("성공");
-        feedAll2Dto.setData(mainPageListUserDto);
-
-        return ResponseEntity.ok().body(feedAll2Dto);
+        feedMainLoginResponseDto.setSuccess(200);
+        feedMainLoginResponseDto.setMessage("성공");
+        feedMainLoginResponseDto.setData(mainPageListUserDto);
+        return ResponseEntity.ok().body(feedMainLoginResponseDto);
 
     }
 
@@ -226,25 +193,18 @@ public class FeedService {
 
     public ResponseEntity<?> getFeedPage() {
         List<SearchTitleDtoMapping> lastestList = feedRepository.findAllByOrderByCreatedAtDesc();
-
-        FeedAll4Dto feedAll4Dto = new FeedAll4Dto();
-
-        feedAll4Dto.setSuccess(200);
-        feedAll4Dto.setMessage("성공");
-        feedAll4Dto.setData(lastestList);
-
-        return ResponseEntity.ok().body(feedAll4Dto);
+        FeedPageResponseDto feedPageResponseDto = new FeedPageResponseDto();
+        feedPageResponseDto.setSuccess(200);
+        feedPageResponseDto.setMessage("성공");
+        feedPageResponseDto.setData(lastestList);
+        return ResponseEntity.ok().body(feedPageResponseDto);
     }
 
     public ResponseEntity<?> getFeedByGenrePage(String genre) {
         List<SearchTitleDtoMapping> genreList = feedRepository.findAllByGenreOrderByCreatedAtDesc(genre);
-
-        FeedAll5Dto feedAll5Dto = new FeedAll5Dto();
-
+        FeedPageGenreResponseDto feedPageGenreResponseDto = new FeedPageGenreResponseDto();
         List<SearchTitleDtoMapping> likes = feedRepository.findAllByGenre(genre);
-
         List<SearchTitleDtoMapping> likeList = new ArrayList<>();
-
         Map<Long,SearchTitleDtoMapping> sortMap = new HashMap<>();
 
         for(SearchTitleDtoMapping feed : likes) {
@@ -261,11 +221,10 @@ public class FeedService {
             likeList.add(sortMap.get(nKey));
         }
 
-        feedAll5Dto.setSuccess(200);
-        feedAll5Dto.setMessage("성공");
-        feedAll5Dto.setData(genreList);
-        feedAll5Dto.setLike(likeList);
-
-        return ResponseEntity.ok().body(feedAll5Dto);
+        feedPageGenreResponseDto.setSuccess(200);
+        feedPageGenreResponseDto.setMessage("성공");
+        feedPageGenreResponseDto.setData(genreList);
+        feedPageGenreResponseDto.setLike(likeList);
+        return ResponseEntity.ok().body(feedPageGenreResponseDto);
     }
 }

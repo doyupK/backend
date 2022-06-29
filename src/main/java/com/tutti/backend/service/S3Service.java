@@ -10,6 +10,8 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.tutti.backend.dto.user.FileRequestDto;
+import com.tutti.backend.exception.CustomException;
+import com.tutti.backend.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -63,7 +65,7 @@ public class S3Service {
                     .withCannedAcl(CannedAccessControlList.PublicRead));
             return new FileRequestDto(s3Client.getUrl(bucket, fileName).toString(), fileName);
         }catch (IOException e){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"파일 업로드에 실패하셨습니다");
+            throw new CustomException(ErrorCode.FAIL_FILE_UPLOAD);
         }
     }
 
@@ -94,7 +96,7 @@ public class S3Service {
         try {
             return fileName.substring(fileName.lastIndexOf("."));
         } catch (StringIndexOutOfBoundsException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일(" + fileName + ") 입니다.");
+            throw new CustomException(ErrorCode.WRONG_FILE_TYPE);
         }
     }
 

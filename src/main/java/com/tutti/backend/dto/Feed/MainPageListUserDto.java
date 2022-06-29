@@ -11,11 +11,11 @@ public class MainPageListUserDto {
 
     private final List<MainPageFeedDto> likeList;
 
-    private final List<SearchTitleDtoMapping> interestedList;
+    private final List<SearchTitleDtoMapping> genreList;
 
     public MainPageListUserDto(List<SearchTitleDtoMapping> lastestList, List<MainPageFeedDto> likeList, List<SearchTitleDtoMapping> interestedList) {
         this.lastestList = lastestList;
         this.likeList = likeList;
-        this.interestedList = interestedList;
+        this.genreList = interestedList;
     }
 }

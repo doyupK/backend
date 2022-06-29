@@ -1,6 +1,6 @@
 package com.tutti.backend.domain;
 
-import com.tutti.backend.dto.CommentRequestDto;
+import com.tutti.backend.dto.comment.CommentRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

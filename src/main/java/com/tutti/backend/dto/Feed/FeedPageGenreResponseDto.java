@@ -6,7 +6,7 @@ import lombok.Setter;
 import java.util.List;
 @Getter
 @Setter
-public class FeedAll5Dto {
+public class FeedPageGenreResponseDto {
     int success;
 
     String message;
