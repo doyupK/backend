@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
@@ -122,20 +124,32 @@ public class FeedService {
         }
         // 좋아요 높은 순
 //        List<MainPageFeedDto> likeList = new ArrayList<>();
-//        Map<Long,MainPageFeedDto> sortMap = new HashMap<>();
-//        // 각 피드 좋아요 카운트
+//        MultiValueMap<Long, MainPageFeedDto> map = new LinkedMultiValueMap<>();
 //        for(MainPageFeedDto feed : feedDtoList) {
 //            Long Hearts = heartRepository.countByFeedIdAndIsHeartTrue(feed.getFeedId());
-//            sortMap.put(Hearts,feed);
+//            map.add(Hearts,feed);
 //        }
-//
+////        Map<List<Long>,MainPageFeedDto> sortMap = new HashMap<>();
+////        // 각 피드 좋아요 카운트
+////        for(MainPageFeedDto feed : feedDtoList) {
+////            List<Long> hearttttt =  new ArrayList<>();
+////            Long Hearts = heartRepository.countByFeedIdAndIsHeartTrue(feed.getFeedId());
+////            hearttttt.add(Hearts);
+////            sortMap.put(hearttttt,feed);
+////
+////        }
+////
 //        // 키로 정렬(좋아요 높은 순으로 정렬)
-//        Object[] mapkey = sortMap.keySet().toArray();
+//        Object[] mapkey = map.keySet().toArray();
 //        Arrays.sort(mapkey);
 //        // 결과 출력
-//        for (Long nKey : sortMap.keySet()){
-//            likeList.add(sortMap.get(nKey));
+//        for (Long nKey : map.keySet()){
+//            List<MainPageFeedDto> dlfma = map.get(nKey);
+//            for(MainPageFeedDto dto : dlfma) {
+//                likeList.add(dto);
+//            }
 //        }
+
         List<SearchTitleDtoMapping> likeList= feedRepository.findAllByOrderByLikeCountDesc();
 
 
