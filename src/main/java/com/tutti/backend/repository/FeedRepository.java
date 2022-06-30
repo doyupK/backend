@@ -27,6 +27,8 @@ public interface FeedRepository extends JpaRepository<Feed,Long> {
 
     List<SearchTitleDtoMapping> findAllByGenreOrderByCreatedAtDesc(String genre);
 
+    List<SearchTitleDtoMapping> findAllByOrderByLikeCountDesc();
+
 
 
 

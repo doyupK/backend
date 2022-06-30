@@ -36,7 +36,7 @@ public class HeartService {
           두번째부터는 isHeart 반전
          */
         if (heart != null) {
-            heart.update();
+            heartRepository.delete(heart);
         } else {
             User user = userRepository.findById(userId).orElseThrow(
                     () -> new CustomException(ErrorCode.NOT_EXISTS_USERNAME) // 유저 정보 없을 때

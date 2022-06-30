@@ -2,6 +2,7 @@ package com.tutti.backend.domain;
 
 import com.tutti.backend.dto.Feed.FeedUpdateRequestDto;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -53,7 +54,8 @@ public class Feed extends Timestamped{
     @OneToMany(mappedBy = "feed",fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Heart> hearts;
 
-
+    @Formula("(select count(*) from heart where heart.feed_id=id)")
+    private int likeCount;
 
 
 
