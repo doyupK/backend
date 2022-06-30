@@ -4,6 +4,7 @@ package com.tutti.backend.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.tutti.backend.dto.user.ResponseDto;
+import com.tutti.backend.dto.user.response.loginResponseDto;
 import com.tutti.backend.security.jwt.JwtTokenUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -29,10 +30,16 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
 
-        ResponseDto loginResponseDto = new ResponseDto();
+        loginResponseDto loginResponseDto = new loginResponseDto();
+
+
+
 
         loginResponseDto.setSuccess(200);
         loginResponseDto.setMessage("로그인 성공");
+        loginResponseDto.setMessage("로그인 성공");
+        loginResponseDto.setArtist(userDetails.getUser().getArtist());
+        loginResponseDto.setProfileUrl(userDetails.getUser().getProfileUrl());
 
         String result = mapper.writeValueAsString(loginResponseDto);
         response.getWriter().write(result);
