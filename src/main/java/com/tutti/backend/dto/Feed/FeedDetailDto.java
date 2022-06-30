@@ -1,6 +1,7 @@
 package com.tutti.backend.dto.Feed;
 
 import com.tutti.backend.domain.Feed;
+import com.tutti.backend.domain.Heart;
 import lombok.Getter;
 
 // 피드 상세 정보를 담은 middleDto
@@ -15,7 +16,11 @@ public class FeedDetailDto {
     String postType;
     String color;
     String artist;
-    public FeedDetailDto(Feed feed, String artist) {
+    String profileUrl;
+    int likeCount;
+    boolean flag = false;
+
+    public FeedDetailDto(Feed feed, String artist, String profileUrl, boolean heartCheck) {
         this.id = feed.getId();
         this.title = feed.getTitle();
         this.description = feed.getDescription();
@@ -25,5 +30,9 @@ public class FeedDetailDto {
         this.postType = feed.getPostType();
         this.color = feed.getColor();
         this.artist = artist;
+        this.profileUrl = profileUrl;
+        this.likeCount = feed.getLikeCount();
+        this.flag = heartCheck;
+
     }
 }

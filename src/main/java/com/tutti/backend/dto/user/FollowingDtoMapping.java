@@ -3,13 +3,13 @@ package com.tutti.backend.dto.user;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public interface FollowingDtoMapping {
-    default String getprofileImage(){
+    default String getProfileImage(){
         return getFollowingUserProfileUrl();
     }
-    default Long getid(){
+    default Long getId(){
         return getFollowingUserId();
     }
-    default String getartist() {
+    default String getArtist() {
         return getFollowingUserArtist();
     }
 

@@ -6,9 +6,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public interface FeedCommentDtoMapping {
     Long getId();
     String getComment();
+    default String getProfileUrl(){
+        return getUserProfileUrl();
+    }
+    default String getArtist(){
+        return getUserArtist();
+    }
+    @JsonIgnore
+    String getUserProfileUrl();
+    @JsonIgnore
     String getUserArtist();
-
-
-
 
 }

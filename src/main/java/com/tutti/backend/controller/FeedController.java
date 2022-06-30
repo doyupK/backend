@@ -78,9 +78,10 @@ public class FeedController {
     // 피드 상세 조회
     @GetMapping("/feeds/{feedId}")
     public ResponseEntity<?> getFeed(
-            @PathVariable Long feedId
+            @PathVariable Long feedId,
+            HttpServletRequest httpServletRequest
     ){
-        return feedService.getFeed(feedId);
+        return feedService.getFeed(feedId,httpServletRequest);
 
     }
     // 피드 삭제

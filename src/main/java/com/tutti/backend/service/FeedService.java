@@ -2,20 +2,22 @@ package com.tutti.backend.service;
 
 import com.tutti.backend.domain.DeletedFeed;
 import com.tutti.backend.domain.Feed;
+import com.tutti.backend.domain.Heart;
 import com.tutti.backend.domain.User;
 import com.tutti.backend.dto.Feed.*;
 import com.tutti.backend.dto.user.FileRequestDto;
 import com.tutti.backend.exception.CustomException;
 import com.tutti.backend.exception.ErrorCode;
 import com.tutti.backend.repository.*;
+import com.tutti.backend.security.jwt.HeaderTokenExtractor;
+import com.tutti.backend.security.jwt.JwtDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @Service
@@ -25,18 +27,28 @@ public class FeedService {
     private final UserRepository userRepository;
     private final S3Service service;
     private final CommentRepository commentRepository;
-
-
+    private final HeaderTokenExtractor headerTokenExtractor;
+    private final JwtDecoder jwtDecoder;
     private final DeletedFeedRepository deletedFeedRepository;
-
+    private final HeartRepository heartRepository;
 
     @Autowired
-    public FeedService(FeedRepository feedRepository, UserRepository userRepository, S3Service service, CommentRepository commentRepository,DeletedFeedRepository deletedFeedRepository) {
+    public FeedService(FeedRepository feedRepository,
+                       UserRepository userRepository,
+                       S3Service service,
+                       CommentRepository commentRepository,
+                       DeletedFeedRepository deletedFeedRepository,
+                       HeaderTokenExtractor headerTokenExtractor,
+                       HeartRepository heartRepository,
+                       JwtDecoder jwtDecoder
+                       ) {
         this.feedRepository = feedRepository;
         this.userRepository = userRepository;
         this.service = service;
         this.commentRepository = commentRepository;
-
+        this.headerTokenExtractor =headerTokenExtractor;
+        this.heartRepository = heartRepository;
+        this.jwtDecoder=jwtDecoder;
         this.deletedFeedRepository = deletedFeedRepository;
     }
 
@@ -75,13 +87,33 @@ public class FeedService {
 
     // 피드 상세 조회
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getFeed(Long feedId) {
+    public ResponseEntity<?> getFeed(Long feedId, HttpServletRequest httpServletRequest) {
         Feed feed = feedRepository.findById(feedId).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEED));
         String artist = feed.getUser().getArtist();
-
+        String jwtToken = httpServletRequest.getHeader("Authorization");
         List<FeedCommentDtoMapping> commentList = commentRepository.findAllByFeed(feed);
+        boolean heartCheck = false;
+        if(jwtToken!=null) {
+            // 현재 로그인 한 user 찾기
+            String userEmail = jwtDecoder.decodeUsername(headerTokenExtractor.extract(jwtToken, httpServletRequest));
+            User user = userRepository.findByEmail(userEmail).orElseThrow(
+                    ()->new CustomException(ErrorCode.NOT_FOUND_USER)
+            );
+            Heart heart = heartRepository.findByUser_IdAndFeed_Id(user.getId(), feedId);
+            if(heart != null){
+                heartCheck = true;
+            }
+            FeedDetailDto feedDetailDto = new FeedDetailDto(feed, artist, feed.getUser().getProfileUrl(), heartCheck);
+            //feedDetail+commentList
+            FeedDetailResponseDto feedDetailResponseDto =  new FeedDetailResponseDto(feedDetailDto,commentList);
+            FeedResponseDto feedResponseDto = new FeedResponseDto();
 
-        FeedDetailDto feedDetailDto = new FeedDetailDto(feed, artist);
+            feedResponseDto.setSuccess(200);
+            feedResponseDto.setMessage("성공");
+            feedResponseDto.setData(feedDetailResponseDto);
+            return  ResponseEntity.ok().body(feedResponseDto);
+        }
+        FeedDetailDto feedDetailDto = new FeedDetailDto(feed, artist, feed.getUser().getProfileUrl(),heartCheck);
 
         //feedDetail+commentList
         FeedDetailResponseDto feedDetailResponseDto =  new FeedDetailResponseDto(feedDetailDto,commentList);

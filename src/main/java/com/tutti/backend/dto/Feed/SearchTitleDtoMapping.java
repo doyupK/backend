@@ -8,7 +8,7 @@ public interface SearchTitleDtoMapping {
     String getGenre();
     String getUserArtist();
     String getAlbumImageUrl();
-    String getUserProfileUrl();
+//    String getUserProfileUrl();
 
 
 
