@@ -121,21 +121,23 @@ public class FeedService {
             feedDtoList.add(mainPageFeedDto);
         }
         // 좋아요 높은 순
-        List<MainPageFeedDto> likeList = new ArrayList<>();
-        Map<Long,MainPageFeedDto> sortMap = new HashMap<>();
-        // 각 피드 좋아요 카운트
-        for(MainPageFeedDto feed : feedDtoList) {
-            Long Hearts = heartRepository.countByFeedIdAndIsHeartTrue(feed.getFeedId());
-            sortMap.put(Hearts,feed);
-        }
+//        List<MainPageFeedDto> likeList = new ArrayList<>();
+//        Map<Long,MainPageFeedDto> sortMap = new HashMap<>();
+//        // 각 피드 좋아요 카운트
+//        for(MainPageFeedDto feed : feedDtoList) {
+//            Long Hearts = heartRepository.countByFeedIdAndIsHeartTrue(feed.getFeedId());
+//            sortMap.put(Hearts,feed);
+//        }
+//
+//        // 키로 정렬(좋아요 높은 순으로 정렬)
+//        Object[] mapkey = sortMap.keySet().toArray();
+//        Arrays.sort(mapkey);
+//        // 결과 출력
+//        for (Long nKey : sortMap.keySet()){
+//            likeList.add(sortMap.get(nKey));
+//        }
+        List<SearchTitleDtoMapping> likeList= feedRepository.findAllByOrderByLikeCountDesc();
 
-        // 키로 정렬(좋아요 높은 순으로 정렬)
-        Object[] mapkey = sortMap.keySet().toArray();
-        Arrays.sort(mapkey);
-        // 결과 출력
-        for (Long nKey : sortMap.keySet()){
-            likeList.add(sortMap.get(nKey));
-        }
 
         MainPageListDto mainPageListDto = new MainPageListDto(latestList,likeList,feedDtoList);
         FeedMainNotLoginResponseDto feedMainNotLoginResponseDto = new FeedMainNotLoginResponseDto();

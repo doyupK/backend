@@ -11,11 +11,11 @@ public class MainPageListDto {
 
     private final List<SearchTitleDtoMapping> lastestList;
 
-    private final List<MainPageFeedDto> likeList;
+    private final List<SearchTitleDtoMapping> likeList;
 
     private final List<MainPageFeedDto> genreList; // 랜덤
 
-    public MainPageListDto(List<SearchTitleDtoMapping> lastestList, List<MainPageFeedDto> likeList, List<MainPageFeedDto> randomList) {
+    public MainPageListDto(List<SearchTitleDtoMapping> lastestList, List<SearchTitleDtoMapping> likeList, List<MainPageFeedDto> randomList) {
         this.lastestList = lastestList;
         this.likeList = likeList;
         this.genreList = randomList;
