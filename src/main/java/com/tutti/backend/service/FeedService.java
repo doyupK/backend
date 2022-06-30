@@ -151,7 +151,7 @@ public class FeedService {
         User findUser = userRepository.findByEmail(user).orElseThrow(
                 ()-> new CustomException(ErrorCode.NOT_FOUND_USER)
         );
-        List<SearchTitleDtoMapping> lastestList = feedRepository.findAllByOrderByCreatedAtDesc();
+        List<SearchTitleDtoMapping> latestList = feedRepository.findAllByOrderByCreatedAtDesc();
         // 관심 장르 별
         List<SearchTitleDtoMapping> interestedList = feedRepository.findAllByGenre(findUser.getFavoriteGenre1());
 
@@ -179,7 +179,7 @@ public class FeedService {
             likeList.add(sortMap.get(nKey));
         }
 
-        MainPageListUserDto mainPageListUserDto = new MainPageListUserDto(lastestList,likeList,interestedList);
+        MainPageListUserDto mainPageListUserDto = new MainPageListUserDto(latestList,likeList,interestedList);
 
         FeedMainLoginResponseDto feedMainLoginResponseDto = new FeedMainLoginResponseDto();
 
