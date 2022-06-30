@@ -93,7 +93,7 @@ public class FeedService {
         String jwtToken = httpServletRequest.getHeader("Authorization");
         List<FeedCommentDtoMapping> commentList = commentRepository.findAllByFeed(feed);
         boolean heartCheck = false;
-        if(jwtToken!=null) {
+        if(!Objects.equals(jwtToken, "")) {
             // 현재 로그인 한 user 찾기
             String userEmail = jwtDecoder.decodeUsername(headerTokenExtractor.extract(jwtToken, httpServletRequest));
             User user = userRepository.findByEmail(userEmail).orElseThrow(

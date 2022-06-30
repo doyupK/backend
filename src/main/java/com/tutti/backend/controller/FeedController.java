@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,11 +29,11 @@ public class FeedController {
     @GetMapping("/")
     public ResponseEntity<?> getMainPage(HttpServletRequest httpServletRequest) {
         String jwtToken = httpServletRequest.getHeader("Authorization");
-        if (jwtToken == null) {
+        if (Objects.equals(jwtToken, "")) {
             return feedService.getMainPage();
         }
-        return ResponseEntity.ok().body(feedService.getMainPageByUser(
-                jwtDecoder.decodeUsername(headerTokenExtractor.extract(jwtToken, httpServletRequest))));
+        return feedService.getMainPageByUser(
+                jwtDecoder.decodeUsername(headerTokenExtractor.extract(jwtToken, httpServletRequest)));
     }
 
 

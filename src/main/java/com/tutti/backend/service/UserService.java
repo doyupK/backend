@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -213,7 +214,7 @@ public class UserService {
     public ResponseEntity<?> getOthersUser(String artist, HttpServletRequest httpServletRequest) {
 
         String jwtToken = httpServletRequest.getHeader("Authorization");
-        if(jwtToken!=null){
+        if(!Objects.equals(jwtToken, "")){
             // 현재 로그인 한 user 찾기
             String userEmail = jwtDecoder.decodeUsername(headerTokenExtractor.extract(jwtToken, httpServletRequest));
             User findUser = userRepository.findByEmail(userEmail).orElseThrow(
