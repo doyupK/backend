@@ -2,10 +2,12 @@ package com.tutti.backend.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
+@Setter
 @Getter
 @NoArgsConstructor
 public class Heart {
@@ -19,7 +21,7 @@ public class Heart {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "postId")
+    @JoinColumn(name = "feedId")
     private Feed feed;
 
     @Column
