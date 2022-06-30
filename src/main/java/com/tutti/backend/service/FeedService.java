@@ -25,18 +25,18 @@ public class FeedService {
     private final UserRepository userRepository;
     private final S3Service service;
     private final CommentRepository commentRepository;
-    private final HeartRepository heartRepository;
+
 
     private final DeletedFeedRepository deletedFeedRepository;
 
 
     @Autowired
-    public FeedService(FeedRepository feedRepository, UserRepository userRepository, S3Service service, CommentRepository commentRepository,HeartRepository heartRepository,DeletedFeedRepository deletedFeedRepository) {
+    public FeedService(FeedRepository feedRepository, UserRepository userRepository, S3Service service, CommentRepository commentRepository,DeletedFeedRepository deletedFeedRepository) {
         this.feedRepository = feedRepository;
         this.userRepository = userRepository;
         this.service = service;
         this.commentRepository = commentRepository;
-        this. heartRepository = heartRepository;
+
         this.deletedFeedRepository = deletedFeedRepository;
     }
 
@@ -170,30 +170,32 @@ public class FeedService {
         List<SearchTitleDtoMapping> latestList = feedRepository.findAllByOrderByCreatedAtDesc();
         // 관심 장르 별
         List<SearchTitleDtoMapping> interestedList = feedRepository.findAllByGenre(findUser.getFavoriteGenre1());
+//
+//        List<MainPageFeedDto> likeList = new ArrayList<>();
+//        List<Feed> likes = feedRepository.findAll();
+//
+//        for(Feed feed: likes){
+//            MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(feed,feed.getUser());
+//            likeList.add(mainPageFeedDto);
+//        }
+//
+//        Map<Long,MainPageFeedDto> sortMap = new HashMap<>();
+//
+//        for(MainPageFeedDto feed : likeList) {
+//            Long Hearts = heartRepository.countByFeedIdAndIsHeartTrue(feed.getFeedId());
+//            sortMap.put(Hearts,feed);
+//        }
+//
+//        // 키로 정렬
+//        Object[] mapkey = sortMap.keySet().toArray();
+//        Arrays.sort(mapkey);
+//        // 결과 출력
+//        for (Long nKey : sortMap.keySet())
+//        {
+//            likeList.add(sortMap.get(nKey));
+//        }
 
-        List<MainPageFeedDto> likeList = new ArrayList<>();
-        List<Feed> likes = feedRepository.findAll();
-
-        for(Feed feed: likes){
-            MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(feed,feed.getUser());
-            likeList.add(mainPageFeedDto);
-        }
-
-        Map<Long,MainPageFeedDto> sortMap = new HashMap<>();
-
-        for(MainPageFeedDto feed : likeList) {
-            Long Hearts = heartRepository.countByFeedIdAndIsHeartTrue(feed.getFeedId());
-            sortMap.put(Hearts,feed);
-        }
-
-        // 키로 정렬
-        Object[] mapkey = sortMap.keySet().toArray();
-        Arrays.sort(mapkey);
-        // 결과 출력
-        for (Long nKey : sortMap.keySet())
-        {
-            likeList.add(sortMap.get(nKey));
-        }
+        List<SearchTitleDtoMapping> likeList= feedRepository.findAllByOrderByLikeCountDesc();
 
         MainPageListUserDto mainPageListUserDto = new MainPageListUserDto(latestList,likeList,interestedList);
 
