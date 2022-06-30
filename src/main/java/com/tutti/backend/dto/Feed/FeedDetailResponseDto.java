@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+
+// 피드 상세 정보와 코멘트를 담은 middleDto
 @Setter
 @Getter
 public class FeedDetailResponseDto {

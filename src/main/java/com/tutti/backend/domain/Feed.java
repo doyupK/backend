@@ -36,7 +36,7 @@ public class Feed extends Timestamped{
     private String genre;
 
     @Column(nullable = false)
-    private String postType;
+    private String postType; // 동영상 or 음악파일
 
     @Column(nullable = false)
     private String color;

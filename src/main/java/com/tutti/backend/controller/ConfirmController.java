@@ -19,8 +19,6 @@ public class ConfirmController {
         this.userService = userService;
     }
 
-
-
     @GetMapping("/page")
     public void viewRedirect(HttpServletResponse httpServletResponse) {
         httpServletResponse.setHeader("Location", "https://naver.com");

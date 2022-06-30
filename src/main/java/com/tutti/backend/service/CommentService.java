@@ -25,6 +25,8 @@ public class CommentService {
     private final UserRepository userRepository;
     private final FeedRepository feedRepository;
 
+
+    // 코멘트 작성
     public Object writeComment(Long feedId,  CommentRequestDto commentRequestDto, UserDetailsImpl userDetails) {
         ResponseDto commentResponseDto = new ResponseDto();
         // 로그인 정보 확인
@@ -44,6 +46,7 @@ public class CommentService {
         return commentResponseDto;
     }
 
+    // 코멘트 수정
     @Transactional
     public Object updateComment(Long feedId,Long commentId, CommentRequestDto commentRequestDto, UserDetailsImpl userDetails) {
         ResponseDto commentResponseDto = new ResponseDto();
@@ -64,16 +67,16 @@ public class CommentService {
         return commentResponseDto;
     }
 
-
+    // 코멘트 삭제
     public Object deleteComment(Long feedId, Long commentId, UserDetailsImpl userDetails) {
         ResponseDto commentResponseDto = new ResponseDto();
 
         // 댓글을 삭제할 꺼면 해당 유저인지 검사하자
         Comment comment = commentRepository.findById(feedId).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_COMMENT) // 커스텀으로 바꿀 부분
+                () -> new CustomException(ErrorCode.NOT_FOUND_COMMENT)
         );
         if (!comment.getUser().getId().equals(userDetails.getUser().getId())) {
-            throw new CustomException(ErrorCode.WRONG_USER); // 커스텀으로 바꿀 부분
+            throw new CustomException(ErrorCode.WRONG_USER);
         }
         commentRepository.deleteById(commentId);
 

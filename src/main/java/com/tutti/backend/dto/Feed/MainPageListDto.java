@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.util.List;
 
+// 비 로그인 유저의 메인 페이지(최신 순, 좋아요 순, 랜덤) middleDto
 @Getter
 public class MainPageListDto {
 
@@ -12,7 +13,7 @@ public class MainPageListDto {
 
     private final List<MainPageFeedDto> likeList;
 
-    private final List<MainPageFeedDto> genreList;
+    private final List<MainPageFeedDto> genreList; // 랜덤
 
     public MainPageListDto(List<SearchTitleDtoMapping> lastestList, List<MainPageFeedDto> likeList, List<MainPageFeedDto> randomList) {
         this.lastestList = lastestList;

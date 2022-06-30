@@ -22,7 +22,7 @@ public class HeartService {
     private final FeedRepository feedRepository;
     private final UserRepository userRepository;
 
-
+    // 좋아요 클릭 시
     @Transactional
     public Object click(Long feedId, UserDetailsImpl userDetails) {
         HeartResponseDto heartResponseDto = new HeartResponseDto();
@@ -30,6 +30,11 @@ public class HeartService {
         Long userId = userDetails.getUser().getId();
 
         Heart heart = heartRepository.findByUser_IdAndFeed_Id(userId, feedId);
+        /*
+          좋아요를 처음 클릭하면 로그인 한 유저가 특정피드에 처음 좋아요를 클릭
+             isHeart=true 를 default 값으로 Heart 생성
+          두번째부터는 isHeart 반전
+         */
         if (heart != null) {
             heart.update();
         } else {
