@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.util.List;
 
+// 로그인한 유저의 메인 페이지(최신 순, 좋아요 순, 관심장르) middleDto
 @Getter
 public class MainPageListUserDto {
 

@@ -3,6 +3,7 @@ package com.tutti.backend.dto.Feed;
 import com.tutti.backend.domain.Feed;
 import lombok.Getter;
 
+// 피드 상세 정보를 담은 middleDto
 @Getter
 public class FeedDetailDto {
     Long id;

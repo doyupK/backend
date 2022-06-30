@@ -58,30 +58,31 @@ public class UserController {
     public ResponseEntity<?> registerUser(@Valid @RequestPart SignupRequestDto signupData, @RequestPart MultipartFile file) {
         return userService.registerUser(signupData, file);
     }
-
+    // 이메일 중복 검사
     @PostMapping("/user/email")
     public ResponseEntity<?> emailCheck(@RequestBody EmailRequestDto emailRequestDto){
         return userService.getUserEmailCheck(emailRequestDto);
     }
+    // 닉네임(Artist) 중복 검사
     @PostMapping("/user/artist")
     public ResponseEntity<?> artistCheck(@RequestBody ArtistRequestDto artistRequestDto){
         return userService.getUserArtistCheck(artistRequestDto);
     }
 
 
-
+    // 팔로우
     @GetMapping("/follow")
     public ResponseEntity<?> followArtist(
                                     @RequestParam(required = false) String artist,
                                     @AuthenticationPrincipal UserDetailsImpl userDetails){
         return userService.followArtist(artist, userDetails);
     }
-
+    // 유저 정보 조회(myPage)
     @GetMapping("/user/mypage")
     public ResponseEntity<?> infoRead (@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.getUserInfo(userDetails);
     }
-
+    // 유저 정보 수정(myPage)
     @PutMapping("/user/mypage")
     public ResponseEntity<?> updateUser(@RequestBody UserUpdateRequestDto userUpdateRequestDto,@AuthenticationPrincipal UserDetailsImpl userDetails){
         if(userDetails.getUser()==null){
@@ -92,13 +93,14 @@ public class UserController {
         return ResponseEntity.ok().body("마이 페이지 수정 완료");
     }
 
+    // 다른 사람 프로필 조회
     // 로그인 Artist는 로컬스토리지에 저장해서 RequestBody로 보내준다는 가정하에 작성함.
     @GetMapping("/user/profile/{artist}")
     public ResponseEntity<?> othersUser(@PathVariable String artist, HttpServletRequest httpServletRequest) {
 
         return userService.getOthersUser(artist,httpServletRequest);
     }
-
+    // 카카오 로그인
     @GetMapping("/user/kakao/callback")
     public ResponseEntity<KakaoUserResponseDto> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         KakaoUserResponseDto kakaoUserResponseDto = kakaoUserService.kakaoLogin(code, response);
@@ -106,7 +108,7 @@ public class UserController {
     }
     //https://kauth.kakao.com/oauth/authorize?client_id=346b2f15b0bcf829529a506449139680&redirect_uri=http://localhost:8080/user/kakao/callback&response_type=code
 
-
+    // 구글 로그인
     @GetMapping("/api/user/google/callback")
     public GoogleResponseDto<GoogleUserResponseDto> googleLogin(@RequestParam String code, HttpServletResponse httpServletResponse) throws JsonProcessingException {
         GoogleUserResponseDto googleUserResponseDto = googleUserService.googleLogin(code);

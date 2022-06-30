@@ -6,6 +6,7 @@ import com.tutti.backend.domain.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+// 메인 페이지 피드 정보 담은 middle Dto
 @Getter
 @NoArgsConstructor
 public class MainPageFeedDto {

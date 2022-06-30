@@ -64,13 +64,16 @@ public class UserService {
         this.jwtDecoder = jwtDecoder;
     }
 
+    // 회원가입
     @Transactional
     public ResponseEntity<?> registerUser(SignupRequestDto signupRequestDto, MultipartFile file) {
         ResponseDto signupResponseDto = new ResponseDto();
+        // 유저 이메일 조회 후 이미 존재하면 예외처리
         Optional<User> findUser = userRepository.findByEmail(signupRequestDto.getEmail());
         if(findUser.isPresent()){
             throw new CustomException(ErrorCode.EXIST_EMAIL);
         }
+        // 프로필 이미지 업로드
         FileRequestDto fileRequestDto = s3Service.upload(file);
 //      PW Hash
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
@@ -84,7 +87,7 @@ public class UserService {
         signupResponseDto.setMessage("회원가입 성공");
         return ResponseEntity.ok().body(signupResponseDto);
     }
-
+    // 이메일 중복 검사
     public ResponseEntity<?> getUserEmailCheck(EmailRequestDto emailRequestDto) {
         ResponseDto signupResponseDto = new ResponseDto();
         Optional<User> user = userRepository.findByEmail(emailRequestDto.getEmail());
@@ -96,7 +99,7 @@ public class UserService {
         signupResponseDto.setMessage("사용할 수 있는 이메일입니다.");
         return ResponseEntity.ok().body(signupResponseDto);
     }
-
+    // 닉네임(Artist) 중복 검사
     public ResponseEntity<?> getUserArtistCheck(ArtistRequestDto artistRequestDto) {
         ResponseDto signupResponseDto = new ResponseDto();
         Optional<User> user = userRepository.findByArtist(artistRequestDto.getArtist());
@@ -108,7 +111,7 @@ public class UserService {
         signupResponseDto.setMessage("사용할 수 있는 아티스트명입니다.");
         return ResponseEntity.ok().body(signupResponseDto);
     }
-
+    // 이메일 인증
     @Transactional
     public void confirmEmail(String token) {
         ConfirmationToken findConfirmationToken = confirmationTokenService.findByIdAndExpirationDateAfterAndExpired(token);
@@ -119,15 +122,15 @@ public class UserService {
             throw new CustomException(ErrorCode.NOT_FOUND_TOKEN);
         }
 
-//      User Confirm 정보 'OK' 로 변경
+        // User Confirm 정보 'OK' 로 변경
         findUserInfo.get().setUserConfirmEnum(UserConfirmEnum.OK_CONFIRM);
     }
-
+    // 팔로잉
     public ResponseEntity<?> followArtist(String artist, UserDetailsImpl userDetails) {
         ResponseDto responseDto = new ResponseDto();
-        //로그인 정보에서 User객체 추출
+        // 로그인 정보에서 User객체 추출 (로그인 유저)
         Optional<User> findLoginUser = userRepository.findByEmail(userDetails.getUser().getEmail());
-        //artist User 객체 추출
+        // artist User 객체 추출 (로그인 유저가 팔로우 할 Artist)
         Optional<User> findArtist = userRepository.findByArtist(artist);
 
         if(!findLoginUser.isPresent()){
@@ -148,6 +151,8 @@ public class UserService {
 
         return ResponseEntity.ok().body(responseDto);
     }
+
+    // 유저 정보 수정(myPage)
     @Transactional
     public void updateUser(UserUpdateRequestDto userUpdateRequestDto, User currentUser) {
         User user = userRepository.findById(currentUser.getId()).orElseThrow(()->new CustomException(ErrorCode.WRONG_USER));
@@ -156,12 +161,14 @@ public class UserService {
 
     }
 
+    // 유저 정보 조회(myPage)
     @Transactional
     public ResponseEntity<?> getUserInfo(UserDetailsImpl userDetails) {
         UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto();
         UserinfoResponseFeedDto userinfoResponseFeedDto = new UserinfoResponseFeedDto();
 
         User user = userDetails.getUser();
+
         Long followingCount = followRepository.countByUser(user);
         Long followerCount = followRepository.countByFollowingUser(user);
         String[] genre = {
@@ -170,20 +177,28 @@ public class UserService {
                 user.getFavoriteGenre3(),
                 user.getFavoriteGenre4()
         };
-        List<Heart> heartList = heartRepository.findAllByUserAndIsHeartTrue(user);
 
+        List<Heart> heartList = heartRepository.findAllByUserAndIsHeartTrue(user);
+        // 유저가 좋아요 누른 피드 리스트
         List<MainPageFeedDto> likeListDto = new ArrayList<>();
 
 
-        UserInfoDto userInfoDto = new UserInfoDto(user.getArtist()
-                , genre, user.getProfileUrl(), followerCount,
-                followingCount, user.getProfileText(),
-                user.getInstagramUrl(), user.getYoutubeUrl());
+        UserInfoDto userInfoDto = new UserInfoDto(
+                user.getArtist(),
+                genre,
+                user.getProfileUrl(),
+                followerCount,
+                followingCount,
+                user.getProfileText(),
+                user.getInstagramUrl(),
+                user.getYoutubeUrl());
+
+        // 유저가 좋아요 누른 피드 리스트
         for(Heart heart : heartList) {
             MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(heart.getFeed(),user);
             likeListDto.add(mainPageFeedDto);
         }
-
+        // 유저가 팔로우 한 리스트
         List<FollowingDtoMapping> followingList = followRepository.findByUser(user);
 
         userinfoResponseFeedDto.setUserInfoDto(userInfoDto);
@@ -194,29 +209,27 @@ public class UserService {
         userInfoResponseDto.setData(userinfoResponseFeedDto);
         return ResponseEntity.ok().body(userInfoResponseDto);
     }
-
+    // 다른 사람 프로필 조회
     public ResponseEntity<?> getOthersUser(String artist, HttpServletRequest httpServletRequest) {
 
         String jwtToken = httpServletRequest.getHeader("Authorization");
         if(jwtToken!=null){
-            // user 찾기
+            // 현재 로그인 한 user 찾기
             String userEmail = jwtDecoder.decodeUsername(headerTokenExtractor.extract(jwtToken, httpServletRequest));
             User findUser = userRepository.findByEmail(userEmail).orElseThrow(
                     ()->new CustomException(ErrorCode.NOT_FOUND_USER)
             );
-
+            // 현재 로그인 유저의 아티스트 이름과 request artist 가 같으면 같은 사람이므로 예외처리
             if(findUser.getArtist().equals(artist)) {
                 throw new CustomException(ErrorCode.MOVED_TEMPORARILY);
             }
-
         }
         UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto();
         UserinfoResponseFeedDto userinfoResponseFeedDto = new UserinfoResponseFeedDto();
 
         User user = userRepository.findByArtist(artist).orElseThrow(
-                ()-> new CustomException(ErrorCode.TEMPORARY_SERVER_ERROR) // 커스텀 에러로 바꿀거
+                ()-> new CustomException(ErrorCode.TEMPORARY_SERVER_ERROR)
         );
-
 
         Long followingCount = followRepository.countByUser(user);
         Long followerCount = followRepository.countByFollowingUser(user);
@@ -231,10 +244,15 @@ public class UserService {
         List<MainPageFeedDto> likeListDto = new ArrayList<>();
 
 
-        UserInfoDto userInfoDto = new UserInfoDto(user.getArtist()
-                , genre, user.getProfileUrl(), followerCount,
-                followingCount, user.getProfileText(),
-                user.getInstagramUrl(), user.getYoutubeUrl());
+        UserInfoDto userInfoDto = new UserInfoDto(
+                user.getArtist(),
+                genre,
+                user.getProfileUrl(),
+                followerCount,
+                followingCount,
+                user.getProfileText(),
+                user.getInstagramUrl(),
+                user.getYoutubeUrl());
         for(Heart heart : heartList) {
             MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(heart.getFeed(),user);
             likeListDto.add(mainPageFeedDto);

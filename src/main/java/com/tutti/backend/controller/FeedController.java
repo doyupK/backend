@@ -24,7 +24,7 @@ public class FeedController {
     private final JwtDecoder jwtDecoder;
 
 
-
+    // 메인 페이지
     @GetMapping("/")
     public ResponseEntity<?> getMainPage(HttpServletRequest httpServletRequest) {
         String jwtToken = httpServletRequest.getHeader("Authorization");
@@ -38,11 +38,12 @@ public class FeedController {
 
 
 
-
+    // 최신 순 전체 피드 따로 가져오기
     @GetMapping("/feeds")
     public ResponseEntity<?> getFeedPage(){
         return feedService.getFeedPage();
     }
+    // 장르 별 피드 따로 가져오기
     @GetMapping("/feeds/search")
     public ResponseEntity<?> getFeedByGenrePage(@RequestParam String genre){
         return feedService.getFeedByGenrePage(genre);
@@ -50,7 +51,7 @@ public class FeedController {
 
 
 
-
+    // 피드 작성
     @PostMapping("/feeds/upload")
     public ResponseEntity<?> createFeed(
             @RequestPart FeedRequestDto feedRequestDto,
@@ -62,6 +63,7 @@ public class FeedController {
         return ResponseEntity.ok().body("피드 등록 완료");
     }
 
+    // 피드 수정
     @PutMapping("/feeds/{feedId}")
     public ResponseEntity<?> updateFeed(
             @PathVariable Long feedId,
@@ -73,6 +75,7 @@ public class FeedController {
         return ResponseEntity.ok().body("피드 수정 완료");
     }
 
+    // 피드 상세 조회
     @GetMapping("/feeds/{feedId}")
     public ResponseEntity<?> getFeed(
             @PathVariable Long feedId
@@ -80,7 +83,7 @@ public class FeedController {
         return feedService.getFeed(feedId);
 
     }
-
+    // 피드 삭제
     @DeleteMapping("/feeds/{feedId}")
     public ResponseEntity<?> deleteFeed(
             @PathVariable Long feedId,
@@ -90,7 +93,7 @@ public class FeedController {
         feedService.deleteFeed(feedId,user);
         return ResponseEntity.ok().body("피드 삭제 완료");
     }
-
+    // 피드 검색
     @GetMapping("/search")
     public ResponseEntity<?> searchFeed(@RequestParam String keyword){
         return feedService.searchFeed(keyword);

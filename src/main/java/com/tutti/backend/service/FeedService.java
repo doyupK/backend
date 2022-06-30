@@ -23,11 +23,8 @@ public class FeedService {
     
     private final FeedRepository feedRepository;
     private final UserRepository userRepository;
-
     private final S3Service service;
-
     private final CommentRepository commentRepository;
-
     private final HeartRepository heartRepository;
 
     @Autowired
@@ -39,8 +36,10 @@ public class FeedService {
         this. heartRepository = heartRepository;
     }
 
+    // 피드 작성
     @Transactional
     public void createFeed(FeedRequestDto feedRequestDto, MultipartFile albumImage, MultipartFile song, User user) {
+        // 파일 업로드
         FileRequestDto albumDto = service.upload(albumImage);
         FileRequestDto songDto = service.upload(song);
         String albumImageUrl = albumDto.getImageUrl();
@@ -58,39 +57,47 @@ public class FeedService {
 
         feedRepository.save(feed);
     }
+
+    // 피드 수정
     @Transactional
     public void updateFeed(Long feedId, FeedUpdateRequestDto feedUpdateRequestDto,User user) {
         Feed feed = feedRepository.findById(feedId).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEED));
+        // 로그인한 유저 정보와 피드의 유저 정보가 다르면 예외처리
         if(user!=feed.getUser()){
             throw new CustomException(ErrorCode.WRONG_USER);
         }
         feed.update(feedUpdateRequestDto);
     }
 
+    // 피드 상세 조회
     @Transactional(readOnly = true)
     public ResponseEntity<?> getFeed(Long feedId) {
         Feed feed = feedRepository.findById(feedId).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEED));
         String artist = feed.getUser().getArtist();
+
         List<FeedCommentDtoMapping> commentList = commentRepository.findAllByFeed(feed);
 
         FeedDetailDto feedDetailDto = new FeedDetailDto(feed, artist);
+
+        //feedDetail+commentList
         FeedDetailResponseDto feedDetailResponseDto =  new FeedDetailResponseDto(feedDetailDto,commentList);
+        FeedResponseDto feedResponseDto = new FeedResponseDto();
 
-        FeedDatailResponseDto feedDatailResponseDto = new FeedDatailResponseDto();
-
-        feedDatailResponseDto.setSuccess(200);
-        feedDatailResponseDto.setMessage("성공");
-        feedDatailResponseDto.setData(feedDetailResponseDto);
-        return  ResponseEntity.ok().body(feedDatailResponseDto);
+        feedResponseDto.setSuccess(200);
+        feedResponseDto.setMessage("성공");
+        feedResponseDto.setData(feedDetailResponseDto);
+        return  ResponseEntity.ok().body(feedResponseDto);
 
     }
+
+    // 피드 삭제
     @Transactional
     public void deleteFeed(Long feedId,User user) {
         Feed feed = feedRepository.findById(feedId).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEED));
         if(user!=feed.getUser()){
             throw new CustomException(ErrorCode.WRONG_USER);
         }
-
+        // 파일 삭제
         String albumImgUrl = feed.getAlbumImageUrl();
         String songUrl = feed.getSongUrl();
         service.deleteImageUrl(albumImgUrl);
@@ -99,28 +106,28 @@ public class FeedService {
         feedRepository.delete(feed);
     }
 
-    // 비 로그인 Main 페이지 로딩
+    // 비 로그인 Main 페이지(3번째 리스트 랜덤순)
     public ResponseEntity<?> getMainPage() {
+        // 최신 순
         List<SearchTitleDtoMapping> lastestList = feedRepository.findAllByOrderByCreatedAtDesc();
         List<Feed> randomList = feedRepository.findAll();
-        List<MainPageFeedDto> feedDtos = new ArrayList<>();
+        // 랜덤 순
         List<MainPageFeedDto> feedDtoList = new ArrayList<>();
 
         for(Feed feed: randomList){
             MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(feed,feed.getUser());
-            feedDtos.add(mainPageFeedDto);
             feedDtoList.add(mainPageFeedDto);
         }
-
+        // 좋아요 높은 순
         List<MainPageFeedDto> likeList = new ArrayList<>();
         Map<Long,MainPageFeedDto> sortMap = new HashMap<>();
-
+        // 각 피드 좋아요 카운트
         for(MainPageFeedDto feed : feedDtoList) {
             Long Hearts = heartRepository.countByFeedIdAndIsHeartTrue(feed.getFeedId());
             sortMap.put(Hearts,feed);
         }
 
-        // 키로 정렬
+        // 키로 정렬(좋아요 높은 순으로 정렬)
         Object[] mapkey = sortMap.keySet().toArray();
         Arrays.sort(mapkey);
         // 결과 출력
@@ -128,7 +135,7 @@ public class FeedService {
             likeList.add(sortMap.get(nKey));
         }
 
-        MainPageListDto mainPageListDto = new MainPageListDto(lastestList,likeList,feedDtos);
+        MainPageListDto mainPageListDto = new MainPageListDto(lastestList,likeList,feedDtoList);
         FeedMainNotLoginResponseDto feedMainNotLoginResponseDto = new FeedMainNotLoginResponseDto();
         feedMainNotLoginResponseDto.setSuccess(200);
         feedMainNotLoginResponseDto.setMessage("성공");
@@ -143,6 +150,7 @@ public class FeedService {
                 ()-> new CustomException(ErrorCode.NOT_FOUND_USER)
         );
         List<SearchTitleDtoMapping> lastestList = feedRepository.findAllByOrderByCreatedAtDesc();
+        // 관심 장르 별
         List<SearchTitleDtoMapping> interestedList = feedRepository.findAllByGenre(findUser.getFavoriteGenre1());
 
         List<MainPageFeedDto> likeList = new ArrayList<>();
@@ -180,6 +188,7 @@ public class FeedService {
 
     }
 
+    // 피드 검색
     public ResponseEntity<?> searchFeed(String keyword) {
         SearchFeedResponseDto searchFeedResponseDto = new SearchFeedResponseDto();
         User user = userRepository.findByArtistLike(keyword);
@@ -191,6 +200,7 @@ public class FeedService {
         return ResponseEntity.ok().body(searchFeedResponseDto);
     }
 
+    // 최신 순 전체 피드 따로 가져오기
     public ResponseEntity<?> getFeedPage() {
         List<SearchTitleDtoMapping> lastestList = feedRepository.findAllByOrderByCreatedAtDesc();
         FeedPageResponseDto feedPageResponseDto = new FeedPageResponseDto();
@@ -200,31 +210,14 @@ public class FeedService {
         return ResponseEntity.ok().body(feedPageResponseDto);
     }
 
+    // 장르 별 피드 따로 가져오기
     public ResponseEntity<?> getFeedByGenrePage(String genre) {
         List<SearchTitleDtoMapping> genreList = feedRepository.findAllByGenreOrderByCreatedAtDesc(genre);
-        FeedPageGenreResponseDto feedPageGenreResponseDto = new FeedPageGenreResponseDto();
-        List<SearchTitleDtoMapping> likes = feedRepository.findAllByGenre(genre);
-        List<SearchTitleDtoMapping> likeList = new ArrayList<>();
-        Map<Long,SearchTitleDtoMapping> sortMap = new HashMap<>();
+        FeedPageResponseDto feedPageResponseDto = new FeedPageResponseDto();
 
-        for(SearchTitleDtoMapping feed : likes) {
-            Long Hearts = heartRepository.countByFeedIdAndIsHeartTrue(feed.getId());
-            sortMap.put(Hearts,feed);
-        }
-
-        // 키로 정렬
-        Object[] mapkey = sortMap.keySet().toArray();
-        Arrays.sort(mapkey);
-        // 결과 출력
-        for (Long nKey : sortMap.keySet())
-        {
-            likeList.add(sortMap.get(nKey));
-        }
-
-        feedPageGenreResponseDto.setSuccess(200);
-        feedPageGenreResponseDto.setMessage("성공");
-        feedPageGenreResponseDto.setData(genreList);
-        feedPageGenreResponseDto.setLike(likeList);
-        return ResponseEntity.ok().body(feedPageGenreResponseDto);
+        feedPageResponseDto.setSuccess(200);
+        feedPageResponseDto.setMessage("성공");
+        feedPageResponseDto.setData(genreList);
+        return ResponseEntity.ok().body(feedPageResponseDto);
     }
 }

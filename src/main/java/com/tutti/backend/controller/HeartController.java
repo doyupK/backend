@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HeartController {
     private final HeartService heartService;
 
+    // 좋아요 클릭
     @PostMapping("/like/{feedId}")
     public ResponseEntity<Object>  heartClick(@PathVariable("feedId") Long feedId,
                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
