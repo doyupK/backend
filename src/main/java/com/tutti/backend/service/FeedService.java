@@ -202,11 +202,11 @@ public class FeedService {
 
     // 최신 순 전체 피드 따로 가져오기
     public ResponseEntity<?> getFeedPage() {
-        List<SearchTitleDtoMapping> lastestList = feedRepository.findAllByOrderByCreatedAtDesc();
+        List<SearchTitleDtoMapping> latestList = feedRepository.findAllByOrderByCreatedAtDesc();
         FeedPageResponseDto feedPageResponseDto = new FeedPageResponseDto();
         feedPageResponseDto.setSuccess(200);
         feedPageResponseDto.setMessage("성공");
-        feedPageResponseDto.setData(lastestList);
+        feedPageResponseDto.setData(latestList);
         return ResponseEntity.ok().body(feedPageResponseDto);
     }
 
