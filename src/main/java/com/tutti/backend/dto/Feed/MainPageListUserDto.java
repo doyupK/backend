@@ -8,14 +8,14 @@ import java.util.List;
 @Getter
 public class MainPageListUserDto {
 
-    private final List<SearchTitleDtoMapping> lastestList;
+    private final List<SearchTitleDtoMapping> latestList;
 
     private final List<MainPageFeedDto> likeList;
 
     private final List<SearchTitleDtoMapping> genreList;
 
-    public MainPageListUserDto(List<SearchTitleDtoMapping> lastestList, List<MainPageFeedDto> likeList, List<SearchTitleDtoMapping> interestedList) {
-        this.lastestList = lastestList;
+    public MainPageListUserDto(List<SearchTitleDtoMapping> latestList, List<MainPageFeedDto> likeList, List<SearchTitleDtoMapping> interestedList) {
+        this.latestList = latestList;
         this.likeList = likeList;
         this.genreList = interestedList;
     }
