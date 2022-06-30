@@ -19,9 +19,9 @@ public class MainPageFeedDto {
 
     private String genre;
 
-    private String albumImage;
+    private String albumImageUrl;
 
-    private String profileImage;
+//    private String profileImageUrl;
 
 
     public MainPageFeedDto(Feed feed, User user){
@@ -29,8 +29,8 @@ public class MainPageFeedDto {
         this.title = feed.getTitle();
         this.artist = user.getArtist();
         this.genre = feed.getGenre();
-        this.albumImage = feed.getAlbumImageUrl();
-        this.profileImage = user.getProfileUrl();
+        this.albumImageUrl = feed.getAlbumImageUrl();
+//        this.profileImageUrl = user.getProfileUrl();
     }
 
 
