@@ -2,7 +2,6 @@ package com.tutti.backend.service;
 
 import com.tutti.backend.domain.DeletedFeed;
 import com.tutti.backend.domain.Feed;
-import com.tutti.backend.domain.Heart;
 import com.tutti.backend.domain.User;
 import com.tutti.backend.dto.Feed.*;
 import com.tutti.backend.dto.user.FileRequestDto;
@@ -112,7 +111,7 @@ public class FeedService {
     // 비 로그인 Main 페이지(3번째 리스트 랜덤순)
     public ResponseEntity<?> getMainPage() {
         // 최신 순
-        List<SearchTitleDtoMapping> lastestList = feedRepository.findAllByOrderByCreatedAtDesc();
+        List<SearchTitleDtoMapping> latestList = feedRepository.findAllByOrderByCreatedAtDesc();
         List<Feed> randomList = feedRepository.findAll();
         // 랜덤 순
         List<MainPageFeedDto> feedDtoList = new ArrayList<>();
@@ -138,7 +137,7 @@ public class FeedService {
             likeList.add(sortMap.get(nKey));
         }
 
-        MainPageListDto mainPageListDto = new MainPageListDto(lastestList,likeList,feedDtoList);
+        MainPageListDto mainPageListDto = new MainPageListDto(latestList,likeList,feedDtoList);
         FeedMainNotLoginResponseDto feedMainNotLoginResponseDto = new FeedMainNotLoginResponseDto();
         feedMainNotLoginResponseDto.setSuccess(200);
         feedMainNotLoginResponseDto.setMessage("성공");
