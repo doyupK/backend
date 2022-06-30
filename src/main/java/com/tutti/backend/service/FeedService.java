@@ -1,15 +1,14 @@
 package com.tutti.backend.service;
 
+import com.tutti.backend.domain.DeletedFeed;
 import com.tutti.backend.domain.Feed;
+import com.tutti.backend.domain.Heart;
 import com.tutti.backend.domain.User;
 import com.tutti.backend.dto.Feed.*;
 import com.tutti.backend.dto.user.FileRequestDto;
 import com.tutti.backend.exception.CustomException;
 import com.tutti.backend.exception.ErrorCode;
-import com.tutti.backend.repository.CommentRepository;
-import com.tutti.backend.repository.FeedRepository;
-import com.tutti.backend.repository.HeartRepository;
-import com.tutti.backend.repository.UserRepository;
+import com.tutti.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,13 +26,17 @@ public class FeedService {
     private final CommentRepository commentRepository;
     private final HeartRepository heartRepository;
 
+    private final DeletedFeedRepository deletedFeedRepository;
+
+
     @Autowired
-    public FeedService(FeedRepository feedRepository, UserRepository userRepository, S3Service service, CommentRepository commentRepository,HeartRepository heartRepository) {
+    public FeedService(FeedRepository feedRepository, UserRepository userRepository, S3Service service, CommentRepository commentRepository,HeartRepository heartRepository,DeletedFeedRepository deletedFeedRepository) {
         this.feedRepository = feedRepository;
         this.userRepository = userRepository;
         this.service = service;
         this.commentRepository = commentRepository;
         this. heartRepository = heartRepository;
+        this.deletedFeedRepository = deletedFeedRepository;
     }
 
     // 피드 작성
@@ -94,14 +97,14 @@ public class FeedService {
     @Transactional
     public void deleteFeed(Long feedId,User user) {
         Feed feed = feedRepository.findById(feedId).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEED));
-        if(user!=feed.getUser()){
+        if(!user.getArtist().equals(feed.getUser().getArtist())){
             throw new CustomException(ErrorCode.WRONG_USER);
         }
-        // 파일 삭제
-        String albumImgUrl = feed.getAlbumImageUrl();
-        String songUrl = feed.getSongUrl();
-        service.deleteImageUrl(albumImgUrl);
-        service.deleteImageUrl(songUrl);
+
+        DeletedFeed deletedFeed = new DeletedFeed(feed);
+
+        deletedFeedRepository.save(deletedFeed);
+
 
         feedRepository.delete(feed);
     }

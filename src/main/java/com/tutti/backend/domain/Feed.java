@@ -4,6 +4,8 @@ import com.tutti.backend.dto.Feed.FeedUpdateRequestDto;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Setter
@@ -44,6 +46,16 @@ public class Feed extends Timestamped{
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "feed",fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "feed",fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Heart> hearts;
+
+
+
+
 
     public Feed (String title,
                  String description,
