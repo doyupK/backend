@@ -2,16 +2,18 @@ package com.tutti.backend.service;
 
 
 import com.tutti.backend.domain.*;
-import com.tutti.backend.dto.Feed.MainPageFeedDto;
 import com.tutti.backend.dto.Feed.UserinfoResponseFeedDto;
 import com.tutti.backend.dto.user.*;
 import com.tutti.backend.dto.user.request.ArtistRequestDto;
 import com.tutti.backend.dto.user.request.EmailRequestDto;
 import com.tutti.backend.dto.user.request.UserUpdateRequestDto;
+import com.tutti.backend.dto.user.response.UserDataResponseDto;
+import com.tutti.backend.dto.user.response.UserFollowDataResponseDto;
 import com.tutti.backend.exception.CustomException;
 import com.tutti.backend.exception.ErrorCode;
 import com.tutti.backend.dto.user.response.UserInfoDto;
 import com.tutti.backend.dto.user.response.UserInfoResponseDto;
+import com.tutti.backend.repository.FeedRepository;
 import com.tutti.backend.repository.FollowRepository;
 import com.tutti.backend.repository.HeartRepository;
 import com.tutti.backend.repository.UserRepository;
@@ -26,8 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -44,6 +44,7 @@ public class UserService {
     private final HeartRepository heartRepository;
     private final HeaderTokenExtractor headerTokenExtractor;
     private final JwtDecoder jwtDecoder;
+    private final FeedRepository feedRepository;
 
 
     @Autowired
@@ -54,7 +55,8 @@ public class UserService {
                        ConfirmationTokenService confirmationTokenService,
                        HeartRepository heartRepository,
                        HeaderTokenExtractor headerTokenExtractor,
-                       JwtDecoder jwtDecoder) {
+                       JwtDecoder jwtDecoder,
+                       FeedRepository feedRepository) {
         this.s3Service = s3Service;
         this.userRepository = userRepository;
         this.followRepository = followRepository;
@@ -63,6 +65,7 @@ public class UserService {
         this.heartRepository = heartRepository;
         this.headerTokenExtractor = headerTokenExtractor;
         this.jwtDecoder = jwtDecoder;
+        this.feedRepository = feedRepository;
     }
 
     // 회원가입
@@ -178,12 +181,6 @@ public class UserService {
                 user.getFavoriteGenre3(),
                 user.getFavoriteGenre4()
         };
-
-        List<Heart> heartList = heartRepository.findAllByUserAndIsHeartTrue(user);
-        // 유저가 좋아요 누른 피드 리스트
-        List<MainPageFeedDto> likeListDto = new ArrayList<>();
-
-
         UserInfoDto userInfoDto = new UserInfoDto(
                 user.getArtist(),
                 genre,
@@ -194,17 +191,10 @@ public class UserService {
                 user.getInstagramUrl(),
                 user.getYoutubeUrl());
 
-        // 유저가 좋아요 누른 피드 리스트
-        for(Heart heart : heartList) {
-            MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(heart.getFeed(),user);
-            likeListDto.add(mainPageFeedDto);
-        }
-        // 유저가 팔로우 한 리스트
-        List<FollowingDtoMapping> followingList = followRepository.findByUser(user);
-
         userinfoResponseFeedDto.setUserInfoDto(userInfoDto);
-        userinfoResponseFeedDto.setLikeList(likeListDto);
-        userinfoResponseFeedDto.setFollowingList(followingList);
+        userinfoResponseFeedDto.setLikeList(feedRepository.findTop6ByHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(user)); // 유저의 좋아요 List를 최신순으로 6개만 가져오기
+        userinfoResponseFeedDto.setFollowingList(followRepository.findTop7ByUser(user)); // 유저가 팔로우 한 리스트 7개
+        userinfoResponseFeedDto.setUploadList(feedRepository.findTop6ByUserOrderByIdDesc(user)); // 유저가 업로드 한 리스트 6개
         userInfoResponseDto.setSuccess(200);
         userInfoResponseDto.setMessage("성공");
         userInfoResponseDto.setData(userinfoResponseFeedDto);
@@ -240,9 +230,9 @@ public class UserService {
                 user.getFavoriteGenre3(),
                 user.getFavoriteGenre4()
         };
-        List<Heart> heartList = heartRepository.findAllByUserAndIsHeartTrue(user);
-
-        List<MainPageFeedDto> likeListDto = new ArrayList<>();
+//        List<Heart> heartList = heartRepository.findAllByUserAndIsHeartTrue(user);
+//
+//        List<MainPageFeedDto> likeListDto = new ArrayList<>();
 
 
         UserInfoDto userInfoDto = new UserInfoDto(
@@ -254,20 +244,126 @@ public class UserService {
                 user.getProfileText(),
                 user.getInstagramUrl(),
                 user.getYoutubeUrl());
-        for(Heart heart : heartList) {
-            MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(heart.getFeed(),user);
-            likeListDto.add(mainPageFeedDto);
-        }
+//        for(Heart heart : heartList) {
+//            MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(heart.getFeed(),user);
+//            likeListDto.add(mainPageFeedDto);
+//        }
 
-        List<FollowingDtoMapping> followingList = followRepository.findByUser(user);
+//        List<FollowingDtoMapping> followingList = followRepository.findByUser(user);
 
         userinfoResponseFeedDto.setUserInfoDto(userInfoDto);
-        userinfoResponseFeedDto.setLikeList(likeListDto);
-        userinfoResponseFeedDto.setFollowingList(followingList);
+        userinfoResponseFeedDto.setLikeList(feedRepository.findTop6ByHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(user)); // 유저의 좋아요 List를 최신순으로 6개만 가져오기
+        userinfoResponseFeedDto.setFollowingList(followRepository.findTop7ByUser(user)); // 유저가 팔로우 한 리스트 7개
+        userinfoResponseFeedDto.setUploadList(feedRepository.findTop6ByUserOrderByIdDesc(user)); // 유저가 업로드 한 리스트 6개
         userInfoResponseDto.setSuccess(200);
         userInfoResponseDto.setMessage("성공");
         userInfoResponseDto.setData(userinfoResponseFeedDto);
 
         return ResponseEntity.ok().body(userInfoResponseDto);
+    }
+
+    // 유저 정보 > 관심음악 조회
+    public ResponseEntity<?> getUserLike(UserDetailsImpl userDetails) {
+        UserDataResponseDto userDataResponseDto = new UserDataResponseDto();
+        User user = userDetails.getUser();
+        userDataResponseDto.setData(feedRepository.findAllByHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc(user.getArtist()));
+        userDataResponseDto.setMessage("성공");
+        userDataResponseDto.setSuccess(200);
+
+        return ResponseEntity.ok().body(userDataResponseDto);
+    }
+
+    // 유저 정보 > 팔로잉 조회
+    public ResponseEntity<?> getUserFollow(UserDetailsImpl userDetails) {
+        UserFollowDataResponseDto userFollowDataResponseDto = new UserFollowDataResponseDto();
+
+        userFollowDataResponseDto.setData(followRepository.findAllByUser_Artist(userDetails.getUser().getArtist()));
+        userFollowDataResponseDto.setMessage("성공");
+        userFollowDataResponseDto.setSuccess(200);
+
+        return ResponseEntity.ok().body(userFollowDataResponseDto);
+    }
+
+    // 유저 정보 > 업로드한 음악조회
+    public ResponseEntity<?> getUserMyFeed(UserDetailsImpl userDetails) {
+        UserDataResponseDto userDataResponseDto = new UserDataResponseDto();
+
+        userDataResponseDto.setData(feedRepository.findAllByUser_ArtistOrderByIdDesc(userDetails.getUser().getArtist()));
+        userDataResponseDto.setMessage("성공");
+        userDataResponseDto.setSuccess(200);
+
+        return ResponseEntity.ok().body(userDataResponseDto);
+    }
+
+    // 타인 정보 > 관심음악 조회
+    public ResponseEntity<?> getOthersUserLike(String artist, HttpServletRequest httpServletRequest) {
+        UserDataResponseDto userDataResponseDto = new UserDataResponseDto();
+
+        String jwtToken = httpServletRequest.getHeader("Authorization");
+        if(!Objects.equals(jwtToken, "")){
+            // 현재 로그인 한 user 찾기
+            String userEmail = jwtDecoder.decodeUsername(headerTokenExtractor.extract(jwtToken, httpServletRequest));
+            User findUser = userRepository.findByEmail(userEmail).orElseThrow(
+                    ()->new CustomException(ErrorCode.NOT_FOUND_USER)
+            );
+            // 현재 로그인 유저의 아티스트 이름과 request artist 가 같으면 같은 사람이므로 예외처리
+            if(findUser.getArtist().equals(artist)) {
+                throw new CustomException(ErrorCode.MOVED_TEMPORARILY);
+            }
+        }
+
+        userDataResponseDto.setData(feedRepository.findAllByHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc(artist));
+        userDataResponseDto.setMessage("성공");
+        userDataResponseDto.setSuccess(200);
+
+
+        return ResponseEntity.ok().body(userDataResponseDto);
+    }
+
+    // 타인 정보 > 팔로잉 조회
+    public ResponseEntity<?> getOthersUserFollow(String artist, HttpServletRequest httpServletRequest) {
+        UserFollowDataResponseDto userFollowDataResponseDto = new UserFollowDataResponseDto();
+
+        String jwtToken = httpServletRequest.getHeader("Authorization");
+        if(!Objects.equals(jwtToken, "")){
+            // 현재 로그인 한 user 찾기
+            String userEmail = jwtDecoder.decodeUsername(headerTokenExtractor.extract(jwtToken, httpServletRequest));
+            User findUser = userRepository.findByEmail(userEmail).orElseThrow(
+                    ()->new CustomException(ErrorCode.NOT_FOUND_USER)
+            );
+            // 현재 로그인 유저의 아티스트 이름과 request artist 가 같으면 같은 사람이므로 예외처리
+            if(findUser.getArtist().equals(artist)) {
+                throw new CustomException(ErrorCode.MOVED_TEMPORARILY);
+            }
+        }
+        userFollowDataResponseDto.setData(followRepository.findAllByUser_Artist(artist));
+        userFollowDataResponseDto.setMessage("성공");
+        userFollowDataResponseDto.setSuccess(200);
+
+        return ResponseEntity.ok().body(userFollowDataResponseDto);
+    }
+
+    // 타인 정보 > 업로드한 음악조회
+    public ResponseEntity<?> getOthersUserFeed(String artist, HttpServletRequest httpServletRequest) {
+        UserDataResponseDto userDataResponseDto = new UserDataResponseDto();
+
+        String jwtToken = httpServletRequest.getHeader("Authorization");
+        if(!Objects.equals(jwtToken, "")){
+            // 현재 로그인 한 user 찾기
+            String userEmail = jwtDecoder.decodeUsername(headerTokenExtractor.extract(jwtToken, httpServletRequest));
+            User findUser = userRepository.findByEmail(userEmail).orElseThrow(
+                    ()->new CustomException(ErrorCode.NOT_FOUND_USER)
+            );
+            // 현재 로그인 유저의 아티스트 이름과 request artist 가 같으면 같은 사람이므로 예외처리
+            if(findUser.getArtist().equals(artist)) {
+                throw new CustomException(ErrorCode.MOVED_TEMPORARILY);
+            }
+        }
+        userDataResponseDto.setData(feedRepository.findAllByUser_ArtistOrderByIdDesc(artist));
+        userDataResponseDto.setMessage("성공");
+        userDataResponseDto.setSuccess(200);
+
+
+        return ResponseEntity.ok().body(userDataResponseDto);
     }
 }

@@ -13,6 +13,7 @@ public interface HeartRepository extends JpaRepository<Heart, Long> {
 
     Long countByFeedIdAndIsHeartTrue(Long id);
 
-    List<Heart> findAllByUserAndIsHeartTrue(User user);
+    List<Heart> findAllByUserAndIsHeartTrue(User user); // 해당 유저의 좋아요 리스트 다 불러오기
+    List<Heart> findTop6ByUserAndIsHeartTrueOrderByIdDesc(User user);// 해당 유저의 최신 좋아요 리스트 6개만 불러오기
 //    List<Heart> findAllByUser(User user);
 }
