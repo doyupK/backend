@@ -82,6 +82,22 @@ public class UserController {
     public ResponseEntity<?> infoRead (@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.getUserInfo(userDetails);
     }
+    // 유저 정보 > 관심음악 조회
+    @GetMapping("/user/mypage/hearts")
+    public ResponseEntity<?> userLikeRead (@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.getUserLike(userDetails);
+    }
+
+    // 유저 정보 > 팔로잉 조회
+    @GetMapping("/user/mypage/follows")
+    public ResponseEntity<?> userFollowRead (@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.getUserFollow(userDetails);
+    }
+    // 유저 정보 > 업로드한 음악조회
+    @GetMapping("/user/mypage/myfeed")
+    public ResponseEntity<?> userMyFeedRead (@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.getUserMyFeed(userDetails);
+    }
     // 유저 정보 수정(myPage)
     @PutMapping("/user/mypage")
     public ResponseEntity<?> updateUser(@RequestBody UserUpdateRequestDto userUpdateRequestDto,@AuthenticationPrincipal UserDetailsImpl userDetails){
@@ -97,9 +113,24 @@ public class UserController {
     // 로그인 Artist는 로컬스토리지에 저장해서 RequestBody로 보내준다는 가정하에 작성함.
     @GetMapping("/user/profile/{artist}")
     public ResponseEntity<?> othersUser(@PathVariable String artist, HttpServletRequest httpServletRequest) {
-
         return userService.getOthersUser(artist,httpServletRequest);
     }
+    // 타인 정보 > 관심음악 조회
+    @GetMapping("/user/profile/{artist}/hearts")
+    public ResponseEntity<?> othersUserLikeRead(@PathVariable String artist, HttpServletRequest httpServletRequest) {
+        return userService.getOthersUserLike(artist,httpServletRequest);
+    }
+    // 타인 정보 > 팔로잉 조회
+    @GetMapping("/user/profile/{artist}/follows")
+    public ResponseEntity<?> othersUserFollowRead(@PathVariable String artist, HttpServletRequest httpServletRequest) {
+        return userService.getOthersUserFollow(artist,httpServletRequest);
+    }
+    // 타인 정보 > 업로드한 음악조회
+    @GetMapping("/user/profile/{artist}/feeds")
+    public ResponseEntity<?> othersUserFeedRead(@PathVariable String artist, HttpServletRequest httpServletRequest) {
+        return userService.getOthersUserFeed(artist,httpServletRequest);
+    }
+
     // 카카오 로그인
     @GetMapping("/user/kakao/callback")
     public ResponseEntity<KakaoUserResponseDto> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {

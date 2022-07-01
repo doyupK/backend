@@ -6,17 +6,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Comment extends Timestamped{
+public class Comment{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
     private String comment;
+
+    @Column
+    private String modifiedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
@@ -29,9 +33,11 @@ public class Comment extends Timestamped{
         this.user = user;
         this.feed = feed;
         this.comment = commentRequestDto.getComment();
+        this.modifiedAt = commentRequestDto.getModifiedAt();
     }
 
     public void update(CommentRequestDto commentRequestDto) {
         this.comment = commentRequestDto.getComment();
+        this.modifiedAt = commentRequestDto.getModifiedAt();
     }
 }

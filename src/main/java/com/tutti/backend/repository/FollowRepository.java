@@ -11,6 +11,7 @@ public interface FollowRepository extends JpaRepository <Follow, Long> {
     Long countByUser(User user);
     Long countByFollowingUser(User user);
 
-    List<FollowingDtoMapping> findByUser(User user);
-
+    List<FollowingDtoMapping> findByUser(User user); // 팔로잉 전체 불러오기
+    List<FollowingDtoMapping> findTop7ByUser(User user);
+    List<FollowingDtoMapping> findAllByUser_Artist(String user);
 }
