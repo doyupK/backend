@@ -9,6 +9,7 @@ import lombok.Getter;
 public class FeedDetailDto {
     Long id;
     String title;
+    String musicTitle;
     String description;
     String albumImageUrl;
     String songUrl;
@@ -23,6 +24,7 @@ public class FeedDetailDto {
     public FeedDetailDto(Feed feed, String artist, String profileUrl, boolean heartCheck) {
         this.id = feed.getId();
         this.title = feed.getTitle();
+        this.musicTitle = getMusicTitle();
         this.description = feed.getDescription();
         this.albumImageUrl = feed.getAlbumImageUrl();
         this.songUrl = feed.getSongUrl();

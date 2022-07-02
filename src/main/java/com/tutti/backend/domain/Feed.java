@@ -25,6 +25,9 @@ public class Feed extends Timestamped{
     @Column(nullable = false)
     private String title;
 
+    @Column(nullable = true)
+    private String musicTitle;
+
     @Column(nullable = false)
     private String description;
 

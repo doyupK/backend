@@ -9,6 +9,8 @@ public class FeedRequestDto {
 
     private String title;
 
+    private String musicTitle;
+
     private String description;
 
     private String genre;
