@@ -24,7 +24,7 @@ public class FeedDetailDto {
     public FeedDetailDto(Feed feed, String artist, String profileUrl, boolean heartCheck) {
         this.id = feed.getId();
         this.title = feed.getTitle();
-        this.musicTitle = getMusicTitle();
+        this.musicTitle = feed.getMusicTitle();
         this.description = feed.getDescription();
         this.albumImageUrl = feed.getAlbumImageUrl();
         this.songUrl = feed.getSongUrl();
