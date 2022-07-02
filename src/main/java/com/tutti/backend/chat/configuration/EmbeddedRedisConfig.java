@@ -1,3 +1,4 @@
+/*
 package com.tutti.backend.chat.configuration;
 
 
@@ -16,9 +17,11 @@ import java.io.IOException;
 
 // import 생략...
 
+*/
 /**
  * 로컬 환경일경우 내장 레디스가 실행됩니다.
- */
+ *//*
+
 @Profile("local")
 @Configuration
 public class EmbeddedRedisConfig {
@@ -41,4 +44,4 @@ public class EmbeddedRedisConfig {
             redisServer.stop();
         }
     }
-}
+}*/
