@@ -25,7 +25,7 @@ public class Feed extends Timestamped{
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private String musicTitle;
 
     @Column(nullable = false)
@@ -63,6 +63,7 @@ public class Feed extends Timestamped{
 
 
     public Feed (String title,
+                 String musicTitle,
                  String description,
                  String albumImageUrl,
                  String songUrl,
@@ -72,6 +73,7 @@ public class Feed extends Timestamped{
                  User user){
 
         this.title = title;
+        this.musicTitle = musicTitle;
         this.description = description;
         this.albumImageUrl = albumImageUrl;
         this.songUrl = songUrl;

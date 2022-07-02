@@ -62,6 +62,7 @@ public class FeedService {
         String songUrl = songDto.getImageUrl();
 
         Feed feed = new Feed(feedRequestDto.getTitle(),
+                feedRequestDto.getMusicTitle(),
                 feedRequestDto.getDescription(),
                 albumImageUrl,
                 songUrl,
