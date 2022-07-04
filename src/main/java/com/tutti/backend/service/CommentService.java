@@ -72,7 +72,7 @@ public class CommentService {
         ResponseDto commentResponseDto = new ResponseDto();
 
         // 댓글을 삭제할 꺼면 해당 유저인지 검사하자
-        Comment comment = commentRepository.findById(feedId).orElseThrow(
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_COMMENT)
         );
         if (!comment.getUser().getId().equals(userDetails.getUser().getId())) {
