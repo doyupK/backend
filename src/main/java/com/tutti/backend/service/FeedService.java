@@ -80,7 +80,7 @@ public class FeedService {
     public void updateFeed(Long feedId, FeedUpdateRequestDto feedUpdateRequestDto,User user) {
         Feed feed = feedRepository.findById(feedId).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEED));
         // 로그인한 유저 정보와 피드의 유저 정보가 다르면 예외처리
-        if(user!=feed.getUser()){
+        if(!user.getArtist().equals(feed.getUser().getArtist())){
             throw new CustomException(ErrorCode.WRONG_USER);
         }
         feed.update(feedUpdateRequestDto);
