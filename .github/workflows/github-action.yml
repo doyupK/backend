@@ -28,6 +28,19 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+    - name: make application.properties
+      run: |
+          echo ">> mkdir & touch"
+          mkdir -p ./src/main/resources
+          cd ./src/main/resources
+          touch ./application-dear1.properties
+          touch ./application-dear2.properties
+          echo ">> copy application-dear1.properties"
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" >> ./application-dear1.properties
+          echo "server.port=8080" >> ./application-dear1.properties
+          
+      shell: bash
+      
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
         
