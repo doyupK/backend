@@ -29,7 +29,7 @@ public class FeedController {
     @GetMapping("/")
     public ResponseEntity<?> getMainPage(HttpServletRequest httpServletRequest) {
         System.out.println("gitAction");
-        System.out.println("aaaa");
+
         String jwtToken = httpServletRequest.getHeader("Authorization");
         if (Objects.equals(jwtToken, "")) {
             return feedService.getMainPage();
