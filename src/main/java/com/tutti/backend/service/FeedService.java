@@ -145,6 +145,7 @@ public class FeedService {
 
     // 비 로그인 Main 페이지(3번째 리스트 랜덤순)
     public ResponseEntity<?> getMainPage() {
+        System.out.println("parkSeYeol_commit_confirm");
         // 최신 순
         List<SearchTitleDtoMapping> latestList = feedRepository.findAllByOrderByCreatedAtDesc();
         List<Feed> randomList = feedRepository.findAll();
