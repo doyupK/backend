@@ -33,11 +33,10 @@ jobs:
           echo ">> mkdir & touch"
           mkdir -p ./src/main/resources
           cd ./src/main/resources
-          touch ./application-dear1.properties
-          touch ./application-dear2.properties
-          echo ">> copy application-dear1.properties"
-          echo "${{ secrets.APPLICATION_PROPERTIES }}" >> ./application-dear1.properties
-          echo "server.port=8080" >> ./application-dear1.properties
+          touch ./application.properties
+          echo ">> copy application.properties"
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" >> ./application.properties
+          echo "server.port=8080" >> ./application.properties
           
       shell: bash
       
