@@ -57,7 +57,7 @@ jobs:
           port: ${{ secrets.PORT }}
           envs: GITHUB_SHA
           script: |
-            docker pull gltlvl12/spring-cicd:${GITHUB_SHA::7}
-            docker tag gltlvl12/spring-cicd:${GITHUB_SHA::7} spring-cicd
+            docker pull gltlvl12/tutti:${GITHUB_SHA::7}
+            docker tag gltlvl12/tutti:${GITHUB_SHA::7} tutti
             docker stop server
-            docker run -d --rm --name server -p 80:8080 spring-cicd
+            docker run -d --rm --name server -p 80:8080 tutti
