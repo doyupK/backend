@@ -7,6 +7,7 @@ import com.tutti.backend.dto.Feed.SearchArtistDtoMapping;
 import com.tutti.backend.dto.Feed.SearchTitleDtoMapping;
 import com.tutti.backend.dto.user.response.UserPageFeedDtoMapping;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -18,16 +19,16 @@ public interface FeedRepository extends JpaRepository<Feed,Long>, FeedQueryRepos
 
     List<Feed> findAll();
 
-    List<SearchTitleDtoMapping> findAllByTitleLike(String keyword);
-
+    List<SearchTitleDtoMapping> findAllByTitleContainingAndPostTypeContaining(String keyword,String postType);
     List<SearchArtistDtoMapping> findAllByUser(User user);
     List<UserPageFeedDtoMapping> findTop6ByUserOrderByIdDesc(User user);
     List<UserPageFeedDtoMapping> findAllByUser_ArtistOrderByIdDesc(String user);
 
     List<SearchTitleDtoMapping> findAllByOrderByCreatedAtDesc();
 
+    List<SearchTitleDtoMapping> findAllByPostTypeLikeOrderByCreatedAtDesc(String postType);
 
-    List<SearchTitleDtoMapping> findAllByGenre(String genre);
+    List<SearchTitleDtoMapping> findAllByGenreAndPostTypeLike(String genre,String postType);
 
     List<SearchTitleDtoMapping> findAllByGenreOrderByCreatedAtDesc(String genre);
 
@@ -37,6 +38,7 @@ public interface FeedRepository extends JpaRepository<Feed,Long>, FeedQueryRepos
     List<UserPageFeedDtoMapping> findAllByHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc(String Artist);
 
 
+    List<SearchTitleDtoMapping> findAllByPostTypeLike(String postType);
 
 
 

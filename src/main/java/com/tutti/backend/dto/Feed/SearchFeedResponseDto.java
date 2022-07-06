@@ -13,4 +13,5 @@ public class SearchFeedResponseDto {
     String message;
     List<SearchTitleDtoMapping> title;
     List<SearchArtistDtoMapping> artist;
+    List<SearchTitleDtoMapping> video;
 }
