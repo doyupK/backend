@@ -255,8 +255,8 @@ public class FeedService {
     }
 
     // 최신 순 전체 피드 따로 가져오기
-    public ResponseEntity<?> getFeedPage() {
-        List<SearchTitleDtoMapping> latestList = feedRepository.findAllByOrderByCreatedAtDesc();
+    public ResponseEntity<?> getFeedPage(String postType, String genre) {
+        List<GetFeedByPostTypeDto> latestList = feedRepository.getFeedByPostType(postType,genre);
         FeedPageResponseDto feedPageResponseDto = new FeedPageResponseDto();
         feedPageResponseDto.setSuccess(200);
         feedPageResponseDto.setMessage("성공");
@@ -265,7 +265,7 @@ public class FeedService {
     }
 
     // 장르 별 피드 따로 가져오기
-    public ResponseEntity<?> getFeedByGenrePage(String genre) {
+    /*public ResponseEntity<?> getFeedByGenrePage(String genre) {
         List<SearchTitleDtoMapping> genreList = feedRepository.findAllByGenreOrderByCreatedAtDesc(genre);
         FeedPageResponseDto feedPageResponseDto = new FeedPageResponseDto();
 
@@ -274,4 +274,13 @@ public class FeedService {
         feedPageResponseDto.setData(genreList);
         return ResponseEntity.ok().body(feedPageResponseDto);
     }
+    public ResponseEntity<?> 영상장르(String genre) {
+        List<SearchTitleDtoMapping> genreList = feedRepository.findAllByGenreOrderByCreatedAtDesc(genre);
+        FeedPageResponseDto feedPageResponseDto = new FeedPageResponseDto();
+
+        feedPageResponseDto.setSuccess(200);
+        feedPageResponseDto.setMessage("성공");
+        feedPageResponseDto.setData(genreList);
+        return ResponseEntity.ok().body(feedPageResponseDto);
+    }*/
 }

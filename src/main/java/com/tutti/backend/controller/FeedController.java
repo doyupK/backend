@@ -41,14 +41,14 @@ public class FeedController {
 
     // 최신 순 전체 피드 따로 가져오기
     @GetMapping("/feeds")
-    public ResponseEntity<?> getFeedPage(){
-        return feedService.getFeedPage();
+    public ResponseEntity<?> getFeedPage(@RequestParam String postType,@RequestParam(required = false) String genre){
+        return feedService.getFeedPage(postType,genre);
     }
     // 장르 별 피드 따로 가져오기
-    @GetMapping("/feeds/search")
+    /*@GetMapping("/feeds/search")
     public ResponseEntity<?> getFeedByGenrePage(@RequestParam String genre){
         return feedService.getFeedByGenrePage(genre);
-    }
+    }*/
 
 
 
