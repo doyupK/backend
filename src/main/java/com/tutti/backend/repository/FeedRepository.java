@@ -19,8 +19,8 @@ public interface FeedRepository extends JpaRepository<Feed,Long> {
     List<SearchTitleDtoMapping> findAllByTitleLike(String keyword);
 
     List<SearchArtistDtoMapping> findAllByUser(User user);
-    List<UserPageFeedDtoMapping> findTop6ByUserOrderByIdDesc(User user);
-    List<UserPageFeedDtoMapping> findAllByUser_ArtistOrderByIdDesc(String user);
+    List<UserPageFeedDtoMapping> findTop6ByPostTypeAndUserOrderByIdDesc(String postType, User user); // 유저가 업로드[노래] 한 리스트 6개
+    List<UserPageFeedDtoMapping> findAllByPostTypeAndUser_ArtistOrderByIdDesc(String postType,String user); // 유저의 업로드[노래] List를 최신순으로 전체 가져오기
 
     List<SearchTitleDtoMapping> findAllByOrderByCreatedAtDesc();
 
@@ -31,8 +31,8 @@ public interface FeedRepository extends JpaRepository<Feed,Long> {
 
     List<SearchTitleDtoMapping> findAllByOrderByLikeCountDesc();
 
-    List<UserPageFeedDtoMapping> findTop6ByHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(User user);
-    List<UserPageFeedDtoMapping> findAllByHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc(String Artist);
+    List<UserPageFeedDtoMapping> findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(String postType,User user); // 유저의 좋아요[음악] List를 최신순으로 6개만 가져오기
+    List<UserPageFeedDtoMapping> findAllByPostTypeAndHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc(String postType,String Artist); // 유저의 좋아요[노래] List를 최신순으로 전체 가져오기
 
 
 

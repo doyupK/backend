@@ -192,9 +192,11 @@ public class UserService {
                 user.getYoutubeUrl());
 
         userinfoResponseFeedDto.setUserInfoDto(userInfoDto);
-        userinfoResponseFeedDto.setLikeList(feedRepository.findTop6ByHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(user)); // 유저의 좋아요 List를 최신순으로 6개만 가져오기
-        userinfoResponseFeedDto.setFollowingList(followRepository.findTop7ByUser(user)); // 유저가 팔로우 한 리스트 7개
-        userinfoResponseFeedDto.setUploadList(feedRepository.findTop6ByUserOrderByIdDesc(user)); // 유저가 업로드 한 리스트 6개
+        userinfoResponseFeedDto.setLikeList(feedRepository.findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc("audio",user)); // 유저의 좋아요[음악] List를 최신순으로 6개만 가져오기
+        userinfoResponseFeedDto.setLikeVideoList(feedRepository.findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc("video",user)); // 유저의 좋아요[영상] List를 최신순으로 6개만 가져오기
+        userinfoResponseFeedDto.setFollowingList(followRepository.findTop7ByUserOrderById(user)); // 유저가 팔로우 한 리스트 7개
+        userinfoResponseFeedDto.setUploadList(feedRepository.findTop6ByPostTypeAndUserOrderByIdDesc("audio",user)); // 유저가 업로드[노래] 한 리스트 6개
+        userinfoResponseFeedDto.setUploadVideoList(feedRepository.findTop6ByPostTypeAndUserOrderByIdDesc("video",user)); // 유저가 업로드[영상] 한 리스트 6개
         userInfoResponseDto.setSuccess(200);
         userInfoResponseDto.setMessage("성공");
         userInfoResponseDto.setData(userinfoResponseFeedDto);
@@ -252,9 +254,11 @@ public class UserService {
 //        List<FollowingDtoMapping> followingList = followRepository.findByUser(user);
 
         userinfoResponseFeedDto.setUserInfoDto(userInfoDto);
-        userinfoResponseFeedDto.setLikeList(feedRepository.findTop6ByHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(user)); // 유저의 좋아요 List를 최신순으로 6개만 가져오기
-        userinfoResponseFeedDto.setFollowingList(followRepository.findTop7ByUser(user)); // 유저가 팔로우 한 리스트 7개
-        userinfoResponseFeedDto.setUploadList(feedRepository.findTop6ByUserOrderByIdDesc(user)); // 유저가 업로드 한 리스트 6개
+        userinfoResponseFeedDto.setLikeList(feedRepository.findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc("audio",user)); // 유저의 좋아요[음악] List를 최신순으로 6개만 가져오기
+        userinfoResponseFeedDto.setLikeVideoList(feedRepository.findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc("video",user)); // 유저의 좋아요[영상] List를 최신순으로 6개만 가져오기
+        userinfoResponseFeedDto.setFollowingList(followRepository.findTop7ByUserOrderById(user)); // 유저가 팔로우 한 리스트 7개
+        userinfoResponseFeedDto.setUploadList(feedRepository.findTop6ByPostTypeAndUserOrderByIdDesc("audio",user)); // 유저가 업로드[노래] 한 리스트 6개
+        userinfoResponseFeedDto.setUploadVideoList(feedRepository.findTop6ByPostTypeAndUserOrderByIdDesc("video",user)); // 유저가 업로드[영상] 한 리스트 6개
         userInfoResponseDto.setSuccess(200);
         userInfoResponseDto.setMessage("성공");
         userInfoResponseDto.setData(userinfoResponseFeedDto);
@@ -266,7 +270,8 @@ public class UserService {
     public ResponseEntity<?> getUserLike(UserDetailsImpl userDetails) {
         UserDataResponseDto userDataResponseDto = new UserDataResponseDto();
         User user = userDetails.getUser();
-        userDataResponseDto.setData(feedRepository.findAllByHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc(user.getArtist()));
+        // 유저의 좋아요[노래] List를 최신순으로 전체 가져오기
+        userDataResponseDto.setData(feedRepository.findAllByPostTypeAndHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc("audio",user.getArtist()));
         userDataResponseDto.setMessage("성공");
         userDataResponseDto.setSuccess(200);
 
@@ -276,7 +281,7 @@ public class UserService {
     // 유저 정보 > 팔로잉 조회
     public ResponseEntity<?> getUserFollow(UserDetailsImpl userDetails) {
         UserFollowDataResponseDto userFollowDataResponseDto = new UserFollowDataResponseDto();
-
+        // 유저의 팔로잉 List를 최신순으로 전체 가져오기
         userFollowDataResponseDto.setData(followRepository.findAllByUser_Artist(userDetails.getUser().getArtist()));
         userFollowDataResponseDto.setMessage("성공");
         userFollowDataResponseDto.setSuccess(200);
@@ -287,8 +292,8 @@ public class UserService {
     // 유저 정보 > 업로드한 음악조회
     public ResponseEntity<?> getUserMyFeed(UserDetailsImpl userDetails) {
         UserDataResponseDto userDataResponseDto = new UserDataResponseDto();
-
-        userDataResponseDto.setData(feedRepository.findAllByUser_ArtistOrderByIdDesc(userDetails.getUser().getArtist()));
+        // 유저의 업로드[노래] List를 최신순으로 전체 가져오기
+        userDataResponseDto.setData(feedRepository.findAllByPostTypeAndUser_ArtistOrderByIdDesc("audio",userDetails.getUser().getArtist()));
         userDataResponseDto.setMessage("성공");
         userDataResponseDto.setSuccess(200);
 
@@ -311,8 +316,8 @@ public class UserService {
                 throw new CustomException(ErrorCode.MOVED_TEMPORARILY);
             }
         }
-
-        userDataResponseDto.setData(feedRepository.findAllByHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc(artist));
+        // 유저의 좋아요[노래] List를 최신순으로 전체 가져오기
+        userDataResponseDto.setData(feedRepository.findAllByPostTypeAndHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc("audio",artist));
         userDataResponseDto.setMessage("성공");
         userDataResponseDto.setSuccess(200);
 
@@ -336,6 +341,7 @@ public class UserService {
                 throw new CustomException(ErrorCode.MOVED_TEMPORARILY);
             }
         }
+        // 유저의 팔로잉 List를 최신순으로 전체 가져오기
         userFollowDataResponseDto.setData(followRepository.findAllByUser_Artist(artist));
         userFollowDataResponseDto.setMessage("성공");
         userFollowDataResponseDto.setSuccess(200);
@@ -359,7 +365,8 @@ public class UserService {
                 throw new CustomException(ErrorCode.MOVED_TEMPORARILY);
             }
         }
-        userDataResponseDto.setData(feedRepository.findAllByUser_ArtistOrderByIdDesc(artist));
+        // 유저의 업로드[노래] List를 최신순으로 전체 가져오기
+        userDataResponseDto.setData(feedRepository.findAllByPostTypeAndUser_ArtistOrderByIdDesc("audio",artist));
         userDataResponseDto.setMessage("성공");
         userDataResponseDto.setSuccess(200);
 
