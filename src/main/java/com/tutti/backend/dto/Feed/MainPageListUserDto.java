@@ -14,9 +14,12 @@ public class MainPageListUserDto {
 
     private final List<SearchTitleDtoMapping> genreList;
 
-    public MainPageListUserDto(List<SearchTitleDtoMapping> latestList, List<SearchTitleDtoMapping> likeList, List<SearchTitleDtoMapping> interestedList) {
+    private final List<SearchTitleDtoMapping> videoList;
+
+    public MainPageListUserDto(List<SearchTitleDtoMapping> latestList, List<SearchTitleDtoMapping> likeList, List<SearchTitleDtoMapping> interestedList,List<SearchTitleDtoMapping> videoList) {
         this.latestList = latestList;
         this.likeList = likeList;
         this.genreList = interestedList;
+        this.videoList=videoList;
     }
 }
