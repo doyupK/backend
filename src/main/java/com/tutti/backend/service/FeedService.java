@@ -147,15 +147,18 @@ public class FeedService {
     public ResponseEntity<?> getMainPage() {
         System.out.println("parkSeYeol_commit_confirm");
         // 최신 순
-        List<SearchTitleDtoMapping> latestList = feedRepository.findAllByOrderByCreatedAtDesc();
-        List<Feed> randomList = feedRepository.findAll();
+        List<SearchTitleDtoMapping> latestList = feedRepository.findAllByPostTypeLikeOrderByCreatedAtDesc("audio");
+        List<GetMainPageListDto> randomList = feedRepository.getMainPageRandomList("audio");
+        Collections.shuffle(randomList);
+
+
         // 랜덤 순
         List<MainPageFeedDto> feedDtoList = new ArrayList<>();
 
-        for(Feed feed: randomList){
-            MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(feed,feed.getUser());
-            feedDtoList.add(mainPageFeedDto);
-        }
+//        for(Feed feed: randomList){
+//            MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(feed,feed.getUser());
+//            feedDtoList.add(mainPageFeedDto);
+//        }
         // 좋아요 높은 순
 //        List<MainPageFeedDto> likeList = new ArrayList<>();
 //        MultiValueMap<Long, MainPageFeedDto> map = new LinkedMultiValueMap<>();
@@ -185,9 +188,10 @@ public class FeedService {
 //        }
 
         List<SearchTitleDtoMapping> likeList= feedRepository.findAllByOrderByLikeCountDesc();
+        List<SearchTitleDtoMapping> videoList= feedRepository.findAllByPostTypeLikeOrderByCreatedAtDesc("video");
 
 
-        MainPageListDto mainPageListDto = new MainPageListDto(latestList,likeList,feedDtoList);
+        MainPageListDto mainPageListDto = new MainPageListDto(latestList,likeList,randomList,videoList);
         FeedMainNotLoginResponseDto feedMainNotLoginResponseDto = new FeedMainNotLoginResponseDto();
         feedMainNotLoginResponseDto.setSuccess(200);
         feedMainNotLoginResponseDto.setMessage("성공");
@@ -203,7 +207,7 @@ public class FeedService {
         );
         List<SearchTitleDtoMapping> latestList = feedRepository.findAllByOrderByCreatedAtDesc();
         // 관심 장르 별
-        List<SearchTitleDtoMapping> interestedList = feedRepository.findAllByGenre(findUser.getFavoriteGenre1());
+        List<SearchTitleDtoMapping> interestedList = feedRepository.findAllByGenreAndPostTypeLike(findUser.getFavoriteGenre1(),"audio");
 //
 //        List<MainPageFeedDto> likeList = new ArrayList<>();
 //        List<Feed> likes = feedRepository.findAll();
@@ -230,8 +234,10 @@ public class FeedService {
 //        }
 
         List<SearchTitleDtoMapping> likeList= feedRepository.findAllByOrderByLikeCountDesc();
+        List<SearchTitleDtoMapping> videoList= feedRepository.findAllByPostTypeLikeOrderByCreatedAtDesc("video");
 
-        MainPageListUserDto mainPageListUserDto = new MainPageListUserDto(latestList,likeList,interestedList);
+
+        MainPageListUserDto mainPageListUserDto = new MainPageListUserDto(latestList,likeList,interestedList,videoList);
 
         FeedMainLoginResponseDto feedMainLoginResponseDto = new FeedMainLoginResponseDto();
 
@@ -247,16 +253,17 @@ public class FeedService {
         SearchFeedResponseDto searchFeedResponseDto = new SearchFeedResponseDto();
         User user = userRepository.findByArtistLike(keyword);
 
-        searchFeedResponseDto.setTitle(feedRepository.findAllByTitleLike(keyword));
+        searchFeedResponseDto.setTitle(feedRepository.findAllByTitleContainingAndPostTypeContaining(keyword,"audio"));
         searchFeedResponseDto.setArtist(feedRepository.findAllByUser(user));
+        searchFeedResponseDto.setVideo(feedRepository.findAllByTitleContainingAndPostTypeContaining(keyword,"video"));
         searchFeedResponseDto.setSuccess(200);
         searchFeedResponseDto.setMessage("성공");
         return ResponseEntity.ok().body(searchFeedResponseDto);
     }
 
     // 최신 순 전체 피드 따로 가져오기
-    public ResponseEntity<?> getFeedPage() {
-        List<SearchTitleDtoMapping> latestList = feedRepository.findAllByOrderByCreatedAtDesc();
+    public ResponseEntity<?> getFeedPage(String postType, String genre) {
+        List<GetFeedByPostTypeDto> latestList = feedRepository.getFeedByPostType(postType,genre);
         FeedPageResponseDto feedPageResponseDto = new FeedPageResponseDto();
         feedPageResponseDto.setSuccess(200);
         feedPageResponseDto.setMessage("성공");
@@ -265,7 +272,7 @@ public class FeedService {
     }
 
     // 장르 별 피드 따로 가져오기
-    public ResponseEntity<?> getFeedByGenrePage(String genre) {
+    /*public ResponseEntity<?> getFeedByGenrePage(String genre) {
         List<SearchTitleDtoMapping> genreList = feedRepository.findAllByGenreOrderByCreatedAtDesc(genre);
         FeedPageResponseDto feedPageResponseDto = new FeedPageResponseDto();
 
@@ -274,4 +281,13 @@ public class FeedService {
         feedPageResponseDto.setData(genreList);
         return ResponseEntity.ok().body(feedPageResponseDto);
     }
+    public ResponseEntity<?> 영상장르(String genre) {
+        List<SearchTitleDtoMapping> genreList = feedRepository.findAllByGenreOrderByCreatedAtDesc(genre);
+        FeedPageResponseDto feedPageResponseDto = new FeedPageResponseDto();
+
+        feedPageResponseDto.setSuccess(200);
+        feedPageResponseDto.setMessage("성공");
+        feedPageResponseDto.setData(genreList);
+        return ResponseEntity.ok().body(feedPageResponseDto);
+    }*/
 }
