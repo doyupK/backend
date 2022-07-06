@@ -4,7 +4,7 @@ import com.tutti.backend.domain.Feed;
 
 import java.util.List;
 
-public interface FeedQueryRepository {
+public interface FeedQueryRepositoryCustom {
 
 List<Feed> getRandomList();
 
