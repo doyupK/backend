@@ -13,5 +13,5 @@ public class FeedPageResponseDto {
 
     int success;
     String message;
-    List<SearchTitleDtoMapping> data;
+    List<GetFeedByPostTypeDto> data;
 }

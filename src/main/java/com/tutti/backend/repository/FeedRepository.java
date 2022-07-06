@@ -1,6 +1,5 @@
 package com.tutti.backend.repository;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tutti.backend.domain.Feed;
 import com.tutti.backend.domain.User;
 import com.tutti.backend.dto.Feed.SearchArtistDtoMapping;
@@ -9,11 +8,10 @@ import com.tutti.backend.dto.user.response.UserPageFeedDtoMapping;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
-public interface FeedRepository extends JpaRepository<Feed,Long>, FeedQueryRepositoryCustom {
+public interface FeedRepository extends JpaRepository<Feed,Long>, FeedRepositoryCustom {
 
     Optional<Feed> findById(Long feedId);
 
