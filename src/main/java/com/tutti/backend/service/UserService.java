@@ -132,24 +132,33 @@ public class UserService {
     // 팔로잉
     public ResponseEntity<?> followArtist(String artist, UserDetailsImpl userDetails) {
         ResponseDto responseDto = new ResponseDto();
-        // 로그인 정보에서 User객체 추출 (로그인 유저)
-        Optional<User> findLoginUser = userRepository.findByEmail(userDetails.getUser().getEmail());
-        // artist User 객체 추출 (로그인 유저가 팔로우 할 Artist)
-        Optional<User> findArtist = userRepository.findByArtist(artist);
-
-        if(!findLoginUser.isPresent()){
-            throw new CustomException(ErrorCode.WRONG_USER);
+//        // 로그인 정보에서 User객체 추출 (로그인 유저)
+//        Optional<User> findLoginUser = userRepository.findByEmail(userDetails.getUser().getEmail());
+//        // artist User 객체 추출 (로그인 유저가 팔로우 할 Artist)
+//        Optional<User> findArtist = userRepository.findByArtist(artist);
+//
+//        if(!findLoginUser.isPresent()){
+//            throw new CustomException(ErrorCode.WRONG_USER);
+//        }
+//        if(!findArtist.isPresent()){
+//            throw new CustomException(ErrorCode.NOT_EXISTS_USERNAME);
+//        }
+//
+//        User user = findLoginUser.get();
+//        User findArtistResult = findArtist.get();
+//        Follow follow = new Follow(user, findArtistResult);
+//
+//        followRepository.save(follow);
+        Follow follow = followRepository.findByUserAndFollowingUser_Artist(userDetails.getUser(), artist);
+        if (follow != null) {
+            followRepository.delete(follow);
+        } else {
+            Optional<User> otherUser = userRepository.findByArtist(artist);
+            if(!otherUser.isPresent()){
+                throw new CustomException(ErrorCode.NOT_EXISTS_USERNAME);
+            }
+            followRepository.save(new Follow(userDetails.getUser(), otherUser.get()));
         }
-        if(!findArtist.isPresent()){
-            throw new CustomException(ErrorCode.NOT_EXISTS_USERNAME);
-        }
-
-        User user = findLoginUser.get();
-        User findArtistResult = findArtist.get();
-        Follow follow = new Follow(user, findArtistResult);
-
-        followRepository.save(follow);
-
         responseDto.setSuccess(200);
         responseDto.setMessage("완료!");
 
@@ -204,8 +213,11 @@ public class UserService {
     }
     // 다른 사람 프로필 조회
     public ResponseEntity<?> getOthersUser(String artist, HttpServletRequest httpServletRequest) {
+        UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto();
+        UserinfoResponseFeedDto userinfoResponseFeedDto = new UserinfoResponseFeedDto();
 
         String jwtToken = httpServletRequest.getHeader("Authorization");
+        Boolean isFollow = false;
         if(!Objects.equals(jwtToken, "")){
             // 현재 로그인 한 user 찾기
             String userEmail = jwtDecoder.decodeUsername(headerTokenExtractor.extract(jwtToken, httpServletRequest));
@@ -216,9 +228,10 @@ public class UserService {
             if(findUser.getArtist().equals(artist)) {
                 throw new CustomException(ErrorCode.MOVED_TEMPORARILY);
             }
+            // 로그인 한 사람의 follow flag bit
+            isFollow = followRepository.existsByUserAndFollowingUser_Artist(findUser, artist);
         }
-        UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto();
-        UserinfoResponseFeedDto userinfoResponseFeedDto = new UserinfoResponseFeedDto();
+        
 
         User user = userRepository.findByArtist(artist).orElseThrow(
                 ()-> new CustomException(ErrorCode.TEMPORARY_SERVER_ERROR)
@@ -261,6 +274,7 @@ public class UserService {
         userinfoResponseFeedDto.setUploadVideoList(feedRepository.findTop6ByPostTypeAndUserOrderByIdDesc("video",user)); // 유저가 업로드[영상] 한 리스트 6개
         userInfoResponseDto.setSuccess(200);
         userInfoResponseDto.setMessage("성공");
+        userInfoResponseDto.setIsFollow(isFollow);
         userInfoResponseDto.setData(userinfoResponseFeedDto);
 
         return ResponseEntity.ok().body(userInfoResponseDto);
@@ -367,6 +381,76 @@ public class UserService {
         }
         // 유저의 업로드[노래] List를 최신순으로 전체 가져오기
         userDataResponseDto.setData(feedRepository.findAllByPostTypeAndUser_ArtistOrderByIdDesc("audio",artist));
+        userDataResponseDto.setMessage("성공");
+        userDataResponseDto.setSuccess(200);
+
+
+        return ResponseEntity.ok().body(userDataResponseDto);
+    }
+
+    // 유저 정보 > 관심영상 조회
+    public ResponseEntity<?> getUserLikeVideo(UserDetailsImpl userDetails) {
+        UserDataResponseDto userDataResponseDto = new UserDataResponseDto();
+        User user = userDetails.getUser();
+        // 유저의 좋아요[영상] List를 최신순으로 전체 가져오기
+        userDataResponseDto.setData(feedRepository.findAllByPostTypeAndHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc("video",user.getArtist()));
+        userDataResponseDto.setMessage("성공");
+        userDataResponseDto.setSuccess(200);
+
+        return ResponseEntity.ok().body(userDataResponseDto);
+    }
+    // 유저 정보 > 업로드한 영상조회
+    public ResponseEntity<?> getUserMyFeedVideo(UserDetailsImpl userDetails) {
+        UserDataResponseDto userDataResponseDto = new UserDataResponseDto();
+        // 유저의 업로드[영상] List를 최신순으로 전체 가져오기
+        userDataResponseDto.setData(feedRepository.findAllByPostTypeAndUser_ArtistOrderByIdDesc("video",userDetails.getUser().getArtist()));
+        userDataResponseDto.setMessage("성공");
+        userDataResponseDto.setSuccess(200);
+
+        return ResponseEntity.ok().body(userDataResponseDto);
+    }
+    // 타인 정보 > 관심영상 조회
+    public ResponseEntity<?> getOthersUserLikeVideo(String artist, HttpServletRequest httpServletRequest) {
+        UserDataResponseDto userDataResponseDto = new UserDataResponseDto();
+
+        String jwtToken = httpServletRequest.getHeader("Authorization");
+        if(!Objects.equals(jwtToken, "")){
+            // 현재 로그인 한 user 찾기
+            String userEmail = jwtDecoder.decodeUsername(headerTokenExtractor.extract(jwtToken, httpServletRequest));
+            User findUser = userRepository.findByEmail(userEmail).orElseThrow(
+                    ()->new CustomException(ErrorCode.NOT_FOUND_USER)
+            );
+            // 현재 로그인 유저의 아티스트 이름과 request artist 가 같으면 같은 사람이므로 예외처리
+            if(findUser.getArtist().equals(artist)) {
+                throw new CustomException(ErrorCode.MOVED_TEMPORARILY);
+            }
+        }
+        // 유저의 좋아요[영상] List를 최신순으로 전체 가져오기
+        userDataResponseDto.setData(feedRepository.findAllByPostTypeAndHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc("video",artist));
+        userDataResponseDto.setMessage("성공");
+        userDataResponseDto.setSuccess(200);
+
+
+        return ResponseEntity.ok().body(userDataResponseDto);
+    }
+    // 타인 정보 > 업로드한 영상조회
+    public ResponseEntity<?> getOthersUserFeedVideo(String artist, HttpServletRequest httpServletRequest) {
+        UserDataResponseDto userDataResponseDto = new UserDataResponseDto();
+
+        String jwtToken = httpServletRequest.getHeader("Authorization");
+        if(!Objects.equals(jwtToken, "")){
+            // 현재 로그인 한 user 찾기
+            String userEmail = jwtDecoder.decodeUsername(headerTokenExtractor.extract(jwtToken, httpServletRequest));
+            User findUser = userRepository.findByEmail(userEmail).orElseThrow(
+                    ()->new CustomException(ErrorCode.NOT_FOUND_USER)
+            );
+            // 현재 로그인 유저의 아티스트 이름과 request artist 가 같으면 같은 사람이므로 예외처리
+            if(findUser.getArtist().equals(artist)) {
+                throw new CustomException(ErrorCode.MOVED_TEMPORARILY);
+            }
+        }
+        // 유저의 업로드[영상] List를 최신순으로 전체 가져오기
+        userDataResponseDto.setData(feedRepository.findAllByPostTypeAndUser_ArtistOrderByIdDesc("video",artist));
         userDataResponseDto.setMessage("성공");
         userDataResponseDto.setSuccess(200);
 
