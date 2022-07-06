@@ -2,11 +2,16 @@ package com.tutti.backend.repository;
 
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.tutti.backend.domain.Feed;
 import com.tutti.backend.domain.QFeed;
 import com.tutti.backend.domain.QUser;
 import com.tutti.backend.dto.Feed.GetFeedByPostTypeDto;
+import com.tutti.backend.dto.Feed.GetMainPageListDto;
 import com.tutti.backend.dto.Feed.QGetFeedByPostTypeDto;
+import com.tutti.backend.dto.Feed.QGetMainPageListDto;
+
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -44,6 +49,22 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                 .where(postTypeEq(postType),
                         genreEq(genre))
                 .orderBy(feed.createdAt.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<GetMainPageListDto> getMainPageRandomList(String audio) {
+        return queryFactory
+                .select(new QGetMainPageListDto(
+                        feed.id,
+                        feed.title,
+                        feed.genre,
+                        user.artist,
+                        feed.albumImageUrl.as("albumImageUrl")
+                ))
+                .from(feed)
+                .join(feed.user,user)
+                .where(feed.postType.eq(audio))
                 .fetch();
     }
 

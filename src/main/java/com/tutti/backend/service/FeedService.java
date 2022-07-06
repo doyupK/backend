@@ -148,7 +148,10 @@ public class FeedService {
         System.out.println("parkSeYeol_commit_confirm");
         // 최신 순
         List<SearchTitleDtoMapping> latestList = feedRepository.findAllByPostTypeLikeOrderByCreatedAtDesc("audio");
-        List<SearchTitleDtoMapping> randomList = feedRepository.findAllByPostTypeLike("audio");
+        List<GetMainPageListDto> randomList = feedRepository.getMainPageRandomList("audio");
+        Collections.shuffle(randomList);
+
+
         // 랜덤 순
         List<MainPageFeedDto> feedDtoList = new ArrayList<>();
 
