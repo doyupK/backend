@@ -15,7 +15,9 @@ import java.util.List;
 public class UserinfoResponseFeedDto {
     UserInfoDto userInfoDto;
     List<UserPageFeedDtoMapping> likeList;
+    List<UserPageFeedDtoMapping> likeVideoList;
     List<FollowingDtoMapping> followingList;
     List<UserPageFeedDtoMapping> uploadList;
+    List<UserPageFeedDtoMapping> uploadVideoList;
 
 }

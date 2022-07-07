@@ -88,6 +88,11 @@ public class UserController {
         return userService.getUserLike(userDetails);
     }
 
+    // 유저 정보 > 관심영상 조회
+    @GetMapping("/user/mypage/hearts/video")
+    public ResponseEntity<?> userLikeVideoRead (@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.getUserLikeVideo(userDetails);
+    }
     // 유저 정보 > 팔로잉 조회
     @GetMapping("/user/mypage/follows")
     public ResponseEntity<?> userFollowRead (@AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -98,6 +103,12 @@ public class UserController {
     public ResponseEntity<?> userMyFeedRead (@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.getUserMyFeed(userDetails);
     }
+    // 유저 정보 > 업로드한 영상조회
+    @GetMapping("/user/mypage/myfeed/video")
+    public ResponseEntity<?> userMyFeedVideoRead(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.getUserMyFeedVideo(userDetails);
+    }
+
     // 유저 정보 수정(myPage)
     @PutMapping("/user/mypage")
     public ResponseEntity<?> updateUser(@RequestBody UserUpdateRequestDto userUpdateRequestDto,@AuthenticationPrincipal UserDetailsImpl userDetails){
@@ -120,6 +131,11 @@ public class UserController {
     public ResponseEntity<?> othersUserLikeRead(@PathVariable String artist, HttpServletRequest httpServletRequest) {
         return userService.getOthersUserLike(artist,httpServletRequest);
     }
+    // 타인 정보 > 관심영상 조회
+    @GetMapping("/user/profile/{artist}/hearts/video")
+    public ResponseEntity<?> othersUserLikeVideoRead(@PathVariable String artist, HttpServletRequest httpServletRequest) {
+        return userService.getOthersUserLikeVideo(artist,httpServletRequest);
+    }
     // 타인 정보 > 팔로잉 조회
     @GetMapping("/user/profile/{artist}/follows")
     public ResponseEntity<?> othersUserFollowRead(@PathVariable String artist, HttpServletRequest httpServletRequest) {
@@ -129,6 +145,11 @@ public class UserController {
     @GetMapping("/user/profile/{artist}/feeds")
     public ResponseEntity<?> othersUserFeedRead(@PathVariable String artist, HttpServletRequest httpServletRequest) {
         return userService.getOthersUserFeed(artist,httpServletRequest);
+    }
+    // 타인 정보 > 업로드한 영상조회
+    @GetMapping("/user/profile/{artist}/feeds/video")
+    public ResponseEntity<?> othersUserFeedVideoRead(@PathVariable String artist, HttpServletRequest httpServletRequest) {
+        return userService.getOthersUserFeedVideo(artist,httpServletRequest);
     }
 
     // 카카오 로그인
