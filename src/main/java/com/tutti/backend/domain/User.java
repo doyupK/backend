@@ -102,7 +102,8 @@ public class User {
         this.artist = artist;
 
     }
-    public void updateUser(UserUpdateRequestDto userUpdateRequestDto){
+    public void updateUser(FileRequestDto fileRequestDto, UserUpdateRequestDto userUpdateRequestDto){
+        this.profileUrl =fileRequestDto.getImageUrl();
         this.profileText = userUpdateRequestDto.getProfileText();
         this.instagramUrl = userUpdateRequestDto.getInstagramUrl();
         this.youtubeUrl = userUpdateRequestDto.getYoutubeUrl();
