@@ -113,13 +113,13 @@ public class UserController {
     @PutMapping("/user/mypage")
     public ResponseEntity<?> updateUser(
             @RequestPart MultipartFile file
-            ,@RequestPart UserUpdateRequestDto userUpdateRequestDto
+            ,@RequestPart UserUpdateRequestDto updateData
             ,@AuthenticationPrincipal UserDetailsImpl userDetails){
         if(userDetails.getUser()==null){
             throw new CustomException(ErrorCode.NOT_FOUND_USER);
         }
         User user = userDetails.getUser();
-        userService.updateUser(file,userUpdateRequestDto,user);
+        userService.updateUser(file,updateData,user);
         return ResponseEntity.ok().body("마이 페이지 수정 완료");
     }
 

@@ -72,11 +72,13 @@ public class S3Service {
 
     // 글 수정 시 기존 s3에 있는 이미지 정보 삭제
     public void deleteImageUrl(String filePath){
+        String filepathReal = filePath.split(".com/")[1];
+        System.out.println(filepathReal);
         // 삭제 구문
-        if(!"".equals(filePath) && filePath != null){
-            boolean isExistObject = s3Client.doesObjectExist(bucket, filePath);
+        if(!"".equals(filepathReal) && filepathReal != null){
+            boolean isExistObject = s3Client.doesObjectExist(bucket, filepathReal);
             if(isExistObject){
-                s3Client.deleteObject(bucket, filePath);
+                s3Client.deleteObject(bucket, filepathReal);
             }
         }
     }
