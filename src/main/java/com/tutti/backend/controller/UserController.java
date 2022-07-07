@@ -71,7 +71,7 @@ public class UserController {
 
 
     // 팔로우
-    @GetMapping("/follow")
+    @PostMapping("/follow")
     public ResponseEntity<?> followArtist(
                                     @RequestParam(required = false) String artist,
                                     @AuthenticationPrincipal UserDetailsImpl userDetails){
