@@ -100,5 +100,9 @@ public class FeedController {
     public ResponseEntity<?> searchFeed(@RequestParam String keyword){
         return feedService.searchFeed(keyword);
     }
+    @GetMapping("/search/more")
+    public ResponseEntity<?> searchMoreFeed(@RequestParam String category,@RequestParam String keyword){
+        return feedService.searchMoreFeed(keyword,category);
+    }
 
 }
