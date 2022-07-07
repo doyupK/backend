@@ -252,17 +252,32 @@ public class FeedService {
     // 피드 검색
     public ResponseEntity<?> searchFeed(String keyword) {
         SearchFeedResponseDto searchFeedResponseDto = new SearchFeedResponseDto();
-        User user = userRepository.findByArtistLike(keyword);
+        /*User user = userRepository.findByArtistLike(keyword);
 
         searchFeedResponseDto.setTitle(feedRepository.findAllByTitleContainingAndPostTypeContaining(keyword,"audio"));
         searchFeedResponseDto.setArtist(feedRepository.findAllByUser(user));
         searchFeedResponseDto.setVideo(feedRepository.findAllByTitleContainingAndPostTypeContaining(keyword,"video"));
         searchFeedResponseDto.setSuccess(200);
+        searchFeedResponseDto.setMessage("성공");*/
+        searchFeedResponseDto.setTitle(feedRepository.searchMusicByTitleKeyword(keyword));
+        searchFeedResponseDto.setArtist(feedRepository.searchMusicByArtistKeyword(keyword));
+        searchFeedResponseDto.setVideo(feedRepository.searchVideoByTitleKeyword(keyword));
+        searchFeedResponseDto.setSuccess(200);
         searchFeedResponseDto.setMessage("성공");
+
+
         return ResponseEntity.ok().body(searchFeedResponseDto);
     }
 
+    public ResponseEntity<?> searchMoreFeed(String keyword, String category) {
+        SearchFeedAllByCategoryAndKeywordDto searchFeedAllByCategoryAndKeywordDto = new SearchFeedAllByCategoryAndKeywordDto();
+        searchFeedAllByCategoryAndKeywordDto.setResults(feedRepository.searchCategoryByKeyword(category,keyword));
+        searchFeedAllByCategoryAndKeywordDto.setSuccess(200);
+        searchFeedAllByCategoryAndKeywordDto.setMessage("성공");
+        return ResponseEntity.ok().body(searchFeedAllByCategoryAndKeywordDto);
+    }
     // 최신 순 전체 피드 따로 가져오기
+
     public ResponseEntity<?> getFeedPage(String postType, String genre) {
         List<GetFeedByPostTypeDto> latestList = feedRepository.getFeedByPostType(postType,genre);
         FeedPageResponseDto feedPageResponseDto = new FeedPageResponseDto();
