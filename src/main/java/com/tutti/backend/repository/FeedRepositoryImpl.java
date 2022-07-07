@@ -58,8 +58,8 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                 .select(new QGetMainPageListDto(
                         feed.id,
                         feed.title,
-                        feed.genre,
                         user.artist,
+                        feed.genre,
                         feed.albumImageUrl.as("albumImageUrl")
                 ))
                 .from(feed)
