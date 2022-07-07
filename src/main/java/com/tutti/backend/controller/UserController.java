@@ -111,50 +111,67 @@ public class UserController {
 
     // 유저 정보 수정(myPage)
     @PutMapping("/user/mypage")
-    public ResponseEntity<?> updateUser(@RequestBody UserUpdateRequestDto userUpdateRequestDto,@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<?> updateUser(
+            @RequestPart MultipartFile file
+            ,@RequestPart UserUpdateRequestDto updateData
+            ,@AuthenticationPrincipal UserDetailsImpl userDetails){
         if(userDetails.getUser()==null){
             throw new CustomException(ErrorCode.NOT_FOUND_USER);
         }
         User user = userDetails.getUser();
-        userService.updateUser(userUpdateRequestDto,user);
+        userService.updateUser(file,updateData,user);
         return ResponseEntity.ok().body("마이 페이지 수정 완료");
     }
 
     // 다른 사람 프로필 조회
     // 로그인 Artist는 로컬스토리지에 저장해서 RequestBody로 보내준다는 가정하에 작성함.
     @GetMapping("/user/profile/{artist}")
-    public ResponseEntity<?> othersUser(@PathVariable String artist, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<?> othersUser(
+            @PathVariable String artist,
+            HttpServletRequest httpServletRequest) {
         return userService.getOthersUser(artist,httpServletRequest);
     }
     // 타인 정보 > 관심음악 조회
     @GetMapping("/user/profile/{artist}/hearts")
-    public ResponseEntity<?> othersUserLikeRead(@PathVariable String artist, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<?> othersUserLikeRead(
+            @PathVariable String artist,
+            HttpServletRequest httpServletRequest) {
         return userService.getOthersUserLike(artist,httpServletRequest);
     }
     // 타인 정보 > 관심영상 조회
     @GetMapping("/user/profile/{artist}/hearts/video")
-    public ResponseEntity<?> othersUserLikeVideoRead(@PathVariable String artist, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<?> othersUserLikeVideoRead(
+            @PathVariable String artist,
+            HttpServletRequest httpServletRequest) {
         return userService.getOthersUserLikeVideo(artist,httpServletRequest);
     }
     // 타인 정보 > 팔로잉 조회
     @GetMapping("/user/profile/{artist}/follows")
-    public ResponseEntity<?> othersUserFollowRead(@PathVariable String artist, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<?> othersUserFollowRead(
+            @PathVariable String artist,
+            HttpServletRequest httpServletRequest) {
         return userService.getOthersUserFollow(artist,httpServletRequest);
     }
     // 타인 정보 > 업로드한 음악조회
     @GetMapping("/user/profile/{artist}/feeds")
-    public ResponseEntity<?> othersUserFeedRead(@PathVariable String artist, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<?> othersUserFeedRead
+    (@PathVariable String artist,
+     HttpServletRequest httpServletRequest) {
         return userService.getOthersUserFeed(artist,httpServletRequest);
     }
     // 타인 정보 > 업로드한 영상조회
     @GetMapping("/user/profile/{artist}/feeds/video")
-    public ResponseEntity<?> othersUserFeedVideoRead(@PathVariable String artist, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<?> othersUserFeedVideoRead(
+            @PathVariable String artist,
+            HttpServletRequest httpServletRequest) {
         return userService.getOthersUserFeedVideo(artist,httpServletRequest);
     }
 
     // 카카오 로그인
     @GetMapping("/user/kakao/callback")
-    public ResponseEntity<KakaoUserResponseDto> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+    public ResponseEntity<KakaoUserResponseDto> kakaoLogin(
+            @RequestParam String code,
+            HttpServletResponse response) throws JsonProcessingException {
         KakaoUserResponseDto kakaoUserResponseDto = kakaoUserService.kakaoLogin(code, response);
         return ResponseEntity.ok().body(kakaoUserResponseDto);
     }
@@ -162,7 +179,9 @@ public class UserController {
 
     // 구글 로그인
     @GetMapping("/api/user/google/callback")
-    public GoogleResponseDto<GoogleUserResponseDto> googleLogin(@RequestParam String code, HttpServletResponse httpServletResponse) throws JsonProcessingException {
+    public GoogleResponseDto<GoogleUserResponseDto> googleLogin(
+            @RequestParam String code,
+            HttpServletResponse httpServletResponse) throws JsonProcessingException {
         GoogleUserResponseDto googleUserResponseDto = googleUserService.googleLogin(code);
         httpServletResponse.addHeader("Authorization", googleUserResponseDto.getToken());
         return GoogleResponseDto.<GoogleUserResponseDto>builder()
