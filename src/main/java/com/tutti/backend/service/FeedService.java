@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @Service
+@Transactional
 public class FeedService {
     
     private final FeedRepository feedRepository;

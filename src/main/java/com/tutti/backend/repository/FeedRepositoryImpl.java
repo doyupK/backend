@@ -39,8 +39,8 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                 .select(new QGetFeedByPostTypeDto(
                         feed.id,
                         feed.title,
-                        feed.genre,
                         user.artist,
+                        feed.genre,
                         feed.albumImageUrl.as("albumImageUrl"),
                         user.profileUrl.as("userProfileImageUrl")
                 ))
