@@ -118,7 +118,8 @@ public class UserService {
     // 이메일 인증
     @Transactional
     public void confirmEmail(String token) {
-        ConfirmationToken findConfirmationToken = confirmationTokenService.findByIdAndExpirationDateAfterAndExpired(token);
+        ConfirmationToken findConfirmationToken = confirmationTokenService
+                .findByIdAndExpirationDateAfterAndExpired(token);
         Optional<User> findUserInfo = userRepository.findByEmail(findConfirmationToken.getUserEmail());
         findConfirmationToken.useToken();    // 토큰 만료
 
@@ -167,10 +168,12 @@ public class UserService {
 
     // 유저 정보 수정(myPage)
     @Transactional
-    public void updateUser(UserUpdateRequestDto userUpdateRequestDto, User currentUser) {
-        User user = userRepository.findById(currentUser.getId()).orElseThrow(()->new CustomException(ErrorCode.WRONG_USER));
-
-        user.updateUser(userUpdateRequestDto);
+    public void updateUser(MultipartFile file, UserUpdateRequestDto userUpdateRequestDto, User currentUser) {
+        User user = userRepository.findById(
+                currentUser.getId()).orElseThrow(
+                        ()->new CustomException(ErrorCode.WRONG_USER));
+        FileRequestDto fileRequestDto = s3Service.upload(file);
+        user.updateUser(fileRequestDto,userUpdateRequestDto);
 
     }
 
@@ -201,11 +204,20 @@ public class UserService {
                 user.getYoutubeUrl());
 
         userinfoResponseFeedDto.setUserInfoDto(userInfoDto);
-        userinfoResponseFeedDto.setLikeList(feedRepository.findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc("audio",user)); // 유저의 좋아요[음악] List를 최신순으로 6개만 가져오기
-        userinfoResponseFeedDto.setLikeVideoList(feedRepository.findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc("video",user)); // 유저의 좋아요[영상] List를 최신순으로 6개만 가져오기
-        userinfoResponseFeedDto.setFollowingList(followRepository.findTop7ByUserOrderById(user)); // 유저가 팔로우 한 리스트 7개
-        userinfoResponseFeedDto.setUploadList(feedRepository.findTop6ByPostTypeAndUserOrderByIdDesc("audio",user)); // 유저가 업로드[노래] 한 리스트 6개
-        userinfoResponseFeedDto.setUploadVideoList(feedRepository.findTop6ByPostTypeAndUserOrderByIdDesc("video",user)); // 유저가 업로드[영상] 한 리스트 6개
+        userinfoResponseFeedDto.setLikeList(feedRepository
+                .findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(
+                        "audio",user)); // 유저의 좋아요[음악] List를 최신순으로 6개만 가져오기
+        userinfoResponseFeedDto.setLikeVideoList(feedRepository
+                .findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(
+                        "video",user)); // 유저의 좋아요[영상] List를 최신순으로 6개만 가져오기
+        userinfoResponseFeedDto.setFollowingList(followRepository
+                .findTop7ByUserOrderById(user)); // 유저가 팔로우 한 리스트 7개
+        userinfoResponseFeedDto.setUploadList(feedRepository
+                .findTop6ByPostTypeAndUserOrderByIdDesc(
+                        "audio",user)); // 유저가 업로드[노래] 한 리스트 6개
+        userinfoResponseFeedDto.setUploadVideoList(feedRepository
+                .findTop6ByPostTypeAndUserOrderByIdDesc(
+                        "video",user)); // 유저가 업로드[영상] 한 리스트 6개
         userInfoResponseDto.setSuccess(200);
         userInfoResponseDto.setMessage("성공");
         userInfoResponseDto.setData(userinfoResponseFeedDto);
@@ -267,11 +279,20 @@ public class UserService {
 //        List<FollowingDtoMapping> followingList = followRepository.findByUser(user);
 
         userinfoResponseFeedDto.setUserInfoDto(userInfoDto);
-        userinfoResponseFeedDto.setLikeList(feedRepository.findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc("audio",user)); // 유저의 좋아요[음악] List를 최신순으로 6개만 가져오기
-        userinfoResponseFeedDto.setLikeVideoList(feedRepository.findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc("video",user)); // 유저의 좋아요[영상] List를 최신순으로 6개만 가져오기
-        userinfoResponseFeedDto.setFollowingList(followRepository.findTop7ByUserOrderById(user)); // 유저가 팔로우 한 리스트 7개
-        userinfoResponseFeedDto.setUploadList(feedRepository.findTop6ByPostTypeAndUserOrderByIdDesc("audio",user)); // 유저가 업로드[노래] 한 리스트 6개
-        userinfoResponseFeedDto.setUploadVideoList(feedRepository.findTop6ByPostTypeAndUserOrderByIdDesc("video",user)); // 유저가 업로드[영상] 한 리스트 6개
+        userinfoResponseFeedDto.setLikeList(
+                feedRepository.findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(
+                        "audio",user)); // 유저의 좋아요[음악] List를 최신순으로 6개만 가져오기
+        userinfoResponseFeedDto.setLikeVideoList(
+                feedRepository.findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(
+                        "video",user)); // 유저의 좋아요[영상] List를 최신순으로 6개만 가져오기
+        userinfoResponseFeedDto.setFollowingList(
+                followRepository.findTop7ByUserOrderById(user)); // 유저가 팔로우 한 리스트 7개
+        userinfoResponseFeedDto.setUploadList(
+                feedRepository.findTop6ByPostTypeAndUserOrderByIdDesc(
+                        "audio",user)); // 유저가 업로드[노래] 한 리스트 6개
+        userinfoResponseFeedDto.setUploadVideoList(
+                feedRepository.findTop6ByPostTypeAndUserOrderByIdDesc(
+                        "video",user)); // 유저가 업로드[영상] 한 리스트 6개
         userInfoResponseDto.setSuccess(200);
         userInfoResponseDto.setMessage("성공");
         userInfoResponseDto.setIsFollow(isFollow);
@@ -285,7 +306,9 @@ public class UserService {
         UserDataResponseDto userDataResponseDto = new UserDataResponseDto();
         User user = userDetails.getUser();
         // 유저의 좋아요[노래] List를 최신순으로 전체 가져오기
-        userDataResponseDto.setData(feedRepository.findAllByPostTypeAndHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc("audio",user.getArtist()));
+        userDataResponseDto.setData(feedRepository
+                .findAllByPostTypeAndHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc(
+                        "audio",user.getArtist()));
         userDataResponseDto.setMessage("성공");
         userDataResponseDto.setSuccess(200);
 
@@ -307,7 +330,9 @@ public class UserService {
     public ResponseEntity<?> getUserMyFeed(UserDetailsImpl userDetails) {
         UserDataResponseDto userDataResponseDto = new UserDataResponseDto();
         // 유저의 업로드[노래] List를 최신순으로 전체 가져오기
-        userDataResponseDto.setData(feedRepository.findAllByPostTypeAndUser_ArtistOrderByIdDesc("audio",userDetails.getUser().getArtist()));
+        userDataResponseDto.setData(feedRepository
+                .findAllByPostTypeAndUser_ArtistOrderByIdDesc(
+                        "audio",userDetails.getUser().getArtist()));
         userDataResponseDto.setMessage("성공");
         userDataResponseDto.setSuccess(200);
 
@@ -331,7 +356,9 @@ public class UserService {
             }
         }
         // 유저의 좋아요[노래] List를 최신순으로 전체 가져오기
-        userDataResponseDto.setData(feedRepository.findAllByPostTypeAndHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc("audio",artist));
+        userDataResponseDto.setData(feedRepository
+                .findAllByPostTypeAndHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc(
+                        "audio",artist));
         userDataResponseDto.setMessage("성공");
         userDataResponseDto.setSuccess(200);
 
