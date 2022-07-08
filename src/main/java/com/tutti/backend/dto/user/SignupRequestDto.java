@@ -30,5 +30,7 @@ public class SignupRequestDto {
 
     String youtubeUrl;
 
+    boolean[] genreSelected;
+
 }
 

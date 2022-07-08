@@ -14,5 +14,7 @@ public class UserUpdateRequestDto {
 
     String[] genre;
 
+    boolean[] genreSelected;
+
 
 }
