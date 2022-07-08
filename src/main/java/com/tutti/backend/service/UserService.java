@@ -194,9 +194,19 @@ public class UserService {
                 user.getFavoriteGenre3(),
                 user.getFavoriteGenre4()
         };
+        boolean[] genreSelected = {
+                user.isGenreSelected1(),
+                user.isGenreSelected2(),
+                user.isGenreSelected3(),
+                user.isGenreSelected4(),
+                user.isGenreSelected5(),
+                user.isGenreSelected6()
+        };
+
         UserInfoDto userInfoDto = new UserInfoDto(
                 user.getArtist(),
                 genre,
+                genreSelected,
                 user.getProfileUrl(),
                 followerCount,
                 followingCount,
@@ -266,6 +276,7 @@ public class UserService {
         UserInfoDto userInfoDto = new UserInfoDto(
                 user.getArtist(),
                 genre,
+                null,
                 user.getProfileUrl(),
                 followerCount,
                 followingCount,
