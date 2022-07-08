@@ -259,9 +259,10 @@ public class FeedService {
         searchFeedResponseDto.setVideo(feedRepository.findAllByTitleContainingAndPostTypeContaining(keyword,"video"));
         searchFeedResponseDto.setSuccess(200);
         searchFeedResponseDto.setMessage("성공");*/
-        searchFeedResponseDto.setTitle(feedRepository.searchMusicByTitleKeyword(keyword));
-        searchFeedResponseDto.setArtist(feedRepository.searchMusicByArtistKeyword(keyword));
-        searchFeedResponseDto.setVideo(feedRepository.searchVideoByTitleKeyword(keyword));
+        searchFeedResponseDto.setMusicTitle(feedRepository.searchMusicByTitleKeyword(keyword));
+        searchFeedResponseDto.setMusicArtist(feedRepository.searchMusicByArtistKeyword(keyword));
+        searchFeedResponseDto.setVideoTitle(feedRepository.searchVideoByTitleKeyword(keyword));
+        searchFeedResponseDto.setVideoTitle(feedRepository.searchVideoByArtistKeyword(keyword));
         searchFeedResponseDto.setSuccess(200);
         searchFeedResponseDto.setMessage("성공");
 

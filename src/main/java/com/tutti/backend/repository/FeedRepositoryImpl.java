@@ -122,6 +122,23 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
     }
 
     @Override
+    public List<GetMainPageListDto> searchVideoByArtistKeyword(String keyword) {
+        return queryFactory
+                .select(new QGetMainPageListDto(
+                        feed.id,
+                        feed.title,
+                        user.artist,
+                        feed.genre,
+                        feed.albumImageUrl.as("albumImageUrl")
+                ))
+                .from(feed)
+                .join(feed.user,user)
+                .where(feed.postType.eq("video").and(feed.user.artist.contains(keyword)))
+                .limit(4)
+                .fetch();
+    }
+
+    @Override
     public List<GetMainPageListDto> searchCategoryByKeyword(String category, String keyword) {
         return queryFactory
                 .select(new QGetMainPageListDto(
@@ -139,12 +156,14 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
 
     private BooleanExpression categoryEq(String category,String keyword) {
         switch (category) {
-            case "music":
+            case "musicTitle":
                 return feed.postType.eq("audio").and(feed.title.contains(keyword));
-            case "artist":
+            case "musicArtist":
                 return feed.postType.eq("audio").and(feed.user.artist.contains(keyword));
-            case "video":
+            case "videoTitle":
                 return feed.postType.eq("video").and(feed.title.contains(keyword));
+            case "videoArtist":
+                return feed.postType.eq("video").and(feed.user.artist.contains(keyword));
         }
         return null;
     }
