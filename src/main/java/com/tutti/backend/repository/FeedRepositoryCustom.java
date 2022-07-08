@@ -12,11 +12,13 @@ List<GetFeedByPostTypeDto> getFeedByPostType(String postType,String genre);
 
 List<GetMainPageListDto> getMainPageRandomList(String audio);
 
-List<GetMainPageListDto> searchMusicByTitleKeyword(String keyword); // 12
+List<GetMainPageListDto> searchMusicByTitleKeyword(String keyword); // 6
 
-List<GetMainPageListDto> searchMusicByArtistKeyword(String keyword); // 12
+List<GetMainPageListDto> searchMusicByArtistKeyword(String keyword); // 6
 
-List<GetMainPageListDto> searchVideoByTitleKeyword(String keyword); // 8
+List<GetMainPageListDto> searchVideoByTitleKeyword(String keyword); // 4
+
+    List<GetMainPageListDto> searchVideoByArtistKeyword(String keyword); // 4
     List<GetMainPageListDto> searchCategoryByKeyword(String category, String keyword);
 
 
