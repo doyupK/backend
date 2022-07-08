@@ -262,7 +262,7 @@ public class FeedService {
         searchFeedResponseDto.setMusicTitle(feedRepository.searchMusicByTitleKeyword(keyword));
         searchFeedResponseDto.setMusicArtist(feedRepository.searchMusicByArtistKeyword(keyword));
         searchFeedResponseDto.setVideoTitle(feedRepository.searchVideoByTitleKeyword(keyword));
-        searchFeedResponseDto.setVideoTitle(feedRepository.searchVideoByArtistKeyword(keyword));
+        searchFeedResponseDto.setVideoArtist(feedRepository.searchVideoByArtistKeyword(keyword));
         searchFeedResponseDto.setSuccess(200);
         searchFeedResponseDto.setMessage("성공");
 
