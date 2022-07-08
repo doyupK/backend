@@ -11,7 +11,8 @@ import java.util.List;
 public class SearchFeedResponseDto {
     int success;
     String message;
-    List<GetMainPageListDto> title;
-    List<GetMainPageListDto> artist;
-    List<GetMainPageListDto> video;
+    List<GetMainPageListDto> musicTitle;
+    List<GetMainPageListDto> musicArtist;
+    List<GetMainPageListDto> videoTitle;
+    List<GetMainPageListDto> videoArtist;
 }
