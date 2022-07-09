@@ -1,3 +1,4 @@
+/*
 package com.tutti.backend.service;
 
 import lombok.RequiredArgsConstructor;
@@ -13,8 +14,11 @@ public class RedisPublisher {
     private final ChannelTopic topic;
 
 
-    /*public void publish(ChannelTopic topic, Chat) {
+    */
+/*public void publish(ChannelTopic topic, Chat) {
         redisTemplate.convertAndSend(topic.getTopic(), message);
-    }*/
+    }*//*
+
     //진행상황 체크 중
 }
+*/
