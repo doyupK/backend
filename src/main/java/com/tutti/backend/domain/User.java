@@ -143,6 +143,21 @@ public class User {
         this.genreSelected5 = userUpdateRequestDto.getGenreSelected()[4];
         this.genreSelected6 = userUpdateRequestDto.getGenreSelected()[5];
     }
+    public void updateUser(UserUpdateRequestDto userUpdateRequestDto){
+        this.profileText = userUpdateRequestDto.getProfileText();
+        this.instagramUrl = userUpdateRequestDto.getInstagramUrl();
+        this.youtubeUrl = userUpdateRequestDto.getYoutubeUrl();
+        this.favoriteGenre1 = userUpdateRequestDto.getGenre()[0];
+        this.favoriteGenre2 = userUpdateRequestDto.getGenre()[1];
+        this.favoriteGenre3 = userUpdateRequestDto.getGenre()[2];
+        this.favoriteGenre4 = userUpdateRequestDto.getGenre()[3];
+        this.genreSelected1 = userUpdateRequestDto.getGenreSelected()[0];
+        this.genreSelected2 = userUpdateRequestDto.getGenreSelected()[1];
+        this.genreSelected3 = userUpdateRequestDto.getGenreSelected()[2];
+        this.genreSelected4 = userUpdateRequestDto.getGenreSelected()[3];
+        this.genreSelected5 = userUpdateRequestDto.getGenreSelected()[4];
+        this.genreSelected6 = userUpdateRequestDto.getGenreSelected()[5];
+    }
 
 
 }

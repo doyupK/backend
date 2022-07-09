@@ -1,7 +1,7 @@
 package com.tutti.backend.service;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+/*import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
@@ -19,9 +19,9 @@ public class RedisSubscriber implements MessageListener {
     private final RedisTemplate redisTemplate;
     private final SimpMessageSendingOperations messagingTemplate;
 
-    /**
+    *//**
      * Redis에서 메시지가 발행(publish)되면 대기하고 있던 onMessage가 해당 메시지를 받아 처리한다.
-     */
+     *//*
     @Override
     public void onMessage(Message message, byte[] pattern) {
         try {
@@ -35,4 +35,4 @@ public class RedisSubscriber implements MessageListener {
             log.error(e.getMessage());
         }
     }
-}
+}*/
