@@ -119,7 +119,11 @@ public class UserController {
             throw new CustomException(ErrorCode.NOT_FOUND_USER);
         }
         User user = userDetails.getUser();
-        userService.updateUser(file,updateData,user);
+        if(file==null){
+            userService.updateUserWithNoFile(updateData,user);
+        }else{
+            userService.updateUser(file,updateData,user);
+        }
         return ResponseEntity.ok().body("마이 페이지 수정 완료");
     }
 

@@ -180,6 +180,14 @@ public class UserService {
             user.updateUser(fileRequestDto,userUpdateRequestDto);
         }
     }
+    @Transactional
+    public void updateUserWithNoFile(UserUpdateRequestDto userUpdateRequestDto, User currentUser) {
+        User user = userRepository.findById(
+                currentUser.getId()).orElseThrow(
+                ()->new CustomException(ErrorCode.WRONG_USER));
+        user.updateUser(userUpdateRequestDto);
+    }
+
 
     // 유저 정보 조회(myPage)
     @Transactional
