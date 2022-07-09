@@ -112,7 +112,7 @@ public class UserController {
     // 유저 정보 수정(myPage)
     @PutMapping("/user/mypage")
     public ResponseEntity<?> updateUser(
-            @RequestPart MultipartFile file
+            @RequestPart(required = false) MultipartFile file
             ,@RequestPart UserUpdateRequestDto updateData
             ,@AuthenticationPrincipal UserDetailsImpl userDetails){
         if(userDetails.getUser()==null){

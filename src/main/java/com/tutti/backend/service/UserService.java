@@ -172,10 +172,13 @@ public class UserService {
         User user = userRepository.findById(
                 currentUser.getId()).orElseThrow(
                         ()->new CustomException(ErrorCode.WRONG_USER));
-        s3Service.deleteImageUrl(user.getProfileUrl());
-        FileRequestDto fileRequestDto = s3Service.upload(file);
-        user.updateUser(fileRequestDto,userUpdateRequestDto);
-
+        if(file.isEmpty()){
+            user.updateUser(userUpdateRequestDto);
+        }else{
+            s3Service.deleteImageUrl(user.getProfileUrl());
+            FileRequestDto fileRequestDto = s3Service.upload(file);
+            user.updateUser(fileRequestDto,userUpdateRequestDto);
+        }
     }
 
     // 유저 정보 조회(myPage)
