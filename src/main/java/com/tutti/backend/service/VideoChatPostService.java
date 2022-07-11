@@ -1,6 +1,7 @@
 package com.tutti.backend.service;
 
 
+import com.tutti.backend.chat.model.ChatRoom;
 import com.tutti.backend.chat.repository.ChatRoomRepository;
 import com.tutti.backend.dto.PostRequestDto;
 
@@ -71,6 +72,9 @@ public class VideoChatPostService {
         VideoChatPost videoChatPost = videoChatPostRepository.findById(videoChatPostId)
                 .orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_VIDEOCHATPOST));
 
+        chatRoomRepository.enterChatRoom(String.valueOf(videoChatPostId));
+
+        ChatRoom chatRoom =chatRoomRepository.findRoomById(String.valueOf(videoChatPostId));
 
         return null;
     }

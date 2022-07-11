@@ -35,6 +35,8 @@ public class VideoChatPostController {
 
         return ResponseEntity.ok().body(videoChatPostService.readPost(user));
     }
+
+
     @GetMapping("/videoChatPost/{videoChatPostId}")
     public ResponseEntity<?> readPostDetail(
             @PathVariable Long videoChatPostId,

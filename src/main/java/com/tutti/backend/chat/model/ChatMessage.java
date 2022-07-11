@@ -15,7 +15,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class ChatMessage {
 
-    // 메시지 타입 : 입장, 채팅
+    // 메시지 타입 : 입장, 채팅, 타입을 같이 주셔야합니다.
     public enum MessageType {
         ENTER, TALK, QUIT
     }
