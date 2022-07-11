@@ -2,6 +2,7 @@ package com.tutti.backend.chat.service;
 
 
 
+import com.tutti.backend.chat.dto.ChatMessageDto;
 import com.tutti.backend.chat.model.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +17,10 @@ public class RedisPublisher {
     private final RedisTemplate<String,Object> redisTemplate;
 
 
-    public void publish (ChannelTopic topic , ChatMessage message) {
+    public void publish (ChannelTopic topic , ChatMessageDto messageDto) {
         log.info("ChannelTopic : {}", topic.getTopic());
-        log.info("ChatMessage : {}", message.getType());
-        redisTemplate.convertAndSend(topic.getTopic(),message);
+        log.info("ChatMessage : {}", messageDto.getType());
+        redisTemplate.convertAndSend(topic.getTopic(),messageDto);
         log.info("발행 완료!");
     }
 

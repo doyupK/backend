@@ -1,6 +1,7 @@
 package com.tutti.backend.domain;
 
-import com.tutti.backend.controller.PostRequestDto;
+import com.tutti.backend.chat.model.ChatRoom;
+import com.tutti.backend.dto.PostRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,6 +38,10 @@ public class VideoChatPost
 
     @Column(nullable = false)
     private String thumbNailImageUrl;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "chatroom_id")
+    private ChatRoom chatRoom;
 
     public VideoChatPost (PostRequestDto requestDto, User user, String thumbNailImageUrl ){
         this.title = requestDto.getTitle();

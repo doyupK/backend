@@ -1,6 +1,7 @@
 package com.tutti.backend.controller;
 
 import com.tutti.backend.domain.User;
+import com.tutti.backend.dto.PostRequestDto;
 import com.tutti.backend.security.UserDetailsImpl;
 import com.tutti.backend.service.VideoChatPostService;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,10 @@ public class VideoChatPostController {
             @RequestPart MultipartFile file,
             @AuthenticationPrincipal UserDetailsImpl userDetails) throws Exception {
         User user = userDetails.getUser();
-
+        videoChatPostService.createPost(user,requestDto,file);
         return ResponseEntity.ok().body("화상채팅 등록 완료");
     }
+
+    
 
 }

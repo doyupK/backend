@@ -38,32 +38,29 @@ public class ChatService {
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new NullPointerException("존재하지 않는 사용자 입니다!")
         );
-        ChatMessage chatMessage = new ChatMessage(messageDto);
-        chatMessage.setSender(user.getArtist());
-/*        chatMessage.setProfileUrl(user.getProfileUrl());*/
-        chatMessage.setEnterUserCnt(enterUserCnt);
+        messageDto.setSender(user.getArtist());
+/*        messageDto.setProfileUrl(user.getProfileUrl());*/
+        messageDto.setEnterUserCnt(enterUserCnt);
 //        Date date = new Date();
 //        chatMessage.setCreateAt(date); // 시간세팅
 
-        log.info("type : {}", chatMessage.getType());
+        if (ChatMessage.MessageType.ENTER.equals(messageDto.getType())) {
+            chatRoomRepository.enterChatRoom(messageDto.getRoomId());
 
-        if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
-            chatRoomRepository.enterChatRoom(chatMessage.getRoomId());
+            messageDto.setMessage("[알림] " + messageDto.getSender() + "님이 입장하셨습니다.");
+/*            messageDto.setProfileUrl(null);*/
 
-            chatMessage.setMessage("[알림] " + chatMessage.getSender() + "님이 입장하셨습니다.");
-            chatMessage.setProfileUrl(null);
+        } else if (ChatMessage.MessageType.QUIT.equals(messageDto.getType())) {
 
-        } else if (ChatMessage.MessageType.QUIT.equals(chatMessage.getType())) {
-
-            chatMessage.setMessage("[알림] " + chatMessage.getSender() + "님이 나가셨습니다.");
-/*            chatMessage.setProfileUrl(null);*/
+            messageDto.setMessage("[알림] " + messageDto.getSender() + "님이 나가셨습니다.");
+/*            messageDto.setProfileUrl(null);*/
         }
 
-        log.info("ENTER : {}", chatMessage.getMessage());
+        log.info("ENTER : {}", messageDto.getMessage());
 
-        chatMessageRepository.save(chatMessage); // 캐시에 저장 했다.
+        chatMessageRepository.save(messageDto); // 캐시에 저장 했다.
         // Websocket 에 발행된 메시지를 redis 로 발행한다(publish)
-        redisPublisher.publish(ChatRoomRepository.getTopic(chatMessage.getRoomId()), chatMessage);
+        redisPublisher.publish(ChatRoomRepository.getTopic(messageDto.getRoomId()), messageDto);
     }
 
 

@@ -1,4 +1,4 @@
-package com.tutti.backend.controller;
+package com.tutti.backend.dto;
 
 import lombok.Getter;
 
