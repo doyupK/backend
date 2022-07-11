@@ -1,6 +1,7 @@
 package com.tutti.backend.chat.model;
 
 
+import com.tutti.backend.domain.VideoChatPost;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +17,7 @@ public class ChatRoom implements Serializable {
     public String roomId;
     public String title;
 
-    public static ChatRoom create(Post post) {
+    public static ChatRoom create(VideoChatPost post) {
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.roomId = String.valueOf(post.getId());
         chatRoom.title = post.getTitle();

@@ -3,6 +3,7 @@ package com.tutti.backend.chat.repository;
 
 import com.tutti.backend.chat.model.ChatRoom;
 import com.tutti.backend.chat.service.RedisSubscriber;
+import com.tutti.backend.domain.VideoChatPost;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -54,7 +55,7 @@ public class ChatRoomRepository {
             topics.put(roomId, topic);
         }
     }
-    public ChatRoom createChatRoom(Post post) {
+    public ChatRoom createChatRoom(VideoChatPost post) {
         ChatRoom chatRoom = ChatRoom.create(post);
         opsHashChatRoom.put(CHAT_ROOMS, chatRoom.getRoomId(), chatRoom);
         return chatRoom;
