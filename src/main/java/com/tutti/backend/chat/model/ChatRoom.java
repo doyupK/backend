@@ -25,10 +25,16 @@ public class ChatRoom implements Serializable {
     @Column
     private String title;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "videochatpost_id")
+    private VideoChatPost videoChatPost;
+
+
     public static ChatRoom create(VideoChatPost post) {
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.roomId = String.valueOf(post.getId());
         chatRoom.title = post.getTitle();
+        chatRoom.videoChatPost = post;
         return chatRoom;
     }
 }

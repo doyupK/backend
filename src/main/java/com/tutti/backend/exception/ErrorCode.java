@@ -29,6 +29,7 @@ public enum ErrorCode {
     NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "404_2", "해당 댓글이 존재하지 않습니다."),
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "404_3", "로그인을 해주세요."),
     NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND, "404_4","토큰을 찾지 못했습니다."),
+    NOT_FOUND_VIDEOCHATPOST(HttpStatus.NOT_FOUND, "404_3", "채널을 찾지 못하였습니다."),
     // 405 file
     WRONG_FILE_TYPE(HttpStatus.BAD_REQUEST,"405_1", "잘못된 형식의 파일입니다."),
     FAIL_FILE_UPLOAD(HttpStatus.INTERNAL_SERVER_ERROR,"405_2", "파일 업로드에 실패하였습니다."),

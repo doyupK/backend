@@ -39,9 +39,6 @@ public class VideoChatPost
     @Column(nullable = false)
     private String thumbNailImageUrl;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "chatroom_id")
-    private ChatRoom chatRoom;
 
     public VideoChatPost (PostRequestDto requestDto, User user, String thumbNailImageUrl ){
         this.title = requestDto.getTitle();
