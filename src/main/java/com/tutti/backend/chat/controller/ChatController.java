@@ -1,9 +1,10 @@
-package com.tutti.backend.controller;
+package com.tutti.backend.chat.controller;
 
 
-import com.tutti.backend.domain.ChatMessage;
-import com.tutti.backend.dto.ChatMessageDto;
-import com.tutti.backend.service.ChatService;
+
+import com.tutti.backend.chat.dto.ChatMessageDto;
+import com.tutti.backend.chat.model.ChatMessage;
+import com.tutti.backend.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.Header;
@@ -16,8 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 
 @Slf4j
-@RequiredArgsConstructor
 @Controller
+@RequiredArgsConstructor
 public class ChatController {
 
     private final ChatService chatService;
@@ -25,16 +26,16 @@ public class ChatController {
     /**
      * websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
      */
+    //1번
     @MessageMapping("/chat/message")
-    public void message(ChatMessageDto message, @Header("Authorization") String token) {
-        log.info("요청 메서드 [Message] /chat/message");
+    public void message(ChatMessageDto message, @Header("token") String token) {
+        log.info("요청 메서드 [message] /chat/message");
         chatService.save(message, token);
     }
 
-    // 이전 채팅 기록 가져오기
     @GetMapping("/chat/message/{roomId}")
     @ResponseBody
-    public List<ChatMessage> getMessages(@PathVariable String roomId) {
+    public List<ChatMessage> getMessage(@PathVariable String roomId){
         log.info("요청 메서드 [GET] /chat/message/{roomId}");
         return chatService.getMessages(roomId);
     }

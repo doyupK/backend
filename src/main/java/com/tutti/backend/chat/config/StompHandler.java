@@ -1,9 +1,10 @@
-package com.tutti.backend.config.handler;
+package com.tutti.backend.chat.config;
 
 
-import com.tutti.backend.repository.ChatMessageRepository;
+import com.tutti.backend.chat.repository.ChatMessageRepository;
+import com.tutti.backend.chat.service.ChatRoomService;
 import com.tutti.backend.security.jwt.JwtDecoder;
-import com.tutti.backend.service.ChatRoomService;
+import com.tutti.backend.security.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
@@ -15,46 +16,44 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+
 @Slf4j
 @RequiredArgsConstructor
 @Component
 public class StompHandler implements ChannelInterceptor {
 
-    private final JwtDecoder jwtDecoder;
+
+    private JwtDecoder jwtDecoder;
+
     private final ChatRoomService chatRoomService;
-//    private final ChatService chatService;
     private final ChatMessageRepository chatMessageRepository;
 
-    // websocket 을 통해 들어온 요청이 처리 되기전 실행된다.
+    // websocket을 통해 들어온 요청이 처리 되기전 실행된다.
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         log.info("30, simpDestination : {}", message.getHeaders().get("simpDestination"));
         log.info("31, sessionId : {}", message.getHeaders().get("simpSessionId"));
-        String sessionId = "";
+        String sessionId = (String) message.getHeaders().get("simpSessionId");
         // websocket 연결시 헤더의 jwt token 검증
         if (StompCommand.CONNECT == accessor.getCommand()) {
+//            sessionId = (String) message.getHeaders().get("simpSessionId");
             log.info("CONNECT : {}", sessionId);
-            String token = accessor.getFirstNativeHeader("Authorization");
-            if (token != null) {
-                token = token.substring(7);
-            }
-            System.out.println("StompHandler token = " + token);
-            jwtDecoder.isValidToken(token);
-        } else if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
+            jwtDecoder.isValidToken(accessor.getFirstNativeHeader("token"));
+        }else if(StompCommand.SUBSCRIBE == accessor.getCommand()){
             log.info("SUBSCRIBE : {}", sessionId);
-            sessionId = (String) message.getHeaders().get("simpSessionId");
-            String roomId = chatRoomService.getRoomId(Optional.ofNullable((String) message.getHeaders().get("simpDestination")).orElse("InvalidRoomId"));
-
-            log.info("roomId, 45 : {}", roomId);
-
+//            sessionId = (String) message.getHeaders().get("simpSessionId");
+            String roomId = chatRoomService.getRoomId((String) Optional.ofNullable(message.getHeaders().get("simpDestination")).orElse("InvalidRoomId"));
+            log.info("roomId : {}", roomId);
             chatMessageRepository.setUserEnterInfo(roomId, sessionId);
             chatMessageRepository.plusUserCnt(roomId);
-        } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
-            sessionId = (String) message.getHeaders().get("simpSessionId");
+
+        }else if (StompCommand.DISCONNECT == accessor.getCommand()) {
+
+//            sessionId = (String) message.getHeaders().get("simpSessionId");
             log.info("DISCONNECT : {}", sessionId);
             String roomId = chatMessageRepository.getRoomId(sessionId);
-            log.info("세션으로 가져오는 roomId, 50 : {}", roomId);
+            log.info("roomId: {}", roomId);
 
             chatMessageRepository.minusUserCnt(sessionId, roomId);
 
@@ -64,3 +63,4 @@ public class StompHandler implements ChannelInterceptor {
         return message;
     }
 }
+

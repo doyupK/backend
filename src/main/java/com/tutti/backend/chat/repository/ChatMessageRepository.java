@@ -1,7 +1,7 @@
-package com.tutti.backend.repository;
+package com.tutti.backend.chat.repository;
 
 
-import com.tutti.backend.domain.ChatMessage;
+import com.tutti.backend.chat.model.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 @Repository
-public class ChatMessageRepository {// Redis
+public class ChatMessageRepository {        //redis
 
     private static final String CHAT_MESSAGE = "CHAT_MESSAGE";
     public static final String USER_COUNT = "USER_COUNT"; // 채팅룸에 입장한 클라이언트수 저장
@@ -38,10 +38,15 @@ public class ChatMessageRepository {// Redis
         valueOps = stringRedisTemplate.opsForValue();
     }
 
+    public Long getUserCnt(String roomId){
+        log.info("getUserCnt : {}", Long.valueOf(Optional.ofNullable(valueOps.get(USER_COUNT + "_" + roomId)).orElse("0")));
+        return Long.valueOf(Optional.ofNullable(valueOps.get(USER_COUNT + "_" + roomId)).orElse("0"));
+    }
+
     public ChatMessage save(ChatMessage chatMessage) {
         log.info("chatMessage : {}", chatMessage.getMessage());
         log.info("type: {}", chatMessage.getType());
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessage.class));
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessage.class)); // 왜 ?
 
         String roomId = chatMessage.getRoomId();
         List<ChatMessage> chatMessageList = opsHashChatMessage.get(CHAT_MESSAGE, roomId);
@@ -53,34 +58,27 @@ public class ChatMessageRepository {// Redis
         return chatMessage;
     }
 
+    //채팅 가져오기 from redis
     public List<ChatMessage> findAllMessage(String roomId) {
         log.info("findAllMessage");
         return opsHashChatMessage.get(CHAT_MESSAGE, roomId);
-        }
-
-    public void plusUserCnt(String roomId) {
-        valueOps.increment(USER_COUNT + "_" + roomId);
-    }
-
-    public void minusUserCnt(String sessionId, String roomId) {
-        String redisRoomId = getRoomId(sessionId);
-        if(roomId.equals(redisRoomId)) {
-            return;
-        }
-        Optional.ofNullable(valueOps.decrement(USER_COUNT + "_" + roomId)).filter(count -> count > 0);
-    }
-
-    public Long getUserCnt(String roomId) {
-        log.info("getUserCnt : {}", Long.valueOf(Optional.ofNullable(valueOps.get(USER_COUNT + "_" + roomId)).orElse("0")));
-        return Long.valueOf(Optional.ofNullable(valueOps.get(USER_COUNT + "_" + roomId)).orElse("0"));
-    }
-
-    public void delete(String roomId) {
-        opsHashChatMessage.delete(CHAT_MESSAGE, roomId);
     }
 
     public void setUserEnterInfo(String roomId, String sessionId) {
-        hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);
+        hashOpsEnterInfo.put(ENTER_INFO,sessionId,roomId);
+        log.info("hashPosEnterInfo.put : {}",hashOpsEnterInfo.get(ENTER_INFO, sessionId) );
+    }
+
+    public void plusUserCnt(String roomId) {
+        valueOps.increment(USER_COUNT + "_" + roomId); // redis string type에서 사용하는 increment 함수, 유저 카운트 증
+    }
+
+    public void minusUserCnt(String sessionId, String roomId) {
+//        String redisRoomId = getRoomId(sessionId);
+//        if(!roomId.equals(redisRoomId)) { // 유저 카운터 감소
+//            return;
+//        }
+        Optional.ofNullable(valueOps.decrement(USER_COUNT + "_" + roomId)).filter(count -> count > 0);
     }
 
     public String getRoomId(String sessionId) {
@@ -94,4 +92,5 @@ public class ChatMessageRepository {// Redis
             log.info("세션 삭제 완료 : {}", sessionId);
         }
     }
+
 }
