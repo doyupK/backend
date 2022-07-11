@@ -19,10 +19,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry
                 .addEndpoint("/ws/chat")
-                .setAllowedOriginPatterns("*")
-                .setAllowedOriginPatterns("http://52.79.214.48/")
                 .setAllowedOriginPatterns("http://localhost:3000/")
                 .withSockJS();
+        //얼로우 오리진 패턴즈는 하나밖에 안 되므로 얼로우 오리진 돌릴 때 하나만 쓰기
     }
 
     @Override
