@@ -3,17 +3,17 @@ package com.tutti.backend.service;
 
 import com.tutti.backend.chat.model.ChatRoom;
 import com.tutti.backend.chat.repository.ChatRoomRepository;
+import com.tutti.backend.domain.Channel;
 import com.tutti.backend.dto.PostRequestDto;
 
 import com.tutti.backend.chat.dto.LiveChannelResponse;
 import com.tutti.backend.chat.dto.LiveChannelResponseDto;
 import com.tutti.backend.domain.User;
-import com.tutti.backend.domain.VideoChatPost;
 import com.tutti.backend.dto.user.FileRequestDto;
 import com.tutti.backend.exception.CustomException;
 import com.tutti.backend.exception.ErrorCode;
 import com.tutti.backend.repository.UserRepository;
-import com.tutti.backend.repository.VideoChatPostRepository;
+import com.tutti.backend.repository.ChannelRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +25,13 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class VideoChatPostService {
+public class ChannelService {
 
     private final S3Service service;
 
     private final UserRepository userRepository;
 
-    private final VideoChatPostRepository videoChatPostRepository;
+    private final ChannelRepository channelRepository;
 
     private final ChatRoomRepository chatRoomRepository;
     public void createPost(User user, PostRequestDto requestDto, MultipartFile file) {
@@ -39,22 +39,22 @@ public class VideoChatPostService {
 
         String thumbNailImageDtoImageUrl = thumbNailImageDto.getImageUrl();
 
-        VideoChatPost videoChatPost = new VideoChatPost(
+        Channel channel = new Channel(
                 requestDto,
                 user,
                 thumbNailImageDtoImageUrl
         );
-         VideoChatPost videoChatPost1 = videoChatPostRepository.save(videoChatPost);
+         Channel channel1 = channelRepository.save(channel);
 
-        chatRoomRepository.createChatRoom(videoChatPost1);
+        chatRoomRepository.createChatRoom(channel1);
     }
 
     public Object readPost(User user) {
         LiveChannelResponse liveChannelResponse = new LiveChannelResponse();
         List<LiveChannelResponseDto> liveChannelResponseDtoList = new ArrayList<>();
 
-        List<VideoChatPost> postList = videoChatPostRepository.findAll();
-        for (VideoChatPost postDto : postList) {
+        List<Channel> postList = channelRepository.findAll();
+        for (Channel postDto : postList) {
             liveChannelResponseDtoList.add(new LiveChannelResponseDto(
                     postDto.getArtist(),
                     postDto.getProfileImageUrl(),
@@ -69,7 +69,7 @@ public class VideoChatPostService {
     }
 
     public Object readPostDetail(User user, Long videoChatPostId) {
-        VideoChatPost videoChatPost = videoChatPostRepository.findById(videoChatPostId)
+        Channel channel = channelRepository.findById(videoChatPostId)
                 .orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_VIDEOCHATPOST));
 
         chatRoomRepository.enterChatRoom(String.valueOf(videoChatPostId));

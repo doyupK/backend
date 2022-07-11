@@ -1,6 +1,5 @@
 package com.tutti.backend.domain;
 
-import com.tutti.backend.chat.model.ChatRoom;
 import com.tutti.backend.dto.PostRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +13,7 @@ import javax.persistence.*;
 @Builder
 @Getter
 @Entity
-public class VideoChatPost
+public class Channel
 {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -40,7 +39,7 @@ public class VideoChatPost
     private String thumbNailImageUrl;
 
 
-    public VideoChatPost (PostRequestDto requestDto, User user, String thumbNailImageUrl ){
+    public Channel(PostRequestDto requestDto, User user, String thumbNailImageUrl ){
         this.title = requestDto.getTitle();
         this.description = requestDto.getDescription();
         this.user = user;
