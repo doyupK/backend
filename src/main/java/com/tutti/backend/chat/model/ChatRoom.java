@@ -26,7 +26,7 @@ public class ChatRoom implements Serializable {
     private String title;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "videochatpost_id")
+    @JoinColumn(name = "channel_id")
     private Channel channel;
 
 
