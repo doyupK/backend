@@ -1,7 +1,7 @@
 package com.tutti.backend.chat.model;
 
 
-import com.tutti.backend.domain.VideoChatPost;
+import com.tutti.backend.domain.Channel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,14 +27,14 @@ public class ChatRoom implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "videochatpost_id")
-    private VideoChatPost videoChatPost;
+    private Channel channel;
 
 
-    public static ChatRoom create(VideoChatPost post) {
+    public static ChatRoom create(Channel post) {
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.roomId = String.valueOf(post.getId());
         chatRoom.title = post.getTitle();
-        chatRoom.videoChatPost = post;
+        chatRoom.channel = post;
         return chatRoom;
     }
 }
