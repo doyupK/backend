@@ -2,28 +2,42 @@ package com.tutti.backend.chat.model;
 
 
 import com.tutti.backend.chat.dto.ChatMessageDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import javax.persistence.*;
+
 
 @Setter
 @Builder
 @AllArgsConstructor
 @Getter
+@Entity
+@NoArgsConstructor
 public class ChatMessage {
 
     // 메시지 타입 : 입장, 채팅
     public enum MessageType {
         ENTER, TALK, QUIT
     }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long Id;
 
-    private MessageType type; // 메시지 타입
+    @Column
     private String roomId; // 방번호 (postId)
+
+    @Enumerated(EnumType.STRING)
+    @Column
+    private MessageType type; // 메시지 타입
+
+    @Column
     private String sender; // nickname
+    @Column
     private String message; // 메시지
-    private String profileUrl;
+    @Column
     private Long enterUserCnt;
+
+
 
     //    @JsonSerialize(using = LocalDateTimeSerializer.class)
 //    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -34,5 +48,7 @@ public class ChatMessage {
         this.type = chatMessageDto.getType();
         this.roomId = chatMessageDto.getRoomId();
         this.message = chatMessageDto.getMessage();
+        this.sender = chatMessageDto.getSender();
+        this.enterUserCnt = chatMessageDto.getEnterUserCnt();
     }
 }

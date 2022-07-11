@@ -24,7 +24,6 @@ public class ChatService {
     private final RedisPublisher redisPublisher;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
-    private final JwtTokenUtils jwtTokenProvider;
 
     private final JwtDecoder jwtDecoder;
     private final UserRepository userRepository;
@@ -41,7 +40,7 @@ public class ChatService {
         );
         ChatMessage chatMessage = new ChatMessage(messageDto);
         chatMessage.setSender(user.getArtist());
-        chatMessage.setProfileUrl(user.getProfileUrl());
+/*        chatMessage.setProfileUrl(user.getProfileUrl());*/
         chatMessage.setEnterUserCnt(enterUserCnt);
 //        Date date = new Date();
 //        chatMessage.setCreateAt(date); // 시간세팅
@@ -57,7 +56,7 @@ public class ChatService {
         } else if (ChatMessage.MessageType.QUIT.equals(chatMessage.getType())) {
 
             chatMessage.setMessage("[알림] " + chatMessage.getSender() + "님이 나가셨습니다.");
-            chatMessage.setProfileUrl(null);
+/*            chatMessage.setProfileUrl(null);*/
         }
 
         log.info("ENTER : {}", chatMessage.getMessage());
@@ -69,7 +68,7 @@ public class ChatService {
 
 
     //redis에 저장되어있는 message 들 출력
-    public List<ChatMessage> getMessages(String roomId) {
+    public List<ChatMessageDto> getMessages(String roomId) {
         log.info("getMessages roomId : {}", roomId);
         return chatMessageRepository.findAllMessage(roomId);
     }

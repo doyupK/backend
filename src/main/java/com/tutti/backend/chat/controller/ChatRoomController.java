@@ -29,7 +29,7 @@ public class ChatRoomController {
         return chatRooms;
     }
 
-    // 채팅 리스트 화면
+   /* // 채팅 리스트 화면
     @GetMapping("/room")
     public String rooms(Model model) {
         return "/chat/room";
@@ -47,7 +47,7 @@ public class ChatRoomController {
     public String roomDetail(Model model, @PathVariable String roomId) {
         model.addAttribute("roomId", roomId);
         return "/chat/roomdetail";
-    }
+    }*/
 
     // 특정 채팅방 조회
     @GetMapping("/room/{roomId}")

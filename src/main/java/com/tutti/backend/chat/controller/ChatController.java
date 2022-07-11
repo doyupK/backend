@@ -35,7 +35,7 @@ public class ChatController {
 
     @GetMapping("/chat/message/{roomId}")
     @ResponseBody
-    public List<ChatMessage> getMessage(@PathVariable String roomId){
+    public List<ChatMessageDto> getMessage(@PathVariable String roomId){
         log.info("요청 메서드 [GET] /chat/message/{roomId}");
         return chatService.getMessages(roomId);
     }
