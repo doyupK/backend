@@ -1,8 +1,11 @@
 package com.tutti.backend.service;
 
 
+import com.tutti.backend.chat.dto.ChatMessageDto;
+import com.tutti.backend.chat.model.ChatMessage;
 import com.tutti.backend.chat.model.ChatRoom;
 import com.tutti.backend.chat.repository.ChatRoomRepository;
+import com.tutti.backend.chat.service.RedisSubscriber;
 import com.tutti.backend.domain.Channel;
 import com.tutti.backend.dto.PostRequestDto;
 
@@ -34,6 +37,8 @@ public class ChannelService {
     private final ChannelRepository channelRepository;
 
     private final ChatRoomRepository chatRoomRepository;
+
+    private final RedisSubscriber redisSubscriber;
     public void createPost(User user, PostRequestDto requestDto, MultipartFile file) {
         FileRequestDto thumbNailImageDto = service.upload(file);
 
@@ -73,8 +78,6 @@ public class ChannelService {
                 .orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_VIDEOCHATPOST));
 
         chatRoomRepository.enterChatRoom(String.valueOf(videoChatPostId));
-
-        ChatRoom chatRoom =chatRoomRepository.findRoomById(String.valueOf(videoChatPostId));
 
         return null;
     }

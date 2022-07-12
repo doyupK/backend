@@ -1,5 +1,7 @@
 package com.tutti.backend.controller;
 
+import com.tutti.backend.chat.model.ChatMessage;
+import com.tutti.backend.chat.service.ChatService;
 import com.tutti.backend.domain.User;
 import com.tutti.backend.dto.PostRequestDto;
 import com.tutti.backend.security.UserDetailsImpl;
@@ -17,8 +19,10 @@ public class ChannelController {
 
     private ChannelService channelService;
 
+    private ChatService chatService;
 
-    @PostMapping("/videoChatPost")
+
+    @PostMapping("/channel")
     public ResponseEntity<?> createPost(
             @RequestPart PostRequestDto requestDto,
             @RequestPart MultipartFile file,
@@ -28,7 +32,7 @@ public class ChannelController {
 
         return ResponseEntity.ok().body("화상채팅 등록 완료");
     }
-    @GetMapping("/videoChatPost")
+    @GetMapping("/channel")
     public ResponseEntity<?> readPost(
             @AuthenticationPrincipal UserDetailsImpl userDetails) throws Exception {
         User user = userDetails.getUser();
@@ -37,13 +41,13 @@ public class ChannelController {
     }
 
 
-    @GetMapping("/videoChatPost/{videoChatPostId}")
+    @GetMapping("/channel/{channelId}")
     public ResponseEntity<?> readPostDetail(
-            @PathVariable Long videoChatPostId,
+            @PathVariable Long channelId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) throws Exception {
         User user = userDetails.getUser();
-
-        return ResponseEntity.ok().body(channelService.readPostDetail(user,videoChatPostId));
+        chatService.save(message, token);
+        return ResponseEntity.ok().body(channelService.readPostDetail(user,channelId));
     }
 
     
