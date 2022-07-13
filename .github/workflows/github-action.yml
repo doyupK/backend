@@ -73,5 +73,5 @@ jobs:
             docker tag gltlvl12/tutti:${GITHUB_SHA::7} tutti
             docker stop server
             docker run -d --rm --name server -p 8081:8080 tutti
-            docker image prune -a -f
+            docker image prune -a
           
