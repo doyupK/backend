@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Service
 public class LiveRoomService {
     private final UserRepository userRepository;
@@ -41,6 +43,12 @@ public class LiveRoomService {
     }
 
     public Object add(AddRoomRequestDto addRoomRequestDto, MultipartFile thumbNailImage, UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+
+        List<LiveRoom> liveRooms = liveRoomRepository.findAllByUserAndOnAirTrue(user);
+        if(liveRooms.size()>1){
+            throw new CustomException(ErrorCode.ENOUGH_LIVE_ROOM);
+        }
         FileRequestDto albumDto = service.upload(thumbNailImage);
         String thumbNailImageUrl = albumDto.getImageUrl();
 
@@ -65,19 +73,19 @@ public class LiveRoomService {
         return liveRoomSearchDto;
     }
 
-    public Object liveRoomDetail(Long chatRoomId) {
+    public Object liveRoomDetail(String artist) {
         LiveRoomSearchDetailDto liveRoomSearchDetailDto = new LiveRoomSearchDetailDto();
 
-        liveRoomSearchDetailDto.setLiveRoomListDto(liveRoomRepository.searchLiveRoom(chatRoomId));
+        liveRoomSearchDetailDto.setLiveRoomListDto(liveRoomRepository.searchLiveRoom(artist));
         liveRoomSearchDetailDto.setSuccess(200);
         liveRoomSearchDetailDto.setMessage("성공");
         return liveRoomSearchDetailDto;
     }
 
-    public void liveRoomDelete(Long chatRoomId, User user) {
-        LiveRoom liveRoom = liveRoomRepository.findById(chatRoomId).orElseThrow(()-> new CustomException(ErrorCode.NOT_FOUND_LIVE_ROOM));
+    public void liveRoomDelete(String artist, User user) {
+        LiveRoom liveRoom = liveRoomRepository.findByUser(user);
 
-        if(user.getArtist().equals(liveRoom.getUser().getArtist())){
+        if(artist.equals(liveRoom.getUser().getArtist())){
             liveRoom.setOnAir(false);
         }
     }

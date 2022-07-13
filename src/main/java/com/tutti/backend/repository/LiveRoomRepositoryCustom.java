@@ -10,7 +10,7 @@ public interface LiveRoomRepositoryCustom {
 
     List<LiveRoomListDto> searchAllLiveRooms();
 
-    LiveRoomListDto searchLiveRoom(Long id);
+    LiveRoomListDto searchLiveRoom(String artist);
 
 
 

@@ -43,7 +43,7 @@ public class LiveRoomRepositoryImpl implements LiveRoomRepositoryCustom {
                                     }
 
     @Override
-    public LiveRoomListDto searchLiveRoom(Long chatRoomId) {
+    public LiveRoomListDto searchLiveRoom(String artist) {
         return queryFactory.select(new QLiveRoomListDto(
                                             liveRoom.id,
                                             liveRoom.roomTitle,
@@ -54,7 +54,7 @@ public class LiveRoomRepositoryImpl implements LiveRoomRepositoryCustom {
                                     ))
                                 .from(liveRoom)
                                 .join(liveRoom.user,user)
-                                .where(liveRoom.id.eq(chatRoomId).and(liveRoom.onAir.eq(true)))
+                                .where(liveRoom.user.artist.eq(artist).and(liveRoom.onAir.eq(true)))
                                 .fetchOne();
     }
 }
