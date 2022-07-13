@@ -29,20 +29,21 @@ public class LiveRoomController {
 
         return ResponseEntity.ok().body(liveRoomService.add(addRoomRequestDto,thumbNailImage, userDetails));
     }
+
     @GetMapping("/chatRoom")
     public ResponseEntity<Object> liveRoomSearch () {
         return ResponseEntity.ok().body(liveRoomService.liveRoomSearch());
     }
 
-    @GetMapping("/chatRoom/{chatRoomId}")
-    public ResponseEntity<Object> liveRoomDetail (@PathVariable Long chatRoomId, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return ResponseEntity.ok().body(liveRoomService.liveRoomDetail(chatRoomId));
+    @GetMapping("/chatRoom/{artist}")
+    public ResponseEntity<Object> liveRoomDetail (@PathVariable String artist, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.ok().body(liveRoomService.liveRoomDetail(artist));
     }
 
-    @DeleteMapping("/chatRoom/{chatRoomId}")
-    public ResponseEntity<Object> liveRoomDelete (@PathVariable Long chatRoomId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    @DeleteMapping("/chatRoom/{artist}")
+    public ResponseEntity<Object> liveRoomDelete (@PathVariable String artist, @AuthenticationPrincipal UserDetailsImpl userDetails){
         User user = userDetails.getUser();
-        liveRoomService.liveRoomDelete(chatRoomId,user);
+        liveRoomService.liveRoomDelete(artist,user);
         return ResponseEntity.ok().body("chatRoom 삭제 완료");
     }
 
