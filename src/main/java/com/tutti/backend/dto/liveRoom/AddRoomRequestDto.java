@@ -8,5 +8,4 @@ import lombok.Getter;
 public class AddRoomRequestDto {
     private String roomTitle;
     private String description;
-    private String genre;
 }

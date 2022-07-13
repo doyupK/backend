@@ -30,13 +30,15 @@ public class LiveRoom extends Timestamped{
     private String thumbnailImageUrl;
 
     @Column(nullable = false)
-    private String genre;
+    private boolean onAir;
 
-    public LiveRoom(String roomTitle, User user, String description, String thumbnailImageUrl, String genre) {
+
+
+    public LiveRoom(String roomTitle, User user, String description, String thumbnailImageUrl) {
         this.roomTitle = roomTitle;
         this.user = user;
         this.description = description;
         this.thumbnailImageUrl = thumbnailImageUrl;
-        this.genre = genre;
+        this.onAir = true;
     }
 }
