@@ -37,6 +37,9 @@ public class ChatMessage {
     @Column
     private Long enterUserCnt;
 
+    @JoinColumn(name = "CHAT_ROOM_ID")
+    @ManyToOne
+    private ChatRoom chatRoom;
 
 
     //    @JsonSerialize(using = LocalDateTimeSerializer.class)
