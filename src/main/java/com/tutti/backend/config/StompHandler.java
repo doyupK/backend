@@ -12,7 +12,6 @@ public class StompHandler implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        System.out.println("이게Localhost버전 : localhost");
         return message;
     }
 }
