@@ -130,6 +130,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/user/search/**");
         skipPathList.add("DELETE,/user/leaveChat");
         skipPathList.add("GET,/search/more");
+        skipPathList.add("GET,/chatRoom");
 
         skipPathList.add("POST,/user/login");
 
