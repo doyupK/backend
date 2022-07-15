@@ -82,7 +82,7 @@ public class UserService {
 //      PW Hash
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
         User user = new User(signupRequestDto, password, fileRequestDto);
-//      Email 전송
+//      Email 전송 (비동기 함수)
         confirmationTokenService.createEmailConfirmationToken(signupRequestDto.getEmail());
 //      DB 저장
         userRepository.save(user);
