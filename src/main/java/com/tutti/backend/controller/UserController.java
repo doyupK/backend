@@ -54,8 +54,10 @@ public class UserController {
 
 
     // 회원 가입 요청 처리
-    @PostMapping(value ="/user/signup", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> registerUser(@Valid @RequestPart SignupRequestDto signupData, @RequestPart MultipartFile file) {
+    @PostMapping(value ="/user/signup", consumes = {MediaType.APPLICATION_JSON_VALUE,
+            MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> registerUser(@Valid @RequestPart SignupRequestDto signupData,
+                                          @RequestPart MultipartFile file) {
         return userService.registerUser(signupData, file);
     }
     // 이메일 중복 검사
