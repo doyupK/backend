@@ -154,6 +154,57 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                 .fetch();
     }
 
+    @Override
+    public List<GetMainPageListDto> getMainPageLatestList(String audio) {
+        return queryFactory
+                .select(new QGetMainPageListDto(
+                        feed.id,
+                        feed.title,
+                        user.artist,
+                        feed.genre,
+                        feed.albumImageUrl.as("albumImageUrl")
+                ))
+                .from(feed)
+                .join(feed.user,user)
+                .where(feed.postType.eq(audio))
+                .orderBy(feed.createdAt.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<GetMainPageListDto> getMainPageVideoList(String video) {
+        return queryFactory
+                .select(new QGetMainPageListDto(
+                        feed.id,
+                        feed.title,
+                        user.artist,
+                        feed.genre,
+                        feed.albumImageUrl.as("albumImageUrl")
+                ))
+                .from(feed)
+                .join(feed.user,user)
+                .where(feed.postType.eq(video))
+                .orderBy(feed.createdAt.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<GetMainPageListDto> getMainPageLoginGenreList(String genre) {
+        return queryFactory
+                .select(new QGetMainPageListDto(
+                        feed.id,
+                        feed.title,
+                        user.artist,
+                        feed.genre,
+                        feed.albumImageUrl.as("albumImageUrl")
+                ))
+                .from(feed)
+                .join(feed.user,user)
+                .where(feed.postType.eq("music").and(feed.genre.eq(genre)))
+                .orderBy(feed.createdAt.desc())
+                .fetch();
+    }
+
     private BooleanExpression categoryEq(String category,String keyword) {
         switch (category) {
             case "musicTitle":
