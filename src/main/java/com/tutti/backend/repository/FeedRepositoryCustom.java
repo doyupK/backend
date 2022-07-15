@@ -10,7 +10,7 @@ public interface FeedRepositoryCustom {
 
 List<GetFeedByPostTypeDto> getFeedByPostType(String postType,String genre);
 
-List<GetMainPageListDto> getMainPageRandomList(String audio);
+List<GetMainPageListDto> getMainPageRandomList(String audio,String recommend);
 
 List<GetMainPageListDto> searchMusicByTitleKeyword(String keyword); // 6
 

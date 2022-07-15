@@ -33,6 +33,7 @@ public class FeedService {
     private final DeletedFeedRepository deletedFeedRepository;
     private final HeartRepository heartRepository;
 
+
     @Autowired
     public FeedService(FeedRepository feedRepository,
                        UserRepository userRepository,
@@ -52,6 +53,8 @@ public class FeedService {
         this.jwtDecoder=jwtDecoder;
         this.deletedFeedRepository = deletedFeedRepository;
     }
+
+
 
     // 피드 작성
     @Transactional
@@ -146,15 +149,26 @@ public class FeedService {
 
     // 비 로그인 Main 페이지(3번째 리스트 랜덤순)
     public ResponseEntity<?> getMainPage() {
+        List<MainPageFeedDto> feedDtoList = new ArrayList<>();
+        /*Collections.shuffle(fd);
+        "힙합","발라드","알앤비","연주곡","댄스","어쿠스틱"};*/
+        List<String> genres = new ArrayList<>();
+        genres.add("힙합");
+        genres.add("발라드");
+        genres.add("알앤비");
+        genres.add("연주곡");
+        genres.add("댄스");
+        genres.add("어쿠스틱");
+
+        Collections.shuffle(genres);
+
+        String recommend = genres.get(0);
+
+
         // 최신 순
         List<GetMainPageListDto> latestList = feedRepository.getMainPageLatestList("audio");
         // 랜덤 순
-        List<GetMainPageListDto> randomList = feedRepository.getMainPageRandomList("audio");
-        Collections.shuffle(randomList);
-
-
-
-        List<MainPageFeedDto> feedDtoList = new ArrayList<>();
+        List<GetMainPageListDto> randomList = feedRepository.getMainPageRandomList("audio",recommend);
 
 //        for(Feed feed: randomList){
 //            MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(feed,feed.getUser());
