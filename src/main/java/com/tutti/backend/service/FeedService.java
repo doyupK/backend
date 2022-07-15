@@ -155,7 +155,7 @@ public class FeedService {
         List<String> genres = new ArrayList<>();
         genres.add("힙합");
         genres.add("발라드");
-        genres.add("알앤비");
+        genres.add("R&B");
         genres.add("연주곡");
         genres.add("댄스");
         genres.add("어쿠스틱");
@@ -222,13 +222,19 @@ public class FeedService {
                 ()-> new CustomException(ErrorCode.NOT_FOUND_USER)
         );
         List<GetMainPageListDto> latestList = feedRepository.getMainPageLatestList("audio");
-        // 관심 장르 별
 
+
+        // 관심 장르 별
         String[] list = {findUser.getFavoriteGenre1(),findUser.getFavoriteGenre2()
                 ,findUser.getFavoriteGenre3(),findUser.getFavoriteGenre4()};
         List<String> favoriteGenres = new ArrayList<>();
         for(String genre: list){
-            if(genre==null){
+            /*if(genre!=null){
+                favoriteGenres.add(genre);
+            }else{
+                break;
+            }*/
+            if (genre == null) {
                 break;
             }
             favoriteGenres.add(genre);
