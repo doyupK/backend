@@ -10,14 +10,14 @@ import java.util.List;
 @Data
 public class MainPageListDto {
 
-    private final List<SearchTitleDtoMapping> latestList;
+    private final List<GetMainPageListDto> latestList;
 
     private final List<SearchTitleDtoMapping> likeList;
 
     private final List<GetMainPageListDto> genreList; // 랜덤
-    private final List<SearchTitleDtoMapping> videoList;
+    private final List<GetMainPageListDto> videoList;
 
-    public MainPageListDto(List<SearchTitleDtoMapping> latestList, List<SearchTitleDtoMapping> likeList, List<GetMainPageListDto> randomList,List<SearchTitleDtoMapping> videoLIst) {
+    public MainPageListDto(List<GetMainPageListDto> latestList, List<SearchTitleDtoMapping> likeList, List<GetMainPageListDto> randomList,List<GetMainPageListDto> videoLIst) {
         this.latestList = latestList;
         this.likeList = likeList;
         this.genreList = randomList;

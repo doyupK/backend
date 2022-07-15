@@ -146,14 +146,14 @@ public class FeedService {
 
     // 비 로그인 Main 페이지(3번째 리스트 랜덤순)
     public ResponseEntity<?> getMainPage() {
-        System.out.println("parkSeYeol_commit_confirm");
         // 최신 순
-        List<SearchTitleDtoMapping> latestList = feedRepository.findAllByPostTypeLikeOrderByCreatedAtDesc("audio");
+        List<GetMainPageListDto> latestList = feedRepository.getMainPageLatestList("audio");
+        // 랜덤 순
         List<GetMainPageListDto> randomList = feedRepository.getMainPageRandomList("audio");
         Collections.shuffle(randomList);
 
 
-        // 랜덤 순
+
         List<MainPageFeedDto> feedDtoList = new ArrayList<>();
 
 //        for(Feed feed: randomList){
@@ -189,7 +189,7 @@ public class FeedService {
 //        }
 
         List<SearchTitleDtoMapping> likeList= feedRepository.findAllByOrderByLikeCountDesc();
-        List<SearchTitleDtoMapping> videoList= feedRepository.findAllByPostTypeLikeOrderByCreatedAtDesc("video");
+        List<GetMainPageListDto> videoList= feedRepository.getMainPageVideoList("video");
 
 
         MainPageListDto mainPageListDto = new MainPageListDto(latestList,likeList,randomList,videoList);
@@ -206,9 +206,9 @@ public class FeedService {
         User findUser = userRepository.findByEmail(user).orElseThrow(
                 ()-> new CustomException(ErrorCode.NOT_FOUND_USER)
         );
-        List<SearchTitleDtoMapping> latestList = feedRepository.findAllByOrderByCreatedAtDesc();
+        List<GetMainPageListDto> latestList = feedRepository.getMainPageLatestList("audio");
         // 관심 장르 별
-        List<SearchTitleDtoMapping> interestedList = feedRepository.findAllByGenreAndPostTypeLike(findUser.getFavoriteGenre1(),"audio");
+        List<GetMainPageListDto> interestedList = feedRepository.getMainPageLoginGenreList(findUser.getFavoriteGenre1());
 //
 //        List<MainPageFeedDto> likeList = new ArrayList<>();
 //        List<Feed> likes = feedRepository.findAll();
@@ -235,7 +235,7 @@ public class FeedService {
 //        }
 
         List<SearchTitleDtoMapping> likeList= feedRepository.findAllByOrderByLikeCountDesc();
-        List<SearchTitleDtoMapping> videoList= feedRepository.findAllByPostTypeLikeOrderByCreatedAtDesc("video");
+        List<GetMainPageListDto> videoList= feedRepository.getMainPageVideoList("video");
 
 
         MainPageListUserDto mainPageListUserDto = new MainPageListUserDto(latestList,likeList,interestedList,videoList);
