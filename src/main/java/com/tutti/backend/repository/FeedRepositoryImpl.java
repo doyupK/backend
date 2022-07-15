@@ -53,7 +53,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
     }
 
     @Override
-    public List<GetMainPageListDto> getMainPageRandomList(String audio) {
+    public List<GetMainPageListDto> getMainPageRandomList(String audio, String recommend) {
         return queryFactory
                 .select(new QGetMainPageListDto(
                         feed.id,
@@ -64,7 +64,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                 ))
                 .from(feed)
                 .join(feed.user,user)
-                .where(feed.postType.eq(audio))
+                .where(feed.postType.eq(audio).and(feed.genre.eq(recommend)))
                 .fetch();
     }
 
