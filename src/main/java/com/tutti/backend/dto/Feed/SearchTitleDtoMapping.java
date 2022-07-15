@@ -6,10 +6,14 @@ public interface SearchTitleDtoMapping {
     Long getId();
     String getTitle();
     String getGenre();
-    String getPostType();
-    String getUserArtist();
+    default String getArtist(){
+        return getUserArtist();
+    }
     String getAlbumImageUrl();
 //    String getUserProfileUrl();
+
+    @JsonIgnore
+    String getUserArtist();
 
 
 
