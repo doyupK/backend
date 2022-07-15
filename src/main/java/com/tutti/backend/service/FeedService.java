@@ -223,12 +223,16 @@ public class FeedService {
         );
         List<GetMainPageListDto> latestList = feedRepository.getMainPageLatestList("audio");
         // 관심 장르 별
-        List<String> favoriteGenres = new ArrayList<>();
-        favoriteGenres.add(findUser.getFavoriteGenre1());
-        favoriteGenres.add(findUser.getFavoriteGenre2());
-        favoriteGenres.add(findUser.getFavoriteGenre3());
-        favoriteGenres.add(findUser.getFavoriteGenre4());
 
+        String[] list = {findUser.getFavoriteGenre1(),findUser.getFavoriteGenre2()
+                ,findUser.getFavoriteGenre3(),findUser.getFavoriteGenre4()};
+        List<String> favoriteGenres = new ArrayList<>();
+        for(String genre: list){
+            if(genre==null){
+                break;
+            }
+            favoriteGenres.add(genre);
+        }
         Collections.shuffle(favoriteGenres);
 
         String recommend = favoriteGenres.get(0);
