@@ -202,7 +202,8 @@ public class FeedService {
 //            }
 //        }
 
-        List<SearchTitleDtoMapping> likeList= feedRepository.findAllByOrderByLikeCountDesc();
+       List<SearchTitleDtoMapping> likeList= feedRepository.findAllByPostTypeOrderByLikeCountDesc("audio");
+       /* List<GetMainPageListDto> likeList= feedRepository.getMainPagLikeList();*/
         List<GetMainPageListDto> videoList= feedRepository.getMainPageVideoList("video");
 
 
@@ -222,7 +223,7 @@ public class FeedService {
         );
         List<GetMainPageListDto> latestList = feedRepository.getMainPageLatestList("audio");
         // 관심 장르 별
-        List<GetMainPageListDto> interestedList = feedRepository.getMainPageLoginGenreList(findUser.getFavoriteGenre1());
+        List<GetMainPageListDto> interestedList = feedRepository.getMainPageLoginGenreList("audio",findUser.getFavoriteGenre1());
 //
 //        List<MainPageFeedDto> likeList = new ArrayList<>();
 //        List<Feed> likes = feedRepository.findAll();
@@ -248,7 +249,7 @@ public class FeedService {
 //            likeList.add(sortMap.get(nKey));
 //        }
 
-        List<SearchTitleDtoMapping> likeList= feedRepository.findAllByOrderByLikeCountDesc();
+        List<SearchTitleDtoMapping> likeList= feedRepository.findAllByPostTypeOrderByLikeCountDesc("audio");
         List<GetMainPageListDto> videoList= feedRepository.getMainPageVideoList("video");
 
 
