@@ -315,8 +315,9 @@ public class FeedService {
     }
     // 최신 순 전체 피드 따로 가져오기
 
-    public ResponseEntity<?> getFeedPage(String postType, String genre) {
+    public ResponseEntity<?> getFeedPage(String postType, String genre,int page, int limit) {
         List<GetFeedByPostTypeDto> latestList = feedRepository.getFeedByPostType(postType,genre);
+
         FeedPageResponseDto feedPageResponseDto = new FeedPageResponseDto();
         feedPageResponseDto.setSuccess(200);
         feedPageResponseDto.setMessage("성공");
