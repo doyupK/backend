@@ -2,6 +2,8 @@ package com.tutti.backend.repository;
 
 import com.tutti.backend.dto.Feed.GetFeedByPostTypeDto;
 import com.tutti.backend.dto.Feed.GetMainPageListDto;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 import java.util.List;
 
@@ -9,6 +11,8 @@ public interface FeedRepositoryCustom {
 
 
 List<GetFeedByPostTypeDto> getFeedByPostType(String postType,String genre);
+
+Slice<GetFeedByPostTypeDto> getFeedByPostTypeInfiniteScroll(String postType, String genre, Pageable pageable);
 
 List<GetMainPageListDto> getMainPageRandomList(String audio,String recommend);
 

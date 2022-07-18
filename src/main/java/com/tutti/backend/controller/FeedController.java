@@ -47,8 +47,9 @@ public class FeedController {
             ,@RequestParam(required = false) String genre
             ,@RequestParam int page
             ,@RequestParam int limit){
+        page = page - 1;
         Pageable pageable = PageRequest.of(page,limit);
-        return feedService.getFeedPage(postType,genre,page,limit);
+        return feedService.getFeedPage(postType,genre,pageable);
     }
     // 장르 별 피드 따로 가져오기
     /*@GetMapping("/feeds/search")
