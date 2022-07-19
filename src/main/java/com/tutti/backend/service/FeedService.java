@@ -13,6 +13,7 @@ import com.tutti.backend.security.jwt.HeaderTokenExtractor;
 import com.tutti.backend.security.jwt.JwtDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -318,12 +319,12 @@ public class FeedService {
 
     public ResponseEntity<?> getFeedPage(String postType, String genre, Pageable pageable) {
         List<GetFeedByPostTypeDto> latestList = feedRepository.getFeedByPostType(postType,genre);
-        List<GetFeedByPostTypeDto> latestList2 = feedRepository.getFeedByPostTypeInfiniteScroll(postType,genre,pageable);
+        Slice<GetFeedByPostTypeDto> latestList2 = feedRepository.getFeedByPostTypeInfiniteScroll(postType,genre,pageable);
 
         FeedPageResponseDto feedPageResponseDto = new FeedPageResponseDto();
         feedPageResponseDto.setSuccess(200);
         feedPageResponseDto.setMessage("성공");
-        feedPageResponseDto.setData(latestList);
+        feedPageResponseDto.setData(latestList2);
         return ResponseEntity.ok().body(feedPageResponseDto);
     }
 

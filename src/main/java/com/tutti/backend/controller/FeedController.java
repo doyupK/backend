@@ -43,7 +43,8 @@ public class FeedController {
 
     // 최신 순 전체 피드 따로 가져오기
     @GetMapping("/feeds")
-    public ResponseEntity<?> getFeedPage(@RequestParam String postType
+    public ResponseEntity<?> getFeedPage(
+            @RequestParam String postType
             ,@RequestParam(required = false) String genre
             ,@RequestParam int page
             ,@RequestParam int limit){
