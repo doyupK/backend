@@ -68,6 +68,14 @@ dependencies {
 //    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 
+    //prometheus
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-core'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'javax.interceptor:javax.interceptor-api:1.2.2'
+
+
 }
 
 //querydsl에서 사용할 경로를 선언
