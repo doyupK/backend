@@ -3,6 +3,7 @@ package com.tutti.backend.dto.Feed;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.Slice;
 
 import java.util.List;
 
@@ -13,5 +14,5 @@ public class FeedPageResponseDto {
 
     int success;
     String message;
-    List<GetFeedByPostTypeDto> data;
+    Slice<GetFeedByPostTypeDto> data;
 }
