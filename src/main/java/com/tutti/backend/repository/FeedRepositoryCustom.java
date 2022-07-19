@@ -24,7 +24,9 @@ List<GetMainPageListDto> searchVideoByTitleKeyword(String keyword); // 4
 
     List<GetMainPageListDto> getMainPageVideoList(String video);
 
-    List<GetMainPageListDto> getMainPageLoginGenreList(String genre);
+    List<GetMainPageListDto> getMainPageLoginGenreList(String audio, String genre);
+
+    List<GetMainPageListDto> getMainPagLikeList();
 
 
 

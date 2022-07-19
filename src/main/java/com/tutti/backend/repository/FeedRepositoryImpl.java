@@ -2,15 +2,15 @@ package com.tutti.backend.repository;
 
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tutti.backend.domain.Feed;
 import com.tutti.backend.domain.QFeed;
+import com.tutti.backend.domain.QHeart;
 import com.tutti.backend.domain.QUser;
-import com.tutti.backend.dto.Feed.GetFeedByPostTypeDto;
-import com.tutti.backend.dto.Feed.GetMainPageListDto;
-import com.tutti.backend.dto.Feed.QGetFeedByPostTypeDto;
-import com.tutti.backend.dto.Feed.QGetMainPageListDto;
+import com.tutti.backend.dto.Feed.*;
 
 
 import javax.persistence.EntityManager;
@@ -18,6 +18,7 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 
 import static com.tutti.backend.domain.QFeed.*;
+import static com.tutti.backend.domain.QHeart.*;
 import static com.tutti.backend.domain.QUser.user;
 import static org.springframework.util.StringUtils.hasText;
 
@@ -189,7 +190,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
     }
 
     @Override
-    public List<GetMainPageListDto> getMainPageLoginGenreList(String genre) {
+    public List<GetMainPageListDto> getMainPageLoginGenreList(String audio, String genre) {
         return queryFactory
                 .select(new QGetMainPageListDto(
                         feed.id,
@@ -200,9 +201,31 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                 ))
                 .from(feed)
                 .join(feed.user,user)
-                .where(feed.postType.eq("music").and(feed.genre.eq(genre)))
+                .where(feed.postType.eq(audio).and(feed.genre.eq(genre)))
                 .orderBy(feed.createdAt.desc())
                 .fetch();
+    }
+
+    @Override
+    public List<GetMainPageListDto> getMainPagLikeList() {
+
+        NumberPath<Long> aliasQuantity = Expressions.numberPath(Long.class,"hearts");
+
+    return null;
+         /*queryFactory
+                .select(new QGetMainPageLikesListDto(
+                        feed.id,
+                        feed.title,
+                        user.artist,
+                        feed.genre,
+                        feed.albumImageUrl.as("albumImageUrl"),
+                        feed.hearts.coun
+                ))
+                .from(feed)
+                .leftJoin(feed.user,user)
+                .where(feed.postType.eq("audio"))
+                .orderBy()
+                .fetch();*/
     }
 
     private BooleanExpression categoryEq(String category,String keyword) {

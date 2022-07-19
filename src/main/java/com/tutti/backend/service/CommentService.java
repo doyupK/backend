@@ -5,6 +5,7 @@ import com.tutti.backend.domain.Comment;
 import com.tutti.backend.domain.Feed;
 import com.tutti.backend.domain.User;
 import com.tutti.backend.dto.comment.CommentRequestDto;
+import com.tutti.backend.dto.comment.CommentResponseDto;
 import com.tutti.backend.dto.user.ResponseDto;
 import com.tutti.backend.exception.CustomException;
 import com.tutti.backend.exception.ErrorCode;
@@ -25,10 +26,10 @@ public class CommentService {
     private final UserRepository userRepository;
     private final FeedRepository feedRepository;
 
-
     // 코멘트 작성
+    @Transactional
     public Object writeComment(Long feedId,  CommentRequestDto commentRequestDto, UserDetailsImpl userDetails) {
-        ResponseDto commentResponseDto = new ResponseDto();
+        CommentResponseDto commentResponseDto = new CommentResponseDto();
         // 로그인 정보 확인
         User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
                 ()-> new CustomException(ErrorCode.NOT_EXISTS_USERNAME)
@@ -38,11 +39,10 @@ public class CommentService {
                 ()-> new CustomException(ErrorCode.NOT_FOUND_FEED)
         );
         Comment comment = new Comment(user, feed, commentRequestDto);
-        commentRepository.save(comment);
-
+        Comment comment1 = commentRepository.save(comment);
         commentResponseDto.setSuccess(200);
         commentResponseDto.setMessage("등록 완료!");
-
+        commentResponseDto.setCommentId(comment1.getId());
         return commentResponseDto;
     }
 

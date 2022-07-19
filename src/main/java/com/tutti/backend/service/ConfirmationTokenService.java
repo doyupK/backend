@@ -30,13 +30,14 @@ public class ConfirmationTokenService {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(receiverEmail);
         mailMessage.setSubject("회원가입 이메일 인증");
-        mailMessage.setText("인증 링크 : "+"http://52.79.234.195/confirm-email?token=" + emailConfirmationToken.getId());
+        mailMessage.setText("인증 링크 : "+"https://seyeolpersonnal.shop/confirm-email?token=" + emailConfirmationToken.getId());
         emailSenderService.sendEmail(mailMessage);
     }
 
 
     public ConfirmationToken findByIdAndExpirationDateAfterAndExpired(String confirmationTokenId) {
-        Optional<ConfirmationToken> confirmationToken = confirmationTokenRepository.findByIdAndExpirationDateAfterAndExpired(confirmationTokenId, LocalDateTime.now(), false);
+        Optional<ConfirmationToken> confirmationToken = confirmationTokenRepository
+                .findByIdAndExpirationDateAfterAndExpired(confirmationTokenId, LocalDateTime.now(), false);
         return confirmationToken.orElseThrow(() -> new BadCredentialsException("Token Not Found"));
     }
 }

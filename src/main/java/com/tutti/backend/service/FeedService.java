@@ -155,7 +155,7 @@ public class FeedService {
         List<String> genres = new ArrayList<>();
         genres.add("힙합");
         genres.add("발라드");
-        genres.add("알앤비");
+        genres.add("R&B");
         genres.add("연주곡");
         genres.add("댄스");
         genres.add("어쿠스틱");
@@ -202,7 +202,8 @@ public class FeedService {
 //            }
 //        }
 
-        List<SearchTitleDtoMapping> likeList= feedRepository.findAllByOrderByLikeCountDesc();
+       List<SearchTitleDtoMapping> likeList= feedRepository.findAllByPostTypeOrderByLikeCountDesc("audio");
+       /* List<GetMainPageListDto> likeList= feedRepository.getMainPagLikeList();*/
         List<GetMainPageListDto> videoList= feedRepository.getMainPageVideoList("video");
 
 
@@ -221,8 +222,29 @@ public class FeedService {
                 ()-> new CustomException(ErrorCode.NOT_FOUND_USER)
         );
         List<GetMainPageListDto> latestList = feedRepository.getMainPageLatestList("audio");
+
+
         // 관심 장르 별
-        List<GetMainPageListDto> interestedList = feedRepository.getMainPageLoginGenreList(findUser.getFavoriteGenre1());
+        String[] list = {findUser.getFavoriteGenre1(),findUser.getFavoriteGenre2()
+                ,findUser.getFavoriteGenre3(),findUser.getFavoriteGenre4()};
+        List<String> favoriteGenres = new ArrayList<>();
+        for(String genre: list){
+            /*if(genre!=null){
+                favoriteGenres.add(genre);
+            }else{
+                break;
+            }*/
+            if (genre == null) {
+                break;
+            }
+            favoriteGenres.add(genre);
+        }
+        Collections.shuffle(favoriteGenres);
+
+        String recommend = favoriteGenres.get(0);
+
+
+        List<GetMainPageListDto> interestedList = feedRepository.getMainPageLoginGenreList("audio",recommend);
 //
 //        List<MainPageFeedDto> likeList = new ArrayList<>();
 //        List<Feed> likes = feedRepository.findAll();
@@ -248,7 +270,7 @@ public class FeedService {
 //            likeList.add(sortMap.get(nKey));
 //        }
 
-        List<SearchTitleDtoMapping> likeList= feedRepository.findAllByOrderByLikeCountDesc();
+        List<SearchTitleDtoMapping> likeList= feedRepository.findAllByPostTypeOrderByLikeCountDesc("audio");
         List<GetMainPageListDto> videoList= feedRepository.getMainPageVideoList("video");
 
 

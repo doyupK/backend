@@ -46,7 +46,7 @@ public class LiveRoomService {
         User user = userDetails.getUser();
 
         List<LiveRoom> liveRooms = liveRoomRepository.findAllByUserAndOnAirTrue(user);
-        if(liveRooms != null){
+        if(!liveRooms.isEmpty()){
             throw new CustomException(ErrorCode.ENOUGH_LIVE_ROOM);
         }
         FileRequestDto albumDto = service.upload(thumbNailImage);
