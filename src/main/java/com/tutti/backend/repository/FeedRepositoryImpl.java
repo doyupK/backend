@@ -1,5 +1,6 @@
 package com.tutti.backend.repository;
 
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -11,10 +12,14 @@ import com.tutti.backend.domain.QFeed;
 import com.tutti.backend.domain.QHeart;
 import com.tutti.backend.domain.QUser;
 import com.tutti.backend.dto.Feed.*;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.tutti.backend.domain.QFeed.*;
@@ -35,7 +40,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
     }
 
     @Override
-    public List<GetFeedByPostTypeDto> getFeedByPostType(String postType,String genre) {
+    public List<GetFeedByPostTypeDto> getFeedByPostType(String postType, String genre) {
         return queryFactory
                 .select(new QGetFeedByPostTypeDto(
                         feed.id,
@@ -51,6 +56,41 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                         genreEq(genre))
                 .orderBy(feed.createdAt.desc())
                 .fetch();
+    }
+
+    @Override
+    public Slice<GetFeedByPostTypeDto> getFeedByPostTypeInfiniteScroll(String postType, String genre, Pageable pageable) {
+        QueryResults<GetFeedByPostTypeDto> results =queryFactory
+                                                .select(new QGetFeedByPostTypeDto(
+                                                        feed.id,
+                                                        feed.title,
+                                                        user.artist,
+                                                        feed.genre,
+                                                        feed.albumImageUrl.as("albumImageUrl"),
+                                                        user.profileUrl.as("userProfileImageUrl")
+                                                ))
+                                                .from(feed)
+                                                .join(feed.user,user)
+                                                .where(postTypeEq(postType),
+                                                        genreEq(genre))
+                                                .orderBy(feed.createdAt.desc())
+                                                .offset(pageable.getOffset())
+                                                .limit(pageable.getPageSize() + 1)
+                                                .fetchResults();
+
+
+        List<GetFeedByPostTypeDto> content = new ArrayList<>();
+        for (GetFeedByPostTypeDto getFeedByPostTypeDto: results.getResults()) {
+            content.add(new GetFeedByPostTypeDto(getFeedByPostTypeDto));
+
+        }
+
+        boolean hasNext = false;
+        if (content.size() > pageable.getPageSize()) {
+            content.remove(pageable.getPageSize());
+            hasNext = true;
+        }
+        return new SliceImpl<>(content, pageable, hasNext);
     }
 
     @Override
