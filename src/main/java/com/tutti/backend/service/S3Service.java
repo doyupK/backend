@@ -58,7 +58,7 @@ public class S3Service {
 
     // 파일 업로드
     public FileRequestDto upload(MultipartFile file) {
-        if(file.isEmpty()){
+        if(file == null){
             return new FileRequestDto(unknownImage, "unknownImage");
         }
         String fileName = createFileName(file.getOriginalFilename()); // 파일명 난수로 변경
