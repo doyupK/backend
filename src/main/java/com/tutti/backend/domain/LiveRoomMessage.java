@@ -34,6 +34,7 @@ public class LiveRoomMessage extends Timestamped{
     String profileImage;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "liveroom_id")
     private LiveRoom liveRoom;
 
     public LiveRoomMessage(Message message,LiveRoom liveRoom){

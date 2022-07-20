@@ -34,8 +34,11 @@ public class LiveRoom extends Timestamped{
     @Column(nullable = false)
     private boolean onAir;
 
-    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy="LiveRoom",orphanRemoval = true)
-    private List<LiveRoomMessage> messages = new ArrayList<>();
+    @OneToMany(fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL,
+            mappedBy = "liveRoom",
+            orphanRemoval = true)
+    private List<LiveRoomMessage> messages;
 
 
 
