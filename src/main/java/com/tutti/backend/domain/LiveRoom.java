@@ -3,6 +3,8 @@ package com.tutti.backend.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter
@@ -31,6 +33,9 @@ public class LiveRoom extends Timestamped{
 
     @Column(nullable = false)
     private boolean onAir;
+
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy="LiveRoom",orphanRemoval = true)
+    private List<LiveRoomMessage> messages = new ArrayList<>();
 
 
 

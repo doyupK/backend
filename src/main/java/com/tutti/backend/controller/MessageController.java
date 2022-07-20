@@ -1,6 +1,7 @@
 package com.tutti.backend.controller;
 
 
+import com.tutti.backend.dto.chatDto.Status;
 import com.tutti.backend.dto.chatDto.messageChannel;
 import com.tutti.backend.dto.chatDto.Message;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,12 @@ public class MessageController {
         HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
 
         if (ho.hasKey(username, username)) { // 데이터가 있을때
+            if(message.getStatus() == Status.JOIN){
+                messageChannel messageChannel = ho.get(username, username);
+                List<Message> messages = messageChannel.getMessageList();
+                simpMessagingTemplate.convertAndSend("/chatroom/public"+username,messages);
+                return message;
+            }
             messageChannel messageChannel = ho.get(username, username);
             messageChannel.getMessageList().add(message);
             ho.put(username, username, messageChannel);
