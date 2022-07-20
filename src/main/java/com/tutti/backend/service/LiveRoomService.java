@@ -92,8 +92,10 @@ public class LiveRoomService {
 
         LiveRoom saveLiveRoom=liveRoomRepository.save(liveRoom);
         List<Follow>followList=followRepository.findAllByFollowingUser(user);
-        for (Follow follower:followList) {
-            notificationService.send(follower.getFollowingUser(),saveLiveRoom,user.getArtist()+"님이 Live를 시작했습니다.");
+        if(followList.size()!=0) {
+            for (Follow follower : followList) {
+                notificationService.send(follower.getFollowingUser(), saveLiveRoom, user.getArtist() + "님이 Live를 시작했습니다.");
+            }
         }
 
         return ResponseEntity.ok().body("라이브 생성 완료");
