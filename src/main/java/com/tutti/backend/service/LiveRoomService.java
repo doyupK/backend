@@ -71,7 +71,7 @@ public class LiveRoomService {
         }
         String thumbNailImageUrl;
 
-        if(thumbNailImage.isEmpty()){
+        if(thumbNailImage == null){
             thumbNailImageUrl = defaultThumbnailImageUrl;
         }else {
             FileRequestDto albumDto = service.upload(thumbNailImage);
