@@ -1,7 +1,10 @@
 package com.tutti.backend.service;
 
 import com.tutti.backend.domain.LiveRoom;
+import com.tutti.backend.domain.LiveRoomMessage;
 import com.tutti.backend.domain.User;
+import com.tutti.backend.dto.chatDto.Message;
+import com.tutti.backend.dto.chatDto.messageChannel;
 import com.tutti.backend.dto.liveRoom.AddRoomRequestDto;
 import com.tutti.backend.dto.liveRoom.LiveRoomSearchDetailDto;
 import com.tutti.backend.dto.liveRoom.LiveRoomSearchDto;
@@ -13,10 +16,13 @@ import com.tutti.backend.security.UserDetailsImpl;
 import com.tutti.backend.security.jwt.HeaderTokenExtractor;
 import com.tutti.backend.security.jwt.JwtDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,19 +33,23 @@ public class LiveRoomService {
     private final JwtDecoder jwtDecoder;
     private final LiveRoomRepository liveRoomRepository;
 
+    private RedisTemplate<String, messageChannel> conversationTemplate;
+
     @Autowired
     public LiveRoomService(
                        UserRepository userRepository,
                        S3Service service,
                        HeaderTokenExtractor headerTokenExtractor,
                        JwtDecoder jwtDecoder,
-                       LiveRoomRepository liveRoomRepository
+                       LiveRoomRepository liveRoomRepository,
+                       RedisTemplate<String, messageChannel> conversationTemplate
     ) {
         this.userRepository = userRepository;
         this.service = service;
         this.headerTokenExtractor =headerTokenExtractor;
         this.jwtDecoder=jwtDecoder;
         this.liveRoomRepository = liveRoomRepository;
+        this.conversationTemplate = conversationTemplate;
     }
 
     public Object add(AddRoomRequestDto addRoomRequestDto, MultipartFile thumbNailImage, UserDetailsImpl userDetails) {
@@ -82,10 +92,26 @@ public class LiveRoomService {
         return liveRoomSearchDetailDto;
     }
 
+    //방송 종료
     public void liveRoomDelete(String artist, User user) {
+
         LiveRoom liveRoom = liveRoomRepository.findByUser(user);
 
         if(artist.equals(liveRoom.getUser().getArtist())){
+            HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
+
+            messageChannel messageChannel = ho.get(artist,artist);
+
+            List<Message> messageList = messageChannel.getMessageList();
+
+            List<LiveRoomMessage> liveRoomMessages = new ArrayList<>();
+
+            for(Message message : messageList){
+                LiveRoomMessage liveRoomMessage = new LiveRoomMessage(message,liveRoom);
+                liveRoomMessages.add(liveRoomMessage);
+            }
+
+            liveRoom.setMessages(liveRoomMessages);
             liveRoom.setOnAir(false);
         }
     }
