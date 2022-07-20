@@ -23,7 +23,7 @@ public class NotificationService {
 
 // ------------------------- SSE 연결 -----------------------------
 
-    public SseEmitter subscribe(Long id, String lastEventId) {
+    public SseEmitter subscribe(String id, String lastEventId) {
         // 현재시간 포함 id
         String emitterId=makeTimeId(id);
         // emitter 생성, 유효 시간만큼 sse 연결 유지, 만료시 자동으로 클라이언트에서 재요청
@@ -46,7 +46,7 @@ public class NotificationService {
 
     }
 
-    private void sendLostData(String lastEventId, Long id, String emitterId, SseEmitter emitter) {
+    private void sendLostData(String lastEventId, String id, String emitterId, SseEmitter emitter) {
         Map<String,Object>eventCaches=emitterRepository.findAllEventCacheStartWithId(String.valueOf(id));
         eventCaches.entrySet().stream()
                 .filter(entry->lastEventId.compareTo(entry.getKey())<0)
@@ -87,7 +87,7 @@ public class NotificationService {
 
 
 
-    private String makeTimeId(Long id) {
+    private String makeTimeId(String id) {
         return id+"_"+System.currentTimeMillis();
     }
 
