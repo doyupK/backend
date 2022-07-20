@@ -36,12 +36,14 @@ public class LiveRoomController {
     }
 
     @GetMapping("/chatRoom/{artist}")
-    public ResponseEntity<Object> liveRoomDetail (@PathVariable String artist, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<Object> liveRoomDetail (@PathVariable String artist
+            , @AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseEntity.ok().body(liveRoomService.liveRoomDetail(artist));
     }
 
     @DeleteMapping("/chatRoom/{artist}")
-    public ResponseEntity<Object> liveRoomDelete (@PathVariable String artist, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<Object> liveRoomDelete (@PathVariable String artist
+            , @AuthenticationPrincipal UserDetailsImpl userDetails){
         User user = userDetails.getUser();
         liveRoomService.liveRoomDelete(artist,user);
         return ResponseEntity.ok().body("chatRoom 삭제 완료");
