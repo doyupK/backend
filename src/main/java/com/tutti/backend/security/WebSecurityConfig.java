@@ -139,7 +139,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/grafana");
 
         skipPathList.add("POST,/user/login");
-
+        skipPathList.add("GET,/subscribe/**");
         skipPathList.add("GET,/");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(skipPathList,"/**");
