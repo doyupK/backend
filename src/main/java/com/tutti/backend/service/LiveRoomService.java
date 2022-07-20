@@ -1,5 +1,6 @@
 package com.tutti.backend.service;
 
+import com.tutti.backend.domain.Follow;
 import com.tutti.backend.domain.LiveRoom;
 import com.tutti.backend.domain.LiveRoomMessage;
 import com.tutti.backend.domain.User;
@@ -36,17 +37,24 @@ public class LiveRoomService {
     private final HeaderTokenExtractor headerTokenExtractor;
     private final JwtDecoder jwtDecoder;
     private final LiveRoomRepository liveRoomRepository;
+    private final static String defaultThumbnailImageUrl =
+            "https://file-bucket-seyeol.s3.ap-northeast-2.amazonaws.com/e3e0395b-8d12-4645-96ce-bc6dd2b85ab8.png";
 
     private RedisTemplate<String, messageChannel> conversationTemplate;
 
+    private final NotificationService notificationService;
+    private final FollowRepository followRepository;
+
     @Autowired
     public LiveRoomService(
-            UserRepository userRepository,
-            S3Service service,
-            HeaderTokenExtractor headerTokenExtractor,
-            JwtDecoder jwtDecoder,
-            LiveRoomRepository liveRoomRepository,
-            RedisTemplate<String, messageChannel> conversationTemplate
+                       UserRepository userRepository,
+                       S3Service service,
+                       HeaderTokenExtractor headerTokenExtractor,
+                       JwtDecoder jwtDecoder,
+                       LiveRoomRepository liveRoomRepository,
+                       RedisTemplate<String, messageChannel> conversationTemplate,
+                       NotificationService notificationService,
+                       FollowRepository followRepository
     ) {
         this.userRepository = userRepository;
         this.service = service;
@@ -54,6 +62,8 @@ public class LiveRoomService {
         this.jwtDecoder = jwtDecoder;
         this.liveRoomRepository = liveRoomRepository;
         this.conversationTemplate = conversationTemplate;
+        this.notificationService=notificationService;
+        this.followRepository=followRepository;
     }
 
     public Object add(AddRoomRequestDto addRoomRequestDto, MultipartFile thumbNailImage, UserDetailsImpl userDetails) {
@@ -63,17 +73,26 @@ public class LiveRoomService {
         if (!liveRooms.isEmpty()) {
             throw new CustomException(ErrorCode.ENOUGH_LIVE_ROOM);
         }
-        FileRequestDto albumDto = service.upload(thumbNailImage);
-        String thumbNailImageUrl = albumDto.getImageUrl();
+        String thumbNailImageUrl;
 
-
+        if(thumbNailImage == null){
+            thumbNailImageUrl = defaultThumbnailImageUrl;
+        }else {
+            FileRequestDto albumDto = service.upload(thumbNailImage);
+            thumbNailImageUrl = albumDto.getImageUrl();
+        }
         LiveRoom liveRoom = new LiveRoom(addRoomRequestDto.getRoomTitle(),
                 userDetails.getUser(),
                 addRoomRequestDto.getDescription(),
                 thumbNailImageUrl
         );
 
-        liveRoomRepository.save(liveRoom);
+        LiveRoom saveLiveRoom=liveRoomRepository.save(liveRoom);
+        List<Follow>followList=followRepository.findAllByFollowingUser(user);
+        for (Follow follower:followList) {
+            notificationService.send(follower.getFollowingUser(),saveLiveRoom,user.getArtist()+"님이 Live를 시작했습니다.");
+        }
+
         return ResponseEntity.ok().body("라이브 생성 완료");
     }
 

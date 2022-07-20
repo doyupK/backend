@@ -6,6 +6,7 @@ import com.tutti.backend.security.UserDetailsImpl;
 import com.tutti.backend.service.LiveRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class LiveRoomController {
 
     @PostMapping("/chatRoom")
     public ResponseEntity<Object> add(@RequestPart AddRoomRequestDto addRoomRequestDto,
-                                             @RequestPart MultipartFile thumbNailImage,
+                                             @Nullable @RequestPart MultipartFile thumbNailImage,
                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         return ResponseEntity.ok().body(liveRoomService.add(addRoomRequestDto,thumbNailImage, userDetails));
