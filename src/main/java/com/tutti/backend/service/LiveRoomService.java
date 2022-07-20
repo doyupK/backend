@@ -33,6 +33,8 @@ public class LiveRoomService {
     private final HeaderTokenExtractor headerTokenExtractor;
     private final JwtDecoder jwtDecoder;
     private final LiveRoomRepository liveRoomRepository;
+    private final static String defaultThumbnailImageUrl =
+            "https://file-bucket-seyeol.s3.ap-northeast-2.amazonaws.com/e3e0395b-8d12-4645-96ce-bc6dd2b85ab8.png";
 
     private RedisTemplate<String, messageChannel> conversationTemplate;
 
@@ -67,10 +69,14 @@ public class LiveRoomService {
         if(!liveRooms.isEmpty()){
             throw new CustomException(ErrorCode.ENOUGH_LIVE_ROOM);
         }
-        FileRequestDto albumDto = service.upload(thumbNailImage);
-        String thumbNailImageUrl = albumDto.getImageUrl();
+        String thumbNailImageUrl;
 
-
+        if(thumbNailImage == null){
+            thumbNailImageUrl = defaultThumbnailImageUrl;
+        }else {
+            FileRequestDto albumDto = service.upload(thumbNailImage);
+            thumbNailImageUrl = albumDto.getImageUrl();
+        }
         LiveRoom liveRoom = new LiveRoom(addRoomRequestDto.getRoomTitle(),
                 userDetails.getUser(),
                 addRoomRequestDto.getDescription(),
