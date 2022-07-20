@@ -36,6 +36,7 @@ public class LiveRoomMessage extends Timestamped{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "liveroom_id")
     private LiveRoom liveRoom;
+//
 
     public LiveRoomMessage(Message message,LiveRoom liveRoom){
         this.senderName = message.getSenderName();
