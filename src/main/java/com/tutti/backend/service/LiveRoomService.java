@@ -21,11 +21,13 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Transactional
 @Slf4j
 @Service
 public class LiveRoomService {
@@ -117,6 +119,8 @@ public class LiveRoomService {
             liveRoom.setOnAir(false);
             Long num = ho.delete(artist, artist);
             log.info(num.toString());
+        }else {
+            throw new CustomException(ErrorCode.WRONG_USER);
         }
     }
 }
