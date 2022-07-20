@@ -25,7 +25,8 @@ public class Notification extends Timestamped {
 
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(nullable=false)
-    private Follow following;
+    private LiveRoom liveRoom;
+
 
     @Column(nullable=false)
     private String content;
@@ -36,20 +37,21 @@ public class Notification extends Timestamped {
     @Column(nullable=false)
     private Boolean isRead;
 
-    public Notification(User receiver, Follow following, String content, String url, boolean isRead) {
+    public Notification(User receiver, LiveRoom liveRoom, String content, String url, Boolean isRead) {
         this.receiver = receiver;
-        this.following = following;
+        this.liveRoom=liveRoom;
         this.content = content;
         this.url = url;
         this.isRead = isRead;
     }
 
-    public Notification(NotificationDetailsDto notificationDetailsDto){
-        this.id=notificationDetailsDto.getId();
-        this.content= notificationDetailsDto.getContent();
-        this.url= notificationDetailsDto.getUrl();
-        this.isRead=notificationDetailsDto.getIsRead();
-    }
+//    public Notification(NotificationDetailsDto notificationDetailsDto){
+//        this.id=notificationDetailsDto.getId();
+//        this.content= notificationDetailsDto.getContent();
+//        this.url= notificationDetailsDto.getUrl();
+//        this.isRead=notificationDetailsDto.getIsRead();
+//        this.liveRoom=notificationDetailsDto
+//    }
     public void read() {
         this.isRead = true;
     }
