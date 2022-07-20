@@ -16,16 +16,20 @@ import com.tutti.backend.repository.*;
 import com.tutti.backend.security.UserDetailsImpl;
 import com.tutti.backend.security.jwt.HeaderTokenExtractor;
 import com.tutti.backend.security.jwt.JwtDecoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Transactional
+@Slf4j
 @Service
 public class LiveRoomService {
     private final UserRepository userRepository;
@@ -54,8 +58,8 @@ public class LiveRoomService {
     ) {
         this.userRepository = userRepository;
         this.service = service;
-        this.headerTokenExtractor =headerTokenExtractor;
-        this.jwtDecoder=jwtDecoder;
+        this.headerTokenExtractor = headerTokenExtractor;
+        this.jwtDecoder = jwtDecoder;
         this.liveRoomRepository = liveRoomRepository;
         this.conversationTemplate = conversationTemplate;
         this.notificationService=notificationService;
@@ -66,7 +70,7 @@ public class LiveRoomService {
         User user = userDetails.getUser();
 
         List<LiveRoom> liveRooms = liveRoomRepository.findAllByUserAndOnAirTrue(user);
-        if(!liveRooms.isEmpty()){
+        if (!liveRooms.isEmpty()) {
             throw new CustomException(ErrorCode.ENOUGH_LIVE_ROOM);
         }
         String thumbNailImageUrl;
@@ -116,22 +120,26 @@ public class LiveRoomService {
 
         LiveRoom liveRoom = liveRoomRepository.findByUser(user);
 
-        if(artist.equals(liveRoom.getUser().getArtist())){
+        if (artist.equals(liveRoom.getUser().getArtist())) {
             HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
 
-            messageChannel messageChannel = ho.get(artist,artist);
+            messageChannel messageChannel = ho.get(artist, artist);
 
             List<Message> messageList = messageChannel.getMessageList();
 
             List<LiveRoomMessage> liveRoomMessages = new ArrayList<>();
 
-            for(Message message : messageList){
-                LiveRoomMessage liveRoomMessage = new LiveRoomMessage(message,liveRoom);
+            for (Message message : messageList) {
+                LiveRoomMessage liveRoomMessage = new LiveRoomMessage(message, liveRoom);
                 liveRoomMessages.add(liveRoomMessage);
             }
 
             liveRoom.setMessages(liveRoomMessages);
             liveRoom.setOnAir(false);
+            Long num = ho.delete(artist, artist);
+            log.info(num.toString());
+        }else {
+            throw new CustomException(ErrorCode.WRONG_USER);
         }
     }
 }
