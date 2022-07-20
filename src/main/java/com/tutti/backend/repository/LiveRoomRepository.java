@@ -13,5 +13,5 @@ public interface LiveRoomRepository extends JpaRepository<LiveRoom, Long>,LiveRo
     LiveRoom findByUser(User user);
 
 
-
+    LiveRoom findByUserAndOnAirTrue(User user);
 }
