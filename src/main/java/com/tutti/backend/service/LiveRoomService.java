@@ -1,5 +1,6 @@
 package com.tutti.backend.service;
 
+import com.tutti.backend.domain.Follow;
 import com.tutti.backend.domain.LiveRoom;
 import com.tutti.backend.domain.LiveRoomMessage;
 import com.tutti.backend.domain.User;
@@ -35,6 +36,9 @@ public class LiveRoomService {
 
     private RedisTemplate<String, messageChannel> conversationTemplate;
 
+    private final NotificationService notificationService;
+    private final FollowRepository followRepository;
+
     @Autowired
     public LiveRoomService(
                        UserRepository userRepository,
@@ -42,7 +46,9 @@ public class LiveRoomService {
                        HeaderTokenExtractor headerTokenExtractor,
                        JwtDecoder jwtDecoder,
                        LiveRoomRepository liveRoomRepository,
-                       RedisTemplate<String, messageChannel> conversationTemplate
+                       RedisTemplate<String, messageChannel> conversationTemplate,
+                       NotificationService notificationService,
+                       FollowRepository followRepository
     ) {
         this.userRepository = userRepository;
         this.service = service;
@@ -50,6 +56,8 @@ public class LiveRoomService {
         this.jwtDecoder=jwtDecoder;
         this.liveRoomRepository = liveRoomRepository;
         this.conversationTemplate = conversationTemplate;
+        this.notificationService=notificationService;
+        this.followRepository=followRepository;
     }
 
     public Object add(AddRoomRequestDto addRoomRequestDto, MultipartFile thumbNailImage, UserDetailsImpl userDetails) {
@@ -69,7 +77,12 @@ public class LiveRoomService {
                 thumbNailImageUrl
         );
 
-        liveRoomRepository.save(liveRoom);
+        LiveRoom saveLiveRoom=liveRoomRepository.save(liveRoom);
+        List<Follow>followList=followRepository.findAllByFollowingUser(user);
+        for (Follow follower:followList) {
+            notificationService.send(follower.getFollowingUser(),saveLiveRoom,user.getArtist()+"님이 Live를 시작했습니다.");
+        }
+
         return ResponseEntity.ok().body("라이브 생성 완료");
     }
 
