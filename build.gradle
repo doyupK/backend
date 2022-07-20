@@ -75,6 +75,8 @@ dependencies {
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'javax.interceptor:javax.interceptor-api:1.2.2'
 
+    //로그
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
 
 }
 
