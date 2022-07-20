@@ -16,16 +16,20 @@ import com.tutti.backend.repository.*;
 import com.tutti.backend.security.UserDetailsImpl;
 import com.tutti.backend.security.jwt.HeaderTokenExtractor;
 import com.tutti.backend.security.jwt.JwtDecoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Transactional
+@Slf4j
 @Service
 public class LiveRoomService {
     private final UserRepository userRepository;
@@ -33,6 +37,7 @@ public class LiveRoomService {
     private final HeaderTokenExtractor headerTokenExtractor;
     private final JwtDecoder jwtDecoder;
     private final LiveRoomRepository liveRoomRepository;
+    private final LiveRoomMessageRepository liveRoomMessageRepository;
     private final static String defaultThumbnailImageUrl =
             "https://file-bucket-seyeol.s3.ap-northeast-2.amazonaws.com/e3e0395b-8d12-4645-96ce-bc6dd2b85ab8.png";
 
@@ -50,23 +55,25 @@ public class LiveRoomService {
                        LiveRoomRepository liveRoomRepository,
                        RedisTemplate<String, messageChannel> conversationTemplate,
                        NotificationService notificationService,
+                       LiveRoomMessageRepository liveRoomMessageRepository,
                        FollowRepository followRepository
     ) {
         this.userRepository = userRepository;
         this.service = service;
-        this.headerTokenExtractor =headerTokenExtractor;
-        this.jwtDecoder=jwtDecoder;
+        this.headerTokenExtractor = headerTokenExtractor;
+        this.jwtDecoder = jwtDecoder;
         this.liveRoomRepository = liveRoomRepository;
         this.conversationTemplate = conversationTemplate;
         this.notificationService=notificationService;
         this.followRepository=followRepository;
+        this.liveRoomMessageRepository=liveRoomMessageRepository;
     }
 
     public Object add(AddRoomRequestDto addRoomRequestDto, MultipartFile thumbNailImage, UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
 
         List<LiveRoom> liveRooms = liveRoomRepository.findAllByUserAndOnAirTrue(user);
-        if(!liveRooms.isEmpty()){
+        if (!liveRooms.isEmpty()) {
             throw new CustomException(ErrorCode.ENOUGH_LIVE_ROOM);
         }
         String thumbNailImageUrl;
@@ -114,24 +121,26 @@ public class LiveRoomService {
     //방송 종료
     public void liveRoomDelete(String artist, User user) {
 
-        LiveRoom liveRoom = liveRoomRepository.findByUser(user);
+        LiveRoom liveRoom = liveRoomRepository.findByUserAndOnAirTrue(user);
 
-        if(artist.equals(liveRoom.getUser().getArtist())){
+        if (artist.equals(liveRoom.getUser().getArtist())) {
             HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
 
-            messageChannel messageChannel = ho.get(artist,artist);
+            messageChannel messageChannel = ho.get(artist, artist);
 
             List<Message> messageList = messageChannel.getMessageList();
 
-            List<LiveRoomMessage> liveRoomMessages = new ArrayList<>();
 
-            for(Message message : messageList){
-                LiveRoomMessage liveRoomMessage = new LiveRoomMessage(message,liveRoom);
-                liveRoomMessages.add(liveRoomMessage);
+            for (Message message : messageList) {
+                LiveRoomMessage liveRoomMessage = new LiveRoomMessage(message, liveRoom);
+                liveRoomMessageRepository.save(liveRoomMessage);
             }
 
-            liveRoom.setMessages(liveRoomMessages);
             liveRoom.setOnAir(false);
+            Long num = ho.delete(artist, artist);
+            log.info(num.toString());
+        }else {
+            throw new CustomException(ErrorCode.WRONG_USER);
         }
     }
 }

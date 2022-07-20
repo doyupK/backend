@@ -15,22 +15,22 @@ public class LiveRoomMessage extends Timestamped{
     @Id
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     String senderName; // 보낸사람
 
-    @Column(nullable = false)
+    @Column
     String receiverName; // 받는사람
 
-    @Column(nullable = false)
+    @Column
     String message; // 메시지 내용
 
-    @Column(nullable = false)
+    @Column
     String date; // 시간? 날짜
 
-    @Column(nullable = false)
+    @Column
     Status status; // ? 상태라는데
 
-    @Column(nullable = false)
+    @Column
     String profileImage;
 
     @ManyToOne(fetch = FetchType.LAZY)
