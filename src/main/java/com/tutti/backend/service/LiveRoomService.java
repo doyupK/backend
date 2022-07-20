@@ -37,6 +37,7 @@ public class LiveRoomService {
     private final HeaderTokenExtractor headerTokenExtractor;
     private final JwtDecoder jwtDecoder;
     private final LiveRoomRepository liveRoomRepository;
+    private final LiveRoomMessageRepository liveRoomMessageRepository;
     private final static String defaultThumbnailImageUrl =
             "https://file-bucket-seyeol.s3.ap-northeast-2.amazonaws.com/e3e0395b-8d12-4645-96ce-bc6dd2b85ab8.png";
 
@@ -54,6 +55,7 @@ public class LiveRoomService {
                        LiveRoomRepository liveRoomRepository,
                        RedisTemplate<String, messageChannel> conversationTemplate,
                        NotificationService notificationService,
+                       LiveRoomMessageRepository liveRoomMessageRepository,
                        FollowRepository followRepository
     ) {
         this.userRepository = userRepository;
@@ -64,6 +66,7 @@ public class LiveRoomService {
         this.conversationTemplate = conversationTemplate;
         this.notificationService=notificationService;
         this.followRepository=followRepository;
+        this.liveRoomMessageRepository=liveRoomMessageRepository;
     }
 
     public Object add(AddRoomRequestDto addRoomRequestDto, MultipartFile thumbNailImage, UserDetailsImpl userDetails) {
@@ -118,7 +121,7 @@ public class LiveRoomService {
     //방송 종료
     public void liveRoomDelete(String artist, User user) {
 
-        LiveRoom liveRoom = liveRoomRepository.findByUser(user);
+        LiveRoom liveRoom = liveRoomRepository.findByUserAndOnAirTrue(user);
 
         if (artist.equals(liveRoom.getUser().getArtist())) {
             HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
@@ -127,14 +130,12 @@ public class LiveRoomService {
 
             List<Message> messageList = messageChannel.getMessageList();
 
-            List<LiveRoomMessage> liveRoomMessages = new ArrayList<>();
 
             for (Message message : messageList) {
                 LiveRoomMessage liveRoomMessage = new LiveRoomMessage(message, liveRoom);
-                liveRoomMessages.add(liveRoomMessage);
+                liveRoomMessageRepository.save(liveRoomMessage);
             }
 
-            liveRoom.setMessages(liveRoomMessages);
             liveRoom.setOnAir(false);
             Long num = ho.delete(artist, artist);
             log.info(num.toString());
