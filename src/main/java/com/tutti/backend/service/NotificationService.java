@@ -38,16 +38,19 @@ public class NotificationService {
         String emitterId=makeTimeId(id);
         // emitter 생성, 유효 시간만큼 sse 연결 유지, 만료시 자동으로 클라이언트에서 재요청
         SseEmitter emitter =new SseEmitter(DEFAULT_TIMEOUT);
+        log.info("2");
         emitterRepository.save(emitterId,emitter);
         // 비동기 요청이 완료될 때
         // 시간초과, 네트워크 오류를 포함한 어던 이유로든 비동기 요청이 완료-> 레퍼지토리 삭제
-        emitter.onCompletion(()->emitterRepository.deleteById(emitterId));
+//        emitter.onCompletion(()->emitterRepository.deleteById(emitterId));
         //비동기 요청 시간이 초과 -> 레퍼지토리 삭제
-        emitter.onTimeout(()->emitterRepository.deleteById(emitterId));
+//        emitter.onTimeout(()->emitterRepository.deleteById(emitterId));
 
         // sseEmitter의 유효시간동안 데이터 전송이 없으면-> 503에러
         // 맨 처음 연결을 진행한다면 dummy데이터 전송
         sendNotification(emitter,emitterId,"EventStream Created. userId = "+id);
+        log.info("3");
+
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 event 유실 예방
         if(!lastEventId.isEmpty()){
             sendLostData(lastEventId,id,emitter);
@@ -61,6 +64,8 @@ public class NotificationService {
         eventCaches.entrySet().stream()
                 .filter(entry->lastEventId.compareTo(entry.getKey())<0)
                 .forEach(entry->sendNotification(emitter, entry.getKey(),entry.getValue()));
+        log.info("4");
+
     }
 
 
@@ -71,6 +76,7 @@ public class NotificationService {
                     .id(eventId)
                     .name("Live")
                     .data(data));
+            log.info("1");
         }catch (IOException exception){
             emitterRepository.deleteById(eventId);
 //            log.error("연결오류",exception);
@@ -85,7 +91,7 @@ public class NotificationService {
         Notification notification = new Notification(receiver,liveRoom,content,"/chatRoom/"+liveRoom.getUser().getArtist(),false);
         String id =receiver.getArtist();
         notificationRepository.save(notification);
-        Map<String,SseEmitter>sseEmitters=emitterRepository.findAllStartWithById(id);
+        Map<String,SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
         sseEmitters.forEach(
                 (key,emitter)->{
                     emitterRepository.saveEventCache(key,notification);
