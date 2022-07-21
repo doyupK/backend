@@ -48,7 +48,7 @@ public class NotificationService {
 
         // sseEmitter의 유효시간동안 데이터 전송이 없으면-> 503에러
         // 맨 처음 연결을 진행한다면 dummy데이터 전송
-        sendNotification(emitter,emitterId,"EventStream Created. userId = "+id);
+        SseEmitter sendEmmitter = sendNotification(emitter,emitterId,"EventStream Created. userId = "+id);
         log.info("3");
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 event 유실 예방
@@ -69,8 +69,8 @@ public class NotificationService {
     }
 
 
-    @Async
-    public void sendNotification(SseEmitter emitter, String eventId, Object data) {
+
+    public SseEmitter sendNotification(SseEmitter emitter, String eventId, Object data) {
         try{
             emitter.send(SseEmitter.event()
                     .id(eventId)
@@ -82,6 +82,7 @@ public class NotificationService {
 //            log.error("연결오류",exception);
             throw new RuntimeException("연결 오류");
         }
+        return emitter;
     }
 // ------------------------- 데이터 전송 -----------------------------
 
