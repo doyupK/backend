@@ -70,14 +70,14 @@ public class NotificationService {
 
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 event 유실 예방
-        if(!lastEventId.isEmpty()){
-            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(String.valueOf(id));
-            events.entrySet().stream()
-                    .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
-                    .forEach(entry -> sendNotification(emitter, entry.getKey(), entry.getValue()));
-
-            //            sendLostData(lastEventId,id,emitter);
-        }
+//        if(!lastEventId.isEmpty()){
+//            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(String.valueOf(id));
+//            events.entrySet().stream()
+//                    .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
+//                    .forEach(entry -> sendNotification(emitter, entry.getKey(), entry.getValue()));
+//
+//            //            sendLostData(lastEventId,id,emitter);
+//        }
         return emitter;
 
     }
