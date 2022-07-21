@@ -27,6 +27,7 @@ public class NotificationController {
 
         SseEmitter sseEmitter=notificationService.subscribe(id,lastEventId);
         log.info("5");
+        System.out.println(sseEmitter.toString());
         return sseEmitter;
     }
 }
