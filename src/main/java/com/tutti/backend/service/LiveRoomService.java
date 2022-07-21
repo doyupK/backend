@@ -69,6 +69,7 @@ public class LiveRoomService {
         this.liveRoomMessageRepository=liveRoomMessageRepository;
     }
 
+    @Transactional
     public Object add(AddRoomRequestDto addRoomRequestDto, MultipartFile thumbNailImage, UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
 
