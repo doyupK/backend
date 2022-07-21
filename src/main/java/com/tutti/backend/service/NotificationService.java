@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class NotificationService {
 
@@ -59,7 +62,9 @@ public class NotificationService {
                 .forEach(entry->sendNotification(emitter, entry.getKey(),entry.getValue()));
     }
 
-    private void sendNotification(SseEmitter emitter, String eventId,  Object data) {
+
+    @Async
+    public void sendNotification(SseEmitter emitter, String eventId, Object data) {
         try{
             emitter.send(SseEmitter.event()
                     .id(eventId)
