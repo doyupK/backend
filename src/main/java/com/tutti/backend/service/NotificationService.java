@@ -64,7 +64,7 @@ public class NotificationService {
                     .data(data));
         }catch (IOException exception){
             emitterRepository.deleteById(eventId);
-            log.error("연결오류",exception);
+//            log.error("연결오류",exception);
             throw new RuntimeException("연결 오류");
         }
     }
