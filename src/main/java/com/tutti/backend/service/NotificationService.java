@@ -19,7 +19,7 @@ import java.util.Map;
 @Service
 public class NotificationService {
 
-    private static final Long DEFAULT_TIMEOUT=60L*1000*60;
+    private static final Long DEFAULT_TIMEOUT=60L*1000;
 
     private final EmitterRepository emitterRepository;
     private final NotificationRepository notificationRepository;
