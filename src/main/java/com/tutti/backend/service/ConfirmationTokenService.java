@@ -31,6 +31,7 @@ public class ConfirmationTokenService {
         mailMessage.setTo(receiverEmail);
         mailMessage.setSubject("회원가입 이메일 인증");
         mailMessage.setText("인증 링크 : "+"https://seyeolpersonnal.shop/confirm-email?token=" + emailConfirmationToken.getId());
+//        mailMessage.setText("인증 링크 : "+"http://localhost:8080/confirm-email?token=" + emailConfirmationToken.getId());
         emailSenderService.sendEmail(mailMessage);
     }
 
