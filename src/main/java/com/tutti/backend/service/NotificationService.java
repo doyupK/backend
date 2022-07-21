@@ -26,7 +26,7 @@ import java.util.Map;
 public class NotificationService {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
-    private static final Long DEFAULT_TIMEOUT=10L*1000;
+    private static final Long DEFAULT_TIMEOUT=30L*1000;
 
     private final EmitterRepository emitterRepository;
     private final NotificationRepository notificationRepository;
@@ -93,6 +93,7 @@ public class NotificationService {
         String id =receiver.getArtist();
         notificationRepository.save(notification);
         Map<String,SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
+        log.info("6");
         sseEmitters.forEach(
                 (key,emitter)->{
                     emitterRepository.saveEventCache(key,notification);
@@ -100,6 +101,7 @@ public class NotificationService {
 
                 }
         );
+        log.info("7");
     }
     private String makeTimeId(String id) {
         return id+"_"+System.currentTimeMillis();
