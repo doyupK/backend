@@ -50,7 +50,7 @@ public class NotificationService {
 
 // ------------------------- SSE 연결 -----------------------------
 
-    public SseEmitter subscribe(String id, String lastEventId) {
+    public SseEmitter subscribe(Long id, String lastEventId) {
         // 현재시간 포함 id
         String emitterId=makeTimeId(id);
         // emitter 생성, 유효 시간만큼 sse 연결 유지, 만료시 자동으로 클라이언트에서 재요청
@@ -68,9 +68,15 @@ public class NotificationService {
             sendNotification(emitter, emitterId, "EventStream Created. userId = " + id);
         log.info("3");
 
+
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 event 유실 예방
         if(!lastEventId.isEmpty()){
-            sendLostData(lastEventId,id,emitter);
+            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(String.valueOf(id));
+            events.entrySet().stream()
+                    .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
+                    .forEach(entry -> sendNotification(emitter, entry.getKey(), entry.getValue()));
+
+            //            sendLostData(lastEventId,id,emitter);
         }
         return emitter;
 
@@ -93,7 +99,7 @@ public class NotificationService {
                     .id(eventId)
                     .name("Live")
                     .data(data));
-            sleep(1, emitter);
+//            sleep(1, emitter);
             log.info("1");
         }catch (IOException exception){
             emitterRepository.deleteById(eventId);
@@ -108,6 +114,7 @@ public class NotificationService {
     @Transactional
     public void send(User receiver, LiveRoom liveRoom, String content){
         Notification notification = new Notification(receiver,liveRoom,content,"/chatRoom/"+liveRoom.getUser().getArtist(),false);
+//        Notification notification = createNotification(receiver, liveRoom, content);
         String id =receiver.getArtist();
         notificationRepository.save(notification);
         Map<String,SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
@@ -121,7 +128,9 @@ public class NotificationService {
         ));
         log.info("7");
     }
-    private String makeTimeId(String id) {
+
+
+    private String makeTimeId(Long id) {
         return id+"_"+System.currentTimeMillis();
     }
 
