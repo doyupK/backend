@@ -82,14 +82,6 @@ public class NotificationService {
                 }
         );
     }
-
-//    private Notification createNotification(User receiver, LiveRoom liveRoom, String content,String url) {
-//        return new Notification(receiver,liveRoom,content,url,false);
-//    }
-
-
-
-
     private String makeTimeId(String id) {
         return id+"_"+System.currentTimeMillis();
     }

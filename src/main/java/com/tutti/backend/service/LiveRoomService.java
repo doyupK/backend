@@ -94,7 +94,7 @@ public class LiveRoomService {
         List<Follow>followList=followRepository.findAllByFollowingUser(user);
         if(followList.size()!=0) {
             for (Follow follower : followList) {
-                notificationService.send(follower.getFollowingUser(), saveLiveRoom, user.getArtist() + "님이 Live를 시작했습니다.");
+                notificationService.send(follower.getUser(), saveLiveRoom, user.getArtist() + "님이 Live를 시작했습니다.");
             }
         }
 
