@@ -26,7 +26,7 @@ import java.util.Map;
 public class NotificationService {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
-    private static final Long DEFAULT_TIMEOUT=30L*1000;
+    private static final Long DEFAULT_TIMEOUT=-1L;
 
     private final EmitterRepository emitterRepository;
     private final NotificationRepository notificationRepository;
