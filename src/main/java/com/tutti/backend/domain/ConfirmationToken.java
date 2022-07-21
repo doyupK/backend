@@ -43,12 +43,16 @@ public class ConfirmationToken {
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
 
+    @Column
+    private boolean confirm;
+
 //  Email 값으로 Token 만들기
     public static ConfirmationToken createEmailConfirmationToken(String userEmail){
         ConfirmationToken confirmationToken = new ConfirmationToken();
         confirmationToken.expirationDate = LocalDateTime.now().plusMinutes(EMAIL_TOKEN_EXPIRATION_TIME_VALUE); // 만료 시간
         confirmationToken.userEmail = userEmail;
         confirmationToken.expired = false;
+        confirmationToken.confirm = false;
         return confirmationToken;
     }
 
@@ -57,5 +61,8 @@ public class ConfirmationToken {
      */
     public void useToken(){
         expired = true;
+    }
+    public void confirm(){
+        confirm = true;
     }
 }
