@@ -26,7 +26,7 @@ import java.util.Map;
 public class NotificationService {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
-    private static final Long DEFAULT_TIMEOUT=60L*1000;
+    private static final Long DEFAULT_TIMEOUT=10L*1000;
 
     private final EmitterRepository emitterRepository;
     private final NotificationRepository notificationRepository;
@@ -37,7 +37,8 @@ public class NotificationService {
         // 현재시간 포함 id
         String emitterId=makeTimeId(id);
         // emitter 생성, 유효 시간만큼 sse 연결 유지, 만료시 자동으로 클라이언트에서 재요청
-        SseEmitter emitter =emitterRepository.save(emitterId, new SseEmitter(DEFAULT_TIMEOUT));
+        SseEmitter emitter =new SseEmitter(DEFAULT_TIMEOUT);
+        emitterRepository.save(emitterId,emitter);
         // 비동기 요청이 완료될 때
         // 시간초과, 네트워크 오류를 포함한 어던 이유로든 비동기 요청이 완료-> 레퍼지토리 삭제
         emitter.onCompletion(()->emitterRepository.deleteById(emitterId));
