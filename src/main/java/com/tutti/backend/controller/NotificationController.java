@@ -7,10 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 
@@ -22,8 +19,11 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping(value = "/subscribe/{id}",produces = "text/event-stream")
-    public SseEmitter subscribe(@PathVariable String id,
-                                @RequestParam(value="lastEventId",required = false,defaultValue = "") String lastEventId){
+    public SseEmitter subscribe(
+            @PathVariable String id,
+//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                @RequestHeader(value="lastEventId",required = false,defaultValue = "") String lastEventId
+    ){
 
         SseEmitter sseEmitter=notificationService.subscribe(id,lastEventId);
         log.info("5");
