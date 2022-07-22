@@ -25,7 +25,7 @@ public class NotificationService {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
     private static final Long DEFAULT_TIMEOUT=-1L;
-
+    private final ExecutorService sseMvcExecutor = Executors.newSingleThreadExecutor();
 
 //    @PostConstruct
 //    public void init() {
@@ -90,7 +90,7 @@ public class NotificationService {
 
 
     public void sendNotification(SseEmitter emitter, String eventId, Object data) {
-        ExecutorService sseMvcExecutor = Executors.newSingleThreadExecutor();
+
         sseMvcExecutor.execute( () -> {
             try{
                 emitter.send(SseEmitter.event()
