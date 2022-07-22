@@ -50,7 +50,7 @@ public class NotificationService {
 
 // ------------------------- SSE 연결 -----------------------------
 
-    public SseEmitter subscribe(Long id, String lastEventId) {
+    public SseEmitter subscribe(String id, String lastEventId) {
         // 현재시간 포함 id
         String emitterId=makeTimeId(id);
         // emitter 생성, 유효 시간만큼 sse 연결 유지, 만료시 자동으로 클라이언트에서 재요청
@@ -65,19 +65,19 @@ public class NotificationService {
 
         // sseEmitter의 유효시간동안 데이터 전송이 없으면-> 503에러
         // 맨 처음 연결을 진행한다면 dummy데이터 전송
-            sendNotification(emitter, emitterId, "EventStream Created. userId = " + id);
+            sendNotification(emitter, emitterId, "EventStream Created. userId = " + id+"\n\n");
         log.info("3");
 
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 event 유실 예방
-//        if(!lastEventId.isEmpty()){
-//            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(String.valueOf(id));
-//            events.entrySet().stream()
-//                    .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
-//                    .forEach(entry -> sendNotification(emitter, entry.getKey(), entry.getValue()));
-//
-//            //            sendLostData(lastEventId,id,emitter);
-//        }
+        if(!lastEventId.isEmpty()){
+            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(String.valueOf(id));
+            events.entrySet().stream()
+                    .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
+                    .forEach(entry -> sendNotification(emitter, entry.getKey(), entry.getValue()));
+
+//                        sendLostData(lastEventId,id,emitter);
+        }
         return emitter;
 
     }
@@ -113,7 +113,12 @@ public class NotificationService {
     // 알림 받을 회원을 찾고 emitter들을 모두 찾아 send
     @Transactional
     public void send(User receiver, LiveRoom liveRoom, String content){
-        Notification notification = new Notification(receiver,liveRoom,content,"/chatRoom/"+liveRoom.getUser().getArtist(),false);
+        Notification notification = new Notification(
+                receiver,
+                liveRoom,
+                content,
+                "/chatRoom/"+liveRoom.getUser().getArtist(),
+                false);
 //        Notification notification = createNotification(receiver, liveRoom, content);
         String id =receiver.getArtist();
         notificationRepository.save(notification);
@@ -130,7 +135,7 @@ public class NotificationService {
     }
 
 
-    private String makeTimeId(Long id) {
+    private String makeTimeId(String id) {
         return id+"_"+System.currentTimeMillis();
     }
 
