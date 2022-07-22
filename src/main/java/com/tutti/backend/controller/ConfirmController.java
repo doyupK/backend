@@ -21,7 +21,7 @@ public class ConfirmController {
 
     @GetMapping("/page")
     public void viewRedirect(HttpServletResponse httpServletResponse) {
-        httpServletResponse.setHeader("Location", "https://tuttimusic.shop");
+        httpServletResponse.setHeader("Location", "https://tuttimusic.shop/emailcheck");
         httpServletResponse.setStatus(302);
     }
 
