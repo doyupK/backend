@@ -12,6 +12,8 @@ import com.tutti.backend.repository.*;
 import com.tutti.backend.security.jwt.HeaderTokenExtractor;
 import com.tutti.backend.security.jwt.JwtDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @Service
+@Transactional
 public class FeedService {
     
     private final FeedRepository feedRepository;
@@ -31,6 +34,7 @@ public class FeedService {
     private final JwtDecoder jwtDecoder;
     private final DeletedFeedRepository deletedFeedRepository;
     private final HeartRepository heartRepository;
+
 
     @Autowired
     public FeedService(FeedRepository feedRepository,
@@ -51,6 +55,8 @@ public class FeedService {
         this.jwtDecoder=jwtDecoder;
         this.deletedFeedRepository = deletedFeedRepository;
     }
+
+
 
     // 피드 작성
     @Transactional
@@ -145,15 +151,26 @@ public class FeedService {
 
     // 비 로그인 Main 페이지(3번째 리스트 랜덤순)
     public ResponseEntity<?> getMainPage() {
-        System.out.println("parkSeYeol_commit_confirm");
-        // 최신 순
-        List<SearchTitleDtoMapping> latestList = feedRepository.findAllByPostTypeLikeOrderByCreatedAtDesc("audio");
-        List<GetMainPageListDto> randomList = feedRepository.getMainPageRandomList("audio");
-        Collections.shuffle(randomList);
-
-
-        // 랜덤 순
         List<MainPageFeedDto> feedDtoList = new ArrayList<>();
+        /*Collections.shuffle(fd);
+        "힙합","발라드","알앤비","연주곡","댄스","어쿠스틱"};*/
+        List<String> genres = new ArrayList<>();
+        genres.add("힙합");
+        genres.add("발라드");
+        genres.add("R&B");
+        genres.add("연주곡");
+        genres.add("댄스");
+        genres.add("어쿠스틱");
+
+        Collections.shuffle(genres);
+
+        String recommend = genres.get(0);
+
+
+        // 최신 순
+        List<GetMainPageListDto> latestList = feedRepository.getMainPageLatestList("audio");
+        // 랜덤 순
+        List<GetMainPageListDto> randomList = feedRepository.getMainPageRandomList("audio",recommend);
 
 //        for(Feed feed: randomList){
 //            MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(feed,feed.getUser());
@@ -187,8 +204,9 @@ public class FeedService {
 //            }
 //        }
 
-        List<SearchTitleDtoMapping> likeList= feedRepository.findAllByOrderByLikeCountDesc();
-        List<SearchTitleDtoMapping> videoList= feedRepository.findAllByPostTypeLikeOrderByCreatedAtDesc("video");
+       List<SearchTitleDtoMapping> likeList= feedRepository.findAllByPostTypeOrderByLikeCountDesc("audio");
+       /* List<GetMainPageListDto> likeList= feedRepository.getMainPagLikeList();*/
+        List<GetMainPageListDto> videoList= feedRepository.getMainPageVideoList("video");
 
 
         MainPageListDto mainPageListDto = new MainPageListDto(latestList,likeList,randomList,videoList);
@@ -205,9 +223,30 @@ public class FeedService {
         User findUser = userRepository.findByEmail(user).orElseThrow(
                 ()-> new CustomException(ErrorCode.NOT_FOUND_USER)
         );
-        List<SearchTitleDtoMapping> latestList = feedRepository.findAllByOrderByCreatedAtDesc();
+        List<GetMainPageListDto> latestList = feedRepository.getMainPageLatestList("audio");
+
+
         // 관심 장르 별
-        List<SearchTitleDtoMapping> interestedList = feedRepository.findAllByGenreAndPostTypeLike(findUser.getFavoriteGenre1(),"audio");
+        String[] list = {findUser.getFavoriteGenre1(),findUser.getFavoriteGenre2()
+                ,findUser.getFavoriteGenre3(),findUser.getFavoriteGenre4()};
+        List<String> favoriteGenres = new ArrayList<>();
+        for(String genre: list){
+            /*if(genre!=null){
+                favoriteGenres.add(genre);
+            }else{
+                break;
+            }*/
+            if (genre == null) {
+                break;
+            }
+            favoriteGenres.add(genre);
+        }
+        Collections.shuffle(favoriteGenres);
+
+        String recommend = favoriteGenres.get(0);
+
+
+        List<GetMainPageListDto> interestedList = feedRepository.getMainPageLoginGenreList("audio",recommend);
 //
 //        List<MainPageFeedDto> likeList = new ArrayList<>();
 //        List<Feed> likes = feedRepository.findAll();
@@ -233,8 +272,8 @@ public class FeedService {
 //            likeList.add(sortMap.get(nKey));
 //        }
 
-        List<SearchTitleDtoMapping> likeList= feedRepository.findAllByOrderByLikeCountDesc();
-        List<SearchTitleDtoMapping> videoList= feedRepository.findAllByPostTypeLikeOrderByCreatedAtDesc("video");
+        List<SearchTitleDtoMapping> likeList= feedRepository.findAllByPostTypeOrderByLikeCountDesc("audio");
+        List<GetMainPageListDto> videoList= feedRepository.getMainPageVideoList("video");
 
 
         MainPageListUserDto mainPageListUserDto = new MainPageListUserDto(latestList,likeList,interestedList,videoList);
@@ -251,23 +290,41 @@ public class FeedService {
     // 피드 검색
     public ResponseEntity<?> searchFeed(String keyword) {
         SearchFeedResponseDto searchFeedResponseDto = new SearchFeedResponseDto();
-        User user = userRepository.findByArtistLike(keyword);
+        /*User user = userRepository.findByArtistLike(keyword);
 
         searchFeedResponseDto.setTitle(feedRepository.findAllByTitleContainingAndPostTypeContaining(keyword,"audio"));
         searchFeedResponseDto.setArtist(feedRepository.findAllByUser(user));
         searchFeedResponseDto.setVideo(feedRepository.findAllByTitleContainingAndPostTypeContaining(keyword,"video"));
         searchFeedResponseDto.setSuccess(200);
+        searchFeedResponseDto.setMessage("성공");*/
+        searchFeedResponseDto.setMusicTitle(feedRepository.searchMusicByTitleKeyword(keyword));
+        searchFeedResponseDto.setMusicArtist(feedRepository.searchMusicByArtistKeyword(keyword));
+        searchFeedResponseDto.setVideoTitle(feedRepository.searchVideoByTitleKeyword(keyword));
+        searchFeedResponseDto.setVideoArtist(feedRepository.searchVideoByArtistKeyword(keyword));
+        searchFeedResponseDto.setSuccess(200);
         searchFeedResponseDto.setMessage("성공");
+
+
         return ResponseEntity.ok().body(searchFeedResponseDto);
     }
 
+    public ResponseEntity<?> searchMoreFeed(String keyword, String category) {
+        SearchFeedAllByCategoryAndKeywordDto searchFeedAllByCategoryAndKeywordDto = new SearchFeedAllByCategoryAndKeywordDto();
+        searchFeedAllByCategoryAndKeywordDto.setResults(feedRepository.searchCategoryByKeyword(category,keyword));
+        searchFeedAllByCategoryAndKeywordDto.setSuccess(200);
+        searchFeedAllByCategoryAndKeywordDto.setMessage("성공");
+        return ResponseEntity.ok().body(searchFeedAllByCategoryAndKeywordDto);
+    }
     // 최신 순 전체 피드 따로 가져오기
-    public ResponseEntity<?> getFeedPage(String postType, String genre) {
+
+    public ResponseEntity<?> getFeedPage(String postType, String genre, Pageable pageable) {
         List<GetFeedByPostTypeDto> latestList = feedRepository.getFeedByPostType(postType,genre);
+        Slice<GetFeedByPostTypeDto> latestList2 = feedRepository.getFeedByPostTypeInfiniteScroll(postType,genre,pageable);
+
         FeedPageResponseDto feedPageResponseDto = new FeedPageResponseDto();
         feedPageResponseDto.setSuccess(200);
         feedPageResponseDto.setMessage("성공");
-        feedPageResponseDto.setData(latestList);
+        feedPageResponseDto.setData(latestList2);
         return ResponseEntity.ok().body(feedPageResponseDto);
     }
 

@@ -63,8 +63,20 @@ dependencies {
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
     //embedded-redis
-    implementation  group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'
+//    implementation  group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'
+//
+//    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+
+    //prometheus
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-core'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'javax.interceptor:javax.interceptor-api:1.2.2'
+
+    //로그
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
 
 }
 

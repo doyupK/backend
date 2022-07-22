@@ -129,9 +129,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/user/fetchAllUsers/*");
         skipPathList.add("GET,/user/search/**");
         skipPathList.add("DELETE,/user/leaveChat");
+        skipPathList.add("GET,/search/more");
+        skipPathList.add("GET,/chatRoom");
+        skipPathList.add("GET,/wss/**");
+        skipPathList.add("POST,/wss/**");
+        skipPathList.add("GET,/ws/**");
+        skipPathList.add("POST,/ws/**");
+        skipPathList.add("GET,/actuator/**");
+        skipPathList.add("GET,/grafana");
 
         skipPathList.add("POST,/user/login");
-
+        skipPathList.add("GET,/subscribe/**");
         skipPathList.add("GET,/");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(skipPathList,"/**");

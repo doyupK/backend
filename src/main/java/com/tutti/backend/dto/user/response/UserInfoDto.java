@@ -8,6 +8,7 @@ import lombok.Getter;
 public class UserInfoDto {
     String artist;
     String[] genre;
+    boolean[] genreSelected;
     String profileImage;
     Long followerCount;
     Long followingCount;

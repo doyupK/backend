@@ -4,12 +4,12 @@
 # documentation.
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+#
+#1
 
 name: Java CI with Gradle
 
 on:
-  push:
-    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
@@ -72,4 +72,5 @@ jobs:
             docker pull gltlvl12/tutti:${GITHUB_SHA::7}
             docker tag gltlvl12/tutti:${GITHUB_SHA::7} tutti
             docker stop server
-            docker run -d --rm --name server -p 80:8080 tutti
+            docker run -d --rm --name server -p 8081:8080 tutti
+          

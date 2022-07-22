@@ -42,6 +42,9 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    private final static String unknownImage =
+            "https://file-bucket-seyeol.s3.ap-northeast-2.amazonaws.com/37030c52-c38f-413b-ae44-c02d404e54fc.jpg";
+
     @PostConstruct
     public void setS3Client() {
         AWSCredentials credentials = new BasicAWSCredentials(this.accessKey, this.secretKey);
@@ -55,6 +58,9 @@ public class S3Service {
 
     // 파일 업로드
     public FileRequestDto upload(MultipartFile file) {
+        if(file == null){
+            return new FileRequestDto(unknownImage, "unknownImage");
+        }
         String fileName = createFileName(file.getOriginalFilename()); // 파일명 난수로 변경
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentLength(file.getSize());          // 파일 크기
@@ -72,11 +78,13 @@ public class S3Service {
 
     // 글 수정 시 기존 s3에 있는 이미지 정보 삭제
     public void deleteImageUrl(String filePath){
+        String filepathReal = filePath.split(".com/")[1];
+        System.out.println(filepathReal);
         // 삭제 구문
-        if(!"".equals(filePath) && filePath != null){
-            boolean isExistObject = s3Client.doesObjectExist(bucket, filePath);
+        if(!"".equals(filepathReal) && filepathReal != null){
+            boolean isExistObject = s3Client.doesObjectExist(bucket, filepathReal);
             if(isExistObject){
-                s3Client.deleteObject(bucket, filePath);
+                s3Client.deleteObject(bucket, filepathReal);
             }
         }
     }

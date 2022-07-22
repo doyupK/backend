@@ -60,6 +60,25 @@ public class User {
     @Column
     private String favoriteGenre4;
 
+    @Column
+    private boolean genreSelected1;
+
+    @Column
+    private boolean genreSelected2;
+
+    @Column
+    private boolean genreSelected3;
+
+    @Column
+    private boolean genreSelected4;
+
+    @Column
+    private boolean genreSelected5;
+
+    @Column
+    private boolean genreSelected6;
+
+
     @Builder.Default
     @CreationTimestamp // INSERT 시 자동으로 값을 채워줌
     @Column(name = "created_at")
@@ -86,6 +105,12 @@ public class User {
         this.favoriteGenre2 = signupRequestDto.getGenre()[1];
         this.favoriteGenre3 = signupRequestDto.getGenre()[2];
         this.favoriteGenre4 = signupRequestDto.getGenre()[3];
+        this.genreSelected1 = signupRequestDto.getGenreSelected()[0];
+        this.genreSelected2 = signupRequestDto.getGenreSelected()[1];
+        this.genreSelected3 = signupRequestDto.getGenreSelected()[2];
+        this.genreSelected4 = signupRequestDto.getGenreSelected()[3];
+        this.genreSelected5 = signupRequestDto.getGenreSelected()[4];
+        this.genreSelected6 = signupRequestDto.getGenreSelected()[5];
         this.password = password;
         this.kakaoId = null;
         this.userConfirmEnum = UserConfirmEnum.BEFORE_CONFIRM;
@@ -102,6 +127,22 @@ public class User {
         this.artist = artist;
 
     }
+    public void updateUser(FileRequestDto fileRequestDto, UserUpdateRequestDto userUpdateRequestDto){
+        this.profileUrl =fileRequestDto.getImageUrl();
+        this.profileText = userUpdateRequestDto.getProfileText();
+        this.instagramUrl = userUpdateRequestDto.getInstagramUrl();
+        this.youtubeUrl = userUpdateRequestDto.getYoutubeUrl();
+        this.favoriteGenre1 = userUpdateRequestDto.getGenre()[0];
+        this.favoriteGenre2 = userUpdateRequestDto.getGenre()[1];
+        this.favoriteGenre3 = userUpdateRequestDto.getGenre()[2];
+        this.favoriteGenre4 = userUpdateRequestDto.getGenre()[3];
+        this.genreSelected1 = userUpdateRequestDto.getGenreSelected()[0];
+        this.genreSelected2 = userUpdateRequestDto.getGenreSelected()[1];
+        this.genreSelected3 = userUpdateRequestDto.getGenreSelected()[2];
+        this.genreSelected4 = userUpdateRequestDto.getGenreSelected()[3];
+        this.genreSelected5 = userUpdateRequestDto.getGenreSelected()[4];
+        this.genreSelected6 = userUpdateRequestDto.getGenreSelected()[5];
+    }
     public void updateUser(UserUpdateRequestDto userUpdateRequestDto){
         this.profileText = userUpdateRequestDto.getProfileText();
         this.instagramUrl = userUpdateRequestDto.getInstagramUrl();
@@ -110,6 +151,12 @@ public class User {
         this.favoriteGenre2 = userUpdateRequestDto.getGenre()[1];
         this.favoriteGenre3 = userUpdateRequestDto.getGenre()[2];
         this.favoriteGenre4 = userUpdateRequestDto.getGenre()[3];
+        this.genreSelected1 = userUpdateRequestDto.getGenreSelected()[0];
+        this.genreSelected2 = userUpdateRequestDto.getGenreSelected()[1];
+        this.genreSelected3 = userUpdateRequestDto.getGenreSelected()[2];
+        this.genreSelected4 = userUpdateRequestDto.getGenreSelected()[3];
+        this.genreSelected5 = userUpdateRequestDto.getGenreSelected()[4];
+        this.genreSelected6 = userUpdateRequestDto.getGenreSelected()[5];
     }
 
 

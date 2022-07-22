@@ -30,7 +30,7 @@ public interface FeedRepository extends JpaRepository<Feed,Long>, FeedRepository
 
     List<SearchTitleDtoMapping> findAllByGenreOrderByCreatedAtDesc(String genre);
 
-    List<SearchTitleDtoMapping> findAllByOrderByLikeCountDesc();
+    List<SearchTitleDtoMapping> findAllByPostTypeOrderByLikeCountDesc(String postType);
 
     List<UserPageFeedDtoMapping> findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(String postType,User user); // 유저의 좋아요[음악] List를 최신순으로 6개만 가져오기
     List<UserPageFeedDtoMapping> findAllByPostTypeAndHearts_User_ArtistAndHearts_IsHeartTrueOrderByHearts_IdDesc(String postType,String Artist); // 유저의 좋아요[노래] List를 최신순으로 전체 가져오기

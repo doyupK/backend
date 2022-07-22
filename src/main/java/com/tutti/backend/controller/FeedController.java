@@ -8,6 +8,8 @@ import com.tutti.backend.security.jwt.HeaderTokenExtractor;
 import com.tutti.backend.security.jwt.JwtDecoder;
 import com.tutti.backend.service.FeedService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -41,8 +43,14 @@ public class FeedController {
 
     // 최신 순 전체 피드 따로 가져오기
     @GetMapping("/feeds")
-    public ResponseEntity<?> getFeedPage(@RequestParam String postType,@RequestParam(required = false) String genre){
-        return feedService.getFeedPage(postType,genre);
+    public ResponseEntity<?> getFeedPage(
+            @RequestParam String postType
+            ,@RequestParam(required = false) String genre
+            ,@RequestParam int page
+            ,@RequestParam int limit){
+        page = page - 1;
+        Pageable pageable = PageRequest.of(page,limit);
+        return feedService.getFeedPage(postType,genre,pageable);
     }
     // 장르 별 피드 따로 가져오기
     /*@GetMapping("/feeds/search")
@@ -99,6 +107,10 @@ public class FeedController {
     @GetMapping("/search")
     public ResponseEntity<?> searchFeed(@RequestParam String keyword){
         return feedService.searchFeed(keyword);
+    }
+    @GetMapping("/search/more")
+    public ResponseEntity<?> searchMoreFeed(@RequestParam String category,@RequestParam String keyword){
+        return feedService.searchMoreFeed(keyword,category);
     }
 
 }

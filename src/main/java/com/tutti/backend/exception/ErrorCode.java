@@ -24,11 +24,14 @@ public enum ErrorCode {
     NOT_EXISTS_USERNAME(HttpStatus.BAD_REQUEST, "400_10", "존재하지 않는 아이디입니다."),
     NOT_EXISTS_PASSWORD(HttpStatus.BAD_REQUEST, "400_11", "존재하지 않는 비밀번호입니다."),
     NOT_EXISTS_KAKAOEMAIL(HttpStatus.BAD_REQUEST, "400_12", "카카오 이메일이 존재하지 않습니다."),
+    ENOUGH_LIVE_ROOM(HttpStatus.BAD_REQUEST, "400_13", "라이브 채널은 하나만 켜주세요."),
+    NOT_AUTH_EMAIL(HttpStatus.BAD_REQUEST,"400_14","이메일 인증이 완료되지 않았습니다."),
     // 404 Not Found
     NOT_FOUND_FEED(HttpStatus.NOT_FOUND, "404_1", "해당 피드가 존재하지 않습니다."),
     NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "404_2", "해당 댓글이 존재하지 않습니다."),
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "404_3", "로그인을 해주세요."),
     NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND, "404_4","토큰을 찾지 못했습니다."),
+    NOT_FOUND_LIVE_ROOM(HttpStatus.NOT_FOUND, "404_5","방송을 찾지 못했습니다."),
     // 405 file
     WRONG_FILE_TYPE(HttpStatus.BAD_REQUEST,"405_1", "잘못된 형식의 파일입니다."),
     FAIL_FILE_UPLOAD(HttpStatus.INTERNAL_SERVER_ERROR,"405_2", "파일 업로드에 실패하였습니다."),

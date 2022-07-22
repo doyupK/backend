@@ -27,4 +27,13 @@ public class GetFeedByPostTypeDto {
         this.albumImageUrl = albumImageUrl;
         this.profileImageUrl = profileImageUrl;
     }
+    @QueryProjection
+    public GetFeedByPostTypeDto(GetFeedByPostTypeDto getFeedByPostTypeDto) {
+        this.id = getFeedByPostTypeDto.getId();
+        this.title = getFeedByPostTypeDto.getTitle();
+        this.artist = getFeedByPostTypeDto.getArtist();
+        this.genre = getFeedByPostTypeDto.getGenre();
+        this.albumImageUrl = getFeedByPostTypeDto.getAlbumImageUrl();
+        this.profileImageUrl = getFeedByPostTypeDto.getProfileImageUrl();
+    }
 }
