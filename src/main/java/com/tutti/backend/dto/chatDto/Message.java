@@ -16,4 +16,5 @@ public class Message {
     String date; // 시간? 날짜
     Status status; // ? 상태라는데
     String profileImage;
+    String count;
 }
