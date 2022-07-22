@@ -65,7 +65,7 @@ public class NotificationService {
 
         // sseEmitter의 유효시간동안 데이터 전송이 없으면-> 503에러
         // 맨 처음 연결을 진행한다면 dummy데이터 전송
-            sendNotification(emitter, emitterId, "EventStream Created. userId = " + id);
+            sendNotification(emitter, emitterId, "EventStream Created. userId = " + id+"\n\n");
         log.info("3");
 
 
