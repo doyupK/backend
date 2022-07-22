@@ -63,11 +63,11 @@ public class NotificationService {
         sendNotification(emitter, emitterId, "EventStream Created. userId = " + id);
 
         log.info("3");
-
+        log.info(lastEventId);
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 event 유실 예방
         if(lastEventId.isEmpty()){
-            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(id);
+//            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(id);
 //            events.entrySet().stream()
 //                    .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
 //                    .forEach(entry -> sendNotification(emitter, entry.getKey(), entry.getValue()));
@@ -79,7 +79,9 @@ public class NotificationService {
     }
 
     private void sendLostData(String lastEventId, String id, SseEmitter emitter) {
+
         Map<String,Object>eventCaches=emitterRepository.findAllEventCacheStartWithId(String.valueOf(id));
+
         eventCaches.entrySet().stream()
                 .filter(entry->lastEventId.compareTo(entry.getKey())<0)
                 .forEach(entry->sendNotification(emitter, entry.getKey(),entry.getValue()));
@@ -97,9 +99,10 @@ public class NotificationService {
                         .id(eventId)
                         .name("Live")
                         .data(data));
+
                 Thread.sleep( 1000);
 
-                log.info("실제 전송 메서드");
+                log.info("실제 전송 메서드:"+data.toString() );
             }catch (IOException exception){
                 emitterRepository.deleteById(eventId);
     //            log.error("연결오류",exception);
