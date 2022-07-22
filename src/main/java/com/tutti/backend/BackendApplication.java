@@ -10,7 +10,7 @@ import javax.annotation.PostConstruct;
 import java.util.TimeZone;
 
 @SpringBootApplication
-@EnableAsync
+
 @EnableJpaAuditing
 public class BackendApplication {
 

@@ -27,6 +27,7 @@ public class RedisConfiguration {
 //
 
 
+
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
 
@@ -48,15 +49,16 @@ public class RedisConfiguration {
         redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(messageChannel.class));
         return redisTemplate;
     }
+
     @Bean
     public StringRedisTemplate canversationTemplate() {
-        //      setConnectionFactory(connectionFactory);
-        // 		setKeySerializer(RedisSerializer.string());
-        //		setValueSerializer(RedisSerializer.string());
-        //		setHashKeySerializer(RedisSerializer.string());
-        //		setHashValueSerializer(RedisSerializer.string());
-        return new StringRedisTemplate(redisConnectionFactory()); // 이걸하면 위에 5개가 딸려옴.
+        StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
+        stringRedisTemplate.setConnectionFactory(redisConnectionFactory());
+        stringRedisTemplate.setKeySerializer(new StringRedisSerializer());
+        stringRedisTemplate.setValueSerializer(new StringRedisSerializer());
+        //    setHashKeySerializer(RedisSerializer.string());
+        //    setHashValueSerializer(RedisSerializer.string());
+        return stringRedisTemplate;
     }
-
 
 }

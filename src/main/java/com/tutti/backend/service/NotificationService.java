@@ -4,9 +4,11 @@ import com.tutti.backend.domain.Follow;
 import com.tutti.backend.domain.LiveRoom;
 import com.tutti.backend.domain.Notification;
 import com.tutti.backend.domain.User;
+import com.tutti.backend.dto.Notification.NotificationCacheDto;
 import com.tutti.backend.dto.Notification.NotificationDetailsDto;
 import com.tutti.backend.repository.EmitterRepository;
 import com.tutti.backend.repository.NotificationRepository;
+import com.tutti.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -19,13 +21,13 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
-@Transactional
 @Service
 public class NotificationService {
 
@@ -59,24 +61,24 @@ public class NotificationService {
         emitterRepository.save(emitterId,emitter);
         // 비동기 요청이 완료될 때
         // 시간초과, 네트워크 오류를 포함한 어던 이유로든 비동기 요청이 완료-> 레퍼지토리 삭제
-        emitter.onCompletion(()->emitterRepository.deleteById(emitterId));
+//        emitter.onCompletion(()->emitterRepository.deleteById(emitterId));
         //비동기 요청 시간이 초과 -> 레퍼지토리 삭제
-        emitter.onTimeout(()->emitterRepository.deleteById(emitterId));
+//        emitter.onTimeout(()->emitterRepository.deleteById(emitterId));
 
         // sseEmitter의 유효시간동안 데이터 전송이 없으면-> 503에러
         // 맨 처음 연결을 진행한다면 dummy데이터 전송
-            sendNotification(emitter, emitterId, "EventStream Created. userId = " + id+"\n\n");
+            sendNotification(emitter, emitterId, "EventStream Created. userId = " + id);
         log.info("3");
 
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 event 유실 예방
-        if(!lastEventId.isEmpty()){
-            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(String.valueOf(id));
-            events.entrySet().stream()
-                    .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
-                    .forEach(entry -> sendNotification(emitter, entry.getKey(), entry.getValue()));
+        if(lastEventId.isEmpty()){
+            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(id);
+//            events.entrySet().stream()
+//                    .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
+//                    .forEach(entry -> sendNotification(emitter, entry.getKey(), entry.getValue()));
 
-//                        sendLostData(lastEventId,id,emitter);
+            sendLostData(lastEventId,id,emitter);
         }
         return emitter;
 
@@ -99,12 +101,15 @@ public class NotificationService {
                     .id(eventId)
                     .name("Live")
                     .data(data));
-//            sleep(1, emitter);
+            Thread.sleep( 1000);
+
             log.info("1");
         }catch (IOException exception){
             emitterRepository.deleteById(eventId);
 //            log.error("연결오류",exception);
             throw new RuntimeException("연결 오류");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
     }
@@ -121,16 +126,21 @@ public class NotificationService {
                 false);
 //        Notification notification = createNotification(receiver, liveRoom, content);
         String id =receiver.getArtist();
+
+
         notificationRepository.save(notification);
+        NotificationCacheDto notificationCacheDto = new NotificationCacheDto(notification);
+
+
         Map<String,SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
         log.info("6");
-        executor.execute(()-> sseEmitters.forEach(
+        sseEmitters.forEach(
                 (key,emitter)->{
-                    emitterRepository.saveEventCache(key,notification);
+                    emitterRepository.saveEventCache(key,notificationCacheDto);
                     sendNotification(emitter,key,new NotificationDetailsDto(notification));
 
                 }
-        ));
+        );
         log.info("7");
     }
 
