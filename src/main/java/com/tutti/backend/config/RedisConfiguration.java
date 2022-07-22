@@ -8,6 +8,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -47,7 +48,15 @@ public class RedisConfiguration {
         redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(messageChannel.class));
         return redisTemplate;
     }
-
+    @Bean
+    public StringRedisTemplate canversationTemplate() {
+        //      setConnectionFactory(connectionFactory);
+        // 		setKeySerializer(RedisSerializer.string());
+        //		setValueSerializer(RedisSerializer.string());
+        //		setHashKeySerializer(RedisSerializer.string());
+        //		setHashValueSerializer(RedisSerializer.string());
+        return new StringRedisTemplate(redisConnectionFactory()); // 이걸하면 위에 5개가 딸려옴.
+    }
 
 
 }
