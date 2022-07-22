@@ -28,7 +28,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
-@Transactional
 @Service
 public class NotificationService {
 
@@ -62,9 +61,9 @@ public class NotificationService {
         emitterRepository.save(emitterId,emitter);
         // 비동기 요청이 완료될 때
         // 시간초과, 네트워크 오류를 포함한 어던 이유로든 비동기 요청이 완료-> 레퍼지토리 삭제
-//        emitter.onCompletion(()->emitterRepository.deleteById(emitterId));
+        emitter.onCompletion(()->emitterRepository.deleteById(emitterId));
         //비동기 요청 시간이 초과 -> 레퍼지토리 삭제
-//        emitter.onTimeout(()->emitterRepository.deleteById(emitterId));
+        emitter.onTimeout(()->emitterRepository.deleteById(emitterId));
 
         // sseEmitter의 유효시간동안 데이터 전송이 없으면-> 503에러
         // 맨 처음 연결을 진행한다면 dummy데이터 전송
