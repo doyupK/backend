@@ -33,11 +33,11 @@ public class StompHandler implements ChannelInterceptor {
             String username = fullDestination.substring(16); // {username}인 nugget만 추출
             sessionUsername.set(sessionId, username);
             // 인원수 한명 추가
-            usernameCount.increment(username);
+            usernameCount.increment(username+2);
         } else if (SimpMessageType.DISCONNECT == accessor.getMessageType()) {
-            String username = sessionUsername.getAndDelete(sessionId); // 매핑해 둔 sessionId로 username 뽑아온 뒤 삭제
+            String username = sessionUsername.get(sessionId); // 매핑해 둔 sessionId로 username 뽑아온 뒤 삭제
             // 인원수 한명 감소
-            usernameCount.decrement(username);
+            usernameCount.decrement(username+2);
         }
         return message;
     }
