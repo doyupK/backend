@@ -1,5 +1,6 @@
 package com.tutti.backend.repository;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -13,9 +14,9 @@ public class EmitterRepository {
     public final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
     private final Map<String, Object> eventCache = new ConcurrentHashMap<>();
 
-    public SseEmitter save(String id, SseEmitter sseEmitter) {
+    @Async
+    public void save(String id, SseEmitter sseEmitter) {
         emitters.put(id, sseEmitter);
-        return sseEmitter;
     }
 
     public void saveEventCache(String id, Object event) {
