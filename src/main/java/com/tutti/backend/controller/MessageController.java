@@ -41,7 +41,7 @@ public class MessageController {
 
         HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
         ValueOperations<String, String> usernameCount = canversationTemplate.opsForValue();
-        message.setCount(String.valueOf(usernameCount.get(username)));
+        message.setCount(String.valueOf(usernameCount.get(username+2)));
 
         if (ho.hasKey(username, username)) { // 데이터가 있을때
             if(message.getStatus() == Status.JOIN){
