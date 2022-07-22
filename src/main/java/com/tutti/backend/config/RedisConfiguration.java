@@ -8,6 +8,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -24,6 +25,7 @@ public class RedisConfiguration {
     @Value("${spring.redis.password}")
     private String password;
 //
+
 
 
     @Bean
@@ -48,6 +50,15 @@ public class RedisConfiguration {
         return redisTemplate;
     }
 
-
+    @Bean
+    public StringRedisTemplate canversationTemplate() {
+        StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
+        stringRedisTemplate.setConnectionFactory(redisConnectionFactory());
+        stringRedisTemplate.setKeySerializer(new StringRedisSerializer());
+        stringRedisTemplate.setValueSerializer(new StringRedisSerializer());
+        //    setHashKeySerializer(RedisSerializer.string());
+        //    setHashValueSerializer(RedisSerializer.string());
+        return stringRedisTemplate;
+    }
 
 }
