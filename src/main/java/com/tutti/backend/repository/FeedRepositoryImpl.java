@@ -122,7 +122,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                     .from(feed)
                     .join(feed.user,user)
                     .where(feed.postType.eq("audio").and(feed.title.contains(keyword)))
-                    .limit(6)
+                    .limit(7)
                     .fetch();
     }
 
@@ -141,7 +141,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                 .from(feed)
                 .join(feed.user,user)
                 .where(feed.postType.eq("audio").and(feed.user.artist.contains(keyword)))
-                .limit(6)
+                .limit(7)
                 .fetch();
     }
 
@@ -158,7 +158,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                 .from(feed)
                 .join(feed.user,user)
                 .where(feed.postType.eq("video").and(feed.title.contains(keyword)))
-                .limit(4)
+                .limit(5)
                 .fetch();
     }
 
@@ -175,7 +175,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                 .from(feed)
                 .join(feed.user,user)
                 .where(feed.postType.eq("video").and(feed.user.artist.contains(keyword)))
-                .limit(4)
+                .limit(5)
                 .fetch();
     }
 
