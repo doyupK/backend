@@ -54,9 +54,9 @@ public class NotificationService {
         emitterRepository.save(emitterId,emitter);
         // 비동기 요청이 완료될 때
         // 시간초과, 네트워크 오류를 포함한 어던 이유로든 비동기 요청이 완료-> 레퍼지토리 삭제
-//        emitter.onCompletion(()->emitterRepository.deleteById(emitterId));
+        emitter.onCompletion(()->emitterRepository.deleteById(emitterId));
         //비동기 요청 시간이 초과 -> 레퍼지토리 삭제
-//        emitter.onTimeout(()->emitterRepository.deleteById(emitterId));
+        emitter.onTimeout(()->emitterRepository.deleteById(emitterId));
 
         // sseEmitter의 유효시간동안 데이터 전송이 없으면-> 503에러
         // 맨 처음 연결을 진행한다면 dummy데이터 전송
@@ -83,7 +83,7 @@ public class NotificationService {
         eventCaches.entrySet().stream()
                 .filter(entry->lastEventId.compareTo(entry.getKey())<0)
                 .forEach(entry->sendNotification(emitter, entry.getKey(),entry.getValue()));
-        log.info("4");
+        log.info("잃은 데이터 갖고와");
 
     }
 
@@ -99,7 +99,7 @@ public class NotificationService {
                         .data(data));
                 Thread.sleep( 1000);
 
-                log.info("1");
+                log.info("실제 전송 메서드");
             }catch (IOException exception){
                 emitterRepository.deleteById(eventId);
     //            log.error("연결오류",exception);
@@ -129,7 +129,7 @@ public class NotificationService {
 
 
         Map<String,SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
-        log.info("6");
+        log.info("이미터 이벤트 생성");
         sseEmitters.forEach(
                 (key,emitter)->{
                     emitterRepository.saveEventCache(key,notificationCacheDto);
@@ -137,7 +137,7 @@ public class NotificationService {
 
                 }
         );
-        log.info("7");
+        log.info("이벤트 송신 완료");
     }
 
 
