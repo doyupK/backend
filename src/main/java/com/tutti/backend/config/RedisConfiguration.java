@@ -50,7 +50,7 @@ public class RedisConfiguration {
         return redisTemplate;
     }
 
-    @Bean
+    @Bean(name = "stringTemplate")
     public StringRedisTemplate canversationTemplate() {
         StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
         stringRedisTemplate.setConnectionFactory(redisConnectionFactory());

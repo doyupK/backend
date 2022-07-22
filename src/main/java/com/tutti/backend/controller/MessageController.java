@@ -15,6 +15,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +32,8 @@ public class MessageController {
     @Autowired
     private RedisTemplate<String, messageChannel> conversationTemplate;
 
-    @Autowired
-    private StringRedisTemplate canversationTemplate;
+    @Resource(name = "stringTemplate")
+    private ValueOperations<String,String > usernameCount;
 
 
     @MessageMapping({"/message","/message/{username}"}) // /app/message 이리로 보내면  (공개대화방 )
@@ -40,7 +41,6 @@ public class MessageController {
     public Message receiveMessage(@Payload Message message, @DestinationVariable String username){
 
         HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
-        ValueOperations<String, String> usernameCount = canversationTemplate.opsForValue();
         message.setCount(String.valueOf(usernameCount.get(username)));
 
         if (ho.hasKey(username, username)) { // 데이터가 있을때

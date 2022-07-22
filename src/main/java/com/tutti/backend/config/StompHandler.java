@@ -11,16 +11,20 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
+
 @Component
 @RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
-    @Autowired
-    private StringRedisTemplate canversationTemplate;
+    @Resource(name = "stringTemplate")
+    private ValueOperations<String,String > usernameCount;
+    @Resource(name = "stringTemplate")
+    private ValueOperations<String,String > sessionUsername;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        ValueOperations<String, String> usernameCount = canversationTemplate.opsForValue(); // 여기에는 username과 인원수가 들어간다. < K , V > -> < username, count >
-        ValueOperations<String, String> sessionUsername = canversationTemplate.opsForValue(); // 여기에는 sessionId와 username이  들어간다.  < K, V > -> < sessionId, username > 이렇게 맵핑
+//        ValueOperations<String, String> usernameCount = canversationTemplate.opsForValue(); // 여기에는 username과 인원수가 들어간다. < K , V > -> < username, count >
+//        ValueOperations<String, String> sessionUsername = canversationTemplate.opsForValue(); // 여기에는 sessionId와 username이  들어간다.  < K, V > -> < sessionId, username > 이렇게 맵핑
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message); // 주어진 메시지의 페이로드와 헤더에서 인스턴스를 만듭니다.
         String sessionId = accessor.getSessionId(); // 해당 유저의 세션 아이디
 
