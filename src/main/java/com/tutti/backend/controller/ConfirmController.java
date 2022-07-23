@@ -30,5 +30,10 @@ public class ConfirmController {
         userService.confirmEmail(token);
         return "redirect:/page";
     }
+
+    @GetMapping("/test")
+    public String testPage() {
+        return "test.html";
+    }
 }
 
