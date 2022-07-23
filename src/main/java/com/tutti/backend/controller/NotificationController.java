@@ -3,15 +3,18 @@ package com.tutti.backend.controller;
 import com.tutti.backend.security.UserDetailsImpl;
 import com.tutti.backend.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.StandardException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class NotificationController {
 

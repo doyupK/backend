@@ -5,6 +5,8 @@ import com.tutti.backend.domain.Notification;
 import com.tutti.backend.domain.User;
 import com.tutti.backend.dto.Notification.NotificationCacheDto;
 import com.tutti.backend.dto.Notification.NotificationDetailsDto;
+import com.tutti.backend.exception.CustomException;
+import com.tutti.backend.exception.ErrorCode;
 import com.tutti.backend.repository.EmitterRepository;
 import com.tutti.backend.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,7 @@ import java.util.concurrent.Executors;
 public class NotificationService {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
-    private static final Long DEFAULT_TIMEOUT=60L*1000*60;
+    private static final Long DEFAULT_TIMEOUT=20L*1000;
     private final ExecutorService sseMvcExecutor = Executors.newSingleThreadExecutor();
 
 //    @PostConstruct
@@ -61,7 +63,12 @@ public class NotificationService {
         // 시간초과, 네트워크 오류를 포함한 어던 이유로든 비동기 요청이 완료-> 레퍼지토리 삭제
         emitter.onCompletion(()->emitterRepository.deleteById(id));
         //비동기 요청 시간이 초과 -> 레퍼지토리 삭제
-        emitter.onTimeout(()->emitterRepository.deleteById(id));
+        emitter.onTimeout(() -> {
+            emitterRepository.deleteById(id);
+            log.info("완료처리");
+            emitter.complete();
+            throw new CustomException(ErrorCode.WRONG_FILE_TYPE);
+        });
 
         // sseEmitter의 유효시간동안 데이터 전송이 없으면-> 503에러
         // 맨 처음 연결을 진행한다면 dummy데이터 전송
@@ -102,7 +109,7 @@ public class NotificationService {
             try{
                 emitter.send(SseEmitter.event()
                         .id(eventId)
-                        .name("sse")
+                        .name("live")
                         .data(data));
 
                 Thread.sleep( 1000);
@@ -117,6 +124,7 @@ public class NotificationService {
             }
 //        });
     }
+
 // ------------------------- 데이터 전송 -----------------------------
 
     // 알림 받을 회원을 찾고 emitter들을 모두 찾아 send
@@ -126,7 +134,7 @@ public class NotificationService {
                 receiver,
                 liveRoom,
                 content,
-                "/chatRoom/"+liveRoom.getUser().getArtist(),
+                "/live/"+liveRoom.getUser().getArtist(),
                 false);
 //        Notification notification = createNotification(receiver, liveRoom, content);
         String id =receiver.getArtist();
