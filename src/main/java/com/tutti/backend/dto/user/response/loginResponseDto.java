@@ -12,4 +12,5 @@ public class loginResponseDto {
     String message;
     String artist;
     String profileUrl;
+    String expiredTime;
 }

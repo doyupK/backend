@@ -19,6 +19,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.cors.CorsUtils;
 
 import java.util.ArrayList;
@@ -34,12 +36,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final HeaderTokenExtractor headerTokenExtractor;
 
     private final AuthenticationFailureHandler customFailureHandler;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     public WebSecurityConfig(JWTAuthProvider jwtAuthProvider, HeaderTokenExtractor headerTokenExtractor,
-                             AuthenticationFailureHandler customFailureHandler) {
+                             AuthenticationFailureHandler customFailureHandler, JwtExceptionFilter jwtExceptionFilter)
+    {
         this.jwtAuthProvider = jwtAuthProvider;
         this.headerTokenExtractor = headerTokenExtractor;
         this.customFailureHandler = customFailureHandler;
+        this.jwtExceptionFilter = jwtExceptionFilter;
     }
 
     @Bean
@@ -66,8 +71,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.headers().frameOptions().disable();
-
-        http.addFilterBefore(formLoginFilter(), UsernamePasswordAuthenticationFilter.class)
+        http.addFilterAfter(jwtExceptionFilter, LogoutFilter.class) // LogoutFilter 다음으로 doFilter 참여
+                .addFilterBefore(formLoginFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
 
