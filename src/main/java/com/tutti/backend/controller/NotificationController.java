@@ -2,6 +2,7 @@ package com.tutti.backend.controller;
 
 import com.tutti.backend.security.UserDetailsImpl;
 import com.tutti.backend.service.NotificationService;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.StandardException;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping(value = "/subscribe/{id}",produces = "text/event-stream")
+    @Timed(value = "Notification subscribe", description = "Time to Create emitter")
     public SseEmitter subscribe(
             @PathVariable String id,
 //            @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -30,7 +32,7 @@ public class NotificationController {
 
         SseEmitter sseEmitter=notificationService.subscribe(id,lastEventId);
         log.info("5");
-        System.out.println(sseEmitter.toString());
+
         return sseEmitter;
     }
 }
