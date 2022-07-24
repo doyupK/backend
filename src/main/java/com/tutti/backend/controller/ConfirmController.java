@@ -1,6 +1,7 @@
 package com.tutti.backend.controller;
 
 import com.tutti.backend.service.UserService;
+import io.micrometer.core.annotation.Timed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,7 @@ public class ConfirmController {
     }
 
     @GetMapping("/confirm-email")
+    @Timed(value = "Confirm Email", description = "Time to confirm E-mail")
     public String viewConfirmEmail(@Valid @RequestParam String token) {
         userService.confirmEmail(token);
         return "redirect:/page";

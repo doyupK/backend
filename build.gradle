@@ -78,6 +78,12 @@ dependencies {
     //로그
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
 
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-aop
+    // Method Run Time Metrics
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '2.6.6'
+
+
 }
 
 //querydsl에서 사용할 경로를 선언

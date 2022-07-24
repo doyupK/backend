@@ -18,10 +18,10 @@ management:
     tags:
       application: ${spring.application.name}
 
-
-logging:
-  level:
-    com.zaxxer.hikari.HikariConfig: DEBUG
-    com.zaxxer.hikari: TRACE
+#  hikari pool status check
+#logging:
+#  level:
+#    com.zaxxer.hikari.HikariConfig: DEBUG
+#    com.zaxxer.hikari: TRACE
 
 

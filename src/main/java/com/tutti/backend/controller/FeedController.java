@@ -7,6 +7,7 @@ import com.tutti.backend.security.UserDetailsImpl;
 import com.tutti.backend.security.jwt.HeaderTokenExtractor;
 import com.tutti.backend.security.jwt.JwtDecoder;
 import com.tutti.backend.service.FeedService;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,7 @@ public class FeedController {
 
     // 메인 페이지
     @GetMapping("/")
+    @Timed(value = "Get Main page", description = "Time to Get Main page response")
     public ResponseEntity<?> getMainPage(HttpServletRequest httpServletRequest) {
         String jwtToken = httpServletRequest.getHeader("Authorization");
         if (Objects.equals(jwtToken, "")) {
@@ -43,6 +45,7 @@ public class FeedController {
 
     // 최신 순 전체 피드 따로 가져오기
     @GetMapping("/feeds")
+    @Timed(value = "Get All Feed Data", description = "Time to Get All Feed Data")
     public ResponseEntity<?> getFeedPage(
             @RequestParam String postType
             ,@RequestParam(required = false) String genre
@@ -62,6 +65,7 @@ public class FeedController {
 
     // 피드 작성
     @PostMapping("/feeds/upload")
+    @Timed(value = "Write feed", description = "Time to write feed")
     public ResponseEntity<?> createFeed(
             @RequestPart FeedRequestDto feedRequestDto,
             @RequestPart MultipartFile albumImage,
@@ -74,6 +78,7 @@ public class FeedController {
 
     // 피드 수정
     @PutMapping("/feeds/{feedId}")
+    @Timed(value = "Modify feed", description = "Time to modify feed")
     public ResponseEntity<?> updateFeed(
             @PathVariable Long feedId,
             @RequestBody FeedUpdateRequestDto feedUpdateRequestDto,
@@ -86,6 +91,7 @@ public class FeedController {
 
     // 피드 상세 조회
     @GetMapping("/feeds/{feedId}")
+    @Timed(value = "Get feed detail page", description = "Time to Get feed detail page response")
     public ResponseEntity<?> getFeed(
             @PathVariable Long feedId,
             HttpServletRequest httpServletRequest
@@ -95,6 +101,7 @@ public class FeedController {
     }
     // 피드 삭제
     @DeleteMapping("/feeds/{feedId}")
+    @Timed(value = "Delete feed", description = "Time to delete feed")
     public ResponseEntity<?> deleteFeed(
             @PathVariable Long feedId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -105,6 +112,7 @@ public class FeedController {
     }
     // 피드 검색
     @GetMapping("/search")
+    @Timed(value = "Search page", description = "Time to Get search response")
     public ResponseEntity<?> searchFeed(@RequestParam String keyword){
         return feedService.searchFeed(keyword);
     }
