@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 public class NotificationService {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
-    private static final Long DEFAULT_TIMEOUT=20L*1000;
+    private static final Long DEFAULT_TIMEOUT=60L*1000 *2;
     private final ExecutorService sseMvcExecutor = Executors.newSingleThreadExecutor();
 
 //    @PostConstruct
@@ -65,7 +65,7 @@ public class NotificationService {
         //비동기 요청 시간이 초과 -> 레퍼지토리 삭제
         emitter.onTimeout(() -> {
             emitterRepository.deleteById(id);
-            log.info("완료처리");
+            log.info("Emitter : {} 만료",id);
             emitter.complete();
             throw new CustomException(ErrorCode.WRONG_FILE_TYPE);
         });
@@ -74,8 +74,6 @@ public class NotificationService {
         // 맨 처음 연결을 진행한다면 dummy데이터 전송
         sendNotification(emitter, id, "EventStream Created. userId = " + id);
 
-        log.info("3");
-        log.info(lastEventId);
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 event 유실 예방
 //        if(!lastEventId.isEmpty()){
@@ -105,16 +103,16 @@ public class NotificationService {
 
     public void sendNotification(SseEmitter emitter, String eventId, Object data) {
 
-//        sseMvcExecutor.execute( () -> {
+        sseMvcExecutor.execute( () -> {
             try{
                 emitter.send(SseEmitter.event()
                         .id(eventId)
                         .name("live")
                         .data(data));
-
                 Thread.sleep( 1000);
-
-                log.info("실제 전송 메서드:"+data.toString() );
+                log.info("실제 전송 메서드: {}", data);
+                int coreCount = Runtime.getRuntime().availableProcessors();
+                log.info("활성 스레드 : {}", coreCount);
             }catch (IOException exception){
                 emitterRepository.deleteById(eventId);
     //            log.error("연결오류",exception);
@@ -122,7 +120,7 @@ public class NotificationService {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-//        });
+        });
     }
 
 // ------------------------- 데이터 전송 -----------------------------
@@ -156,19 +154,6 @@ public class NotificationService {
         log.info("이벤트 송신 완료");
     }
 
-
-    private String makeTimeId(String id) {
-        return id+"_"+System.currentTimeMillis();
-    }
-
-    private void sleep(int seconds, SseEmitter sseEmitter) {
-        try {
-            Thread.sleep(seconds * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            sseEmitter.completeWithError(e);
-        }
-    }
 
 
 }

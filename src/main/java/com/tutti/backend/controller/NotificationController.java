@@ -1,15 +1,11 @@
 package com.tutti.backend.controller;
 
-import com.tutti.backend.security.UserDetailsImpl;
+
 import com.tutti.backend.service.NotificationService;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.StandardException;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -30,9 +26,6 @@ public class NotificationController {
                                 @RequestHeader(value="lastEventId",required = false,defaultValue = "") String lastEventId
     ){
 
-        SseEmitter sseEmitter=notificationService.subscribe(id,lastEventId);
-        log.info("5");
-
-        return sseEmitter;
+        return notificationService.subscribe(id,lastEventId);
     }
 }
