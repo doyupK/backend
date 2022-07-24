@@ -36,10 +36,8 @@ public enum ErrorCode {
     WRONG_FILE_TYPE(HttpStatus.BAD_REQUEST,"405_1", "잘못된 형식의 파일입니다."),
     FAIL_FILE_UPLOAD(HttpStatus.INTERNAL_SERVER_ERROR,"405_2", "파일 업로드에 실패하였습니다."),
 
-
-
-    ;
-
+    EXPIRED_JWT(HttpStatus.UNAUTHORIZED,"401_1","JWT 시간이 만료되었습니다."),
+    AUTHENTICATION_FAILURE_JWT(HttpStatus.UNAUTHORIZED,"401_2","올바른 JWT 정보가 아닙니다.");
 
 
 
