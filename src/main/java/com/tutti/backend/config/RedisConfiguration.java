@@ -56,8 +56,6 @@ public class RedisConfiguration {
         stringRedisTemplate.setConnectionFactory(redisConnectionFactory());
         stringRedisTemplate.setKeySerializer(new StringRedisSerializer());
         stringRedisTemplate.setValueSerializer(new StringRedisSerializer());
-        //    setHashKeySerializer(RedisSerializer.string());
-        //    setHashValueSerializer(RedisSerializer.string());
         return stringRedisTemplate;
     }
 
