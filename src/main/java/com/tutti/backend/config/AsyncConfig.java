@@ -23,7 +23,7 @@ public class AsyncConfig extends AsyncConfigurerSupport {
 //        MaxPoolSize가 넘어가는 스레드 요청 시 Queue에 저장하는데, 최대 Queue에 저장 가능한 개수
         executor.setQueueCapacity(100);
 //        생선되는 스레드의 접두사
-        executor.setThreadNamePrefix("unsplash-ASYNC-");
+        executor.setThreadNamePrefix("tutti_ASYC_THREAD");
         executor.initialize();
         return executor;
     }
