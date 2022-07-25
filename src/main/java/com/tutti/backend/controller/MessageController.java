@@ -70,7 +70,7 @@ public class MessageController {
         simpMessagingTemplate.convertAndSend("/chatroom/public"+username,message);
         return message;
     }
-    @SubscribeMapping("/subscribe")
+    @SubscribeMapping("/chatroom/public{username}")
     public List<Message> subscribeMessage(@Payload Message message, @DestinationVariable String username){
         HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
         ValueOperations<String, String> usernameCount = canversationTemplate.opsForValue();
