@@ -133,7 +133,7 @@ public class LiveRoomService {
 
         if (artist.equals(liveRoom.getUser().getArtist())) {
             HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
-            ValueOperations<String, String> sessionUsername = canversationTemplate.opsForValue();
+            ValueOperations<String, String> usernameCount = canversationTemplate.opsForValue();
 
             messageChannel messageChannel = ho.get(artist, artist);
 
@@ -147,7 +147,7 @@ public class LiveRoomService {
 
             liveRoom.setOnAir(false);
             Long num = ho.delete(artist, artist);
-            sessionUsername.getAndDelete(artist);
+            usernameCount.getAndDelete(artist+2);
             log.info(num.toString());
         }else {
             throw new CustomException(ErrorCode.WRONG_USER);
