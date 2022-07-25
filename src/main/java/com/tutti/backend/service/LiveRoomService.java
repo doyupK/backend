@@ -20,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +44,7 @@ public class LiveRoomService {
             "https://file-bucket-seyeol.s3.ap-northeast-2.amazonaws.com/e3e0395b-8d12-4645-96ce-bc6dd2b85ab8.png";
 
     private RedisTemplate<String, messageChannel> conversationTemplate;
+    private StringRedisTemplate canversationTemplate;
 
     private final NotificationService notificationService;
     private final FollowRepository followRepository;
@@ -54,6 +57,7 @@ public class LiveRoomService {
                        JwtDecoder jwtDecoder,
                        LiveRoomRepository liveRoomRepository,
                        RedisTemplate<String, messageChannel> conversationTemplate,
+                       StringRedisTemplate canversationTemplate,
                        NotificationService notificationService,
                        LiveRoomMessageRepository liveRoomMessageRepository,
                        FollowRepository followRepository
@@ -64,6 +68,7 @@ public class LiveRoomService {
         this.jwtDecoder = jwtDecoder;
         this.liveRoomRepository = liveRoomRepository;
         this.conversationTemplate = conversationTemplate;
+        this.canversationTemplate = canversationTemplate;
         this.notificationService=notificationService;
         this.followRepository=followRepository;
         this.liveRoomMessageRepository=liveRoomMessageRepository;
@@ -128,6 +133,7 @@ public class LiveRoomService {
 
         if (artist.equals(liveRoom.getUser().getArtist())) {
             HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
+            ValueOperations<String, String> sessionUsername = canversationTemplate.opsForValue();
 
             messageChannel messageChannel = ho.get(artist, artist);
 
@@ -141,6 +147,7 @@ public class LiveRoomService {
 
             liveRoom.setOnAir(false);
             Long num = ho.delete(artist, artist);
+            sessionUsername.getAndDelete(artist);
             log.info(num.toString());
         }else {
             throw new CustomException(ErrorCode.WRONG_USER);
