@@ -5,6 +5,7 @@ import com.tutti.backend.domain.ConfirmationToken;
 import com.tutti.backend.repository.ConfirmationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ public class ConfirmationTokenService {
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final EmailSenderService emailSenderService;
 
-
+    @Async
     public void createEmailConfirmationToken(String receiverEmail) {
 
 
