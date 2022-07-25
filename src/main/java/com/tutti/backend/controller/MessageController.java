@@ -5,11 +5,13 @@ import com.tutti.backend.dto.chatDto.Status;
 import com.tutti.backend.dto.chatDto.messageChannel;
 import com.tutti.backend.dto.chatDto.Message;
 import io.micrometer.core.annotation.Timed;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.messaging.handler.MessagingAdviceBean;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -24,6 +26,7 @@ import java.util.UUID;
 
 
 @Controller
+@Slf4j
 public class MessageController {
     HashMap<String, messageChannel> hashMap = new HashMap<>();
 
@@ -51,7 +54,6 @@ public class MessageController {
 //                messageChannel messageChannel = ho.get(username, username);
 //                List<Message> messages = messageChannel.getMessageList();
 //                simpMessagingTemplate.convertAndSend("/chatroom/public"+username,messages);
-//                simpMessagingTemplate.send();
 //                return message;
 //            }
             messageChannel messageChannel = ho.get(username, username);
@@ -71,15 +73,16 @@ public class MessageController {
         return message;
     }
     @SubscribeMapping("/chatroom/public{username}")
-    public List<Message> subscribeMessage(@Payload Message message, @DestinationVariable String username){
+    public Message subscribeMessage(@Payload Message message, @DestinationVariable String username){
         HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
         ValueOperations<String, String> usernameCount = canversationTemplate.opsForValue();
         message.setCount(String.valueOf(usernameCount.get(username+2)));
-
+        log.info("subscribe");
         messageChannel messageChannel = ho.get(username, username);
+        List<Message> messages = messageChannel.getMessageList();
+        simpMessagingTemplate.convertAndSend("/chatroom/public"+username,messages);
 
-
-        return messageChannel.getMessageList();
+        return message;
     }
 
 }
