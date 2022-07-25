@@ -14,6 +14,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
@@ -46,12 +47,13 @@ public class MessageController {
         message.setCount(String.valueOf(usernameCount.get(username+2)));
 
         if (ho.hasKey(username, username)) { // 데이터가 있을때
-            if(message.getStatus() == Status.JOIN){
-                messageChannel messageChannel = ho.get(username, username);
-                List<Message> messages = messageChannel.getMessageList();
-                simpMessagingTemplate.convertAndSend("/chatroom/public"+username,messages);
-                return message;
-            }
+//            if(message.getStatus() == Status.JOIN){
+//                messageChannel messageChannel = ho.get(username, username);
+//                List<Message> messages = messageChannel.getMessageList();
+//                simpMessagingTemplate.convertAndSend("/chatroom/public"+username,messages);
+//                simpMessagingTemplate.send();
+//                return message;
+//            }
             messageChannel messageChannel = ho.get(username, username);
             messageChannel.getMessageList().add(message);
             ho.put(username, username, messageChannel);
@@ -67,6 +69,17 @@ public class MessageController {
         }
         simpMessagingTemplate.convertAndSend("/chatroom/public"+username,message);
         return message;
+    }
+    @SubscribeMapping("/subscribe")
+    public List<Message> subscribeMessage(@Payload Message message, @DestinationVariable String username){
+        HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
+        ValueOperations<String, String> usernameCount = canversationTemplate.opsForValue();
+        message.setCount(String.valueOf(usernameCount.get(username+2)));
+
+        messageChannel messageChannel = ho.get(username, username);
+
+
+        return messageChannel.getMessageList();
     }
 
 }

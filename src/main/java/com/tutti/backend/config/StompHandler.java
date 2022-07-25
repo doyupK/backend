@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.SimpMessageType;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,9 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     private StringRedisTemplate canversationTemplate;
     @Autowired
