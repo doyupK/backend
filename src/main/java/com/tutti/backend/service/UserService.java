@@ -109,6 +109,9 @@ public class UserService {
         if(user.isPresent()){
             throw new CustomException(ErrorCode.EXIST_EMAIL);
         }
+        if(confirmationTokenRepository.existsByUserEmail(emailRequestDto.getEmail())){
+            throw new CustomException(ErrorCode.AlREADY_SENT_AUTH_EMAIL);
+        }
         //      Email 전송 (비동기 함수)
         confirmationTokenService.createEmailConfirmationToken(emailRequestDto.getEmail());
         signupResponseDto.setSuccess(200);
