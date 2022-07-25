@@ -7,8 +7,12 @@ import com.tutti.backend.security.UserDetailsImpl;
 import com.tutti.backend.security.jwt.HeaderTokenExtractor;
 import com.tutti.backend.security.jwt.JwtDecoder;
 import com.tutti.backend.service.FeedService;
+import com.tutti.backend.service.NotificationService;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +25,8 @@ import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class FeedController {
-
     private final FeedService feedService;
     private final HeaderTokenExtractor headerTokenExtractor;
     private final JwtDecoder jwtDecoder;
