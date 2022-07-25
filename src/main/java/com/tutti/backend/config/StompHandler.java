@@ -19,8 +19,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
 
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+
     @Autowired
     private StringRedisTemplate canversationTemplate;
     @Autowired
