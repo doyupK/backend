@@ -1,5 +1,6 @@
 package com.tutti.backend.repository;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -29,6 +30,11 @@ public class EmitterRepository {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    public Boolean findById(String id) {
+        return emitters.containsKey(id);
+    }
+
+
     public Map<String, Object> findAllEventCacheStartWithId(String id) {
         return eventCache.entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith(id))
@@ -47,6 +53,16 @@ public class EmitterRepository {
 
     public void deleteById(String id) {
         emitters.remove(id);
+    }
+
+    public void deleteAllById(String id) {
+        emitters.forEach(
+                (key, data) -> {
+                    if (key.startsWith(id)) {
+                        emitters.remove(key);
+                    }
+                }
+        );
     }
 
     public void deleteAllEventCacheStartWithId(String id) {

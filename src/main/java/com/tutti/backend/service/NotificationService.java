@@ -54,26 +54,31 @@ public class NotificationService {
 
     public SseEmitter subscribe(String Id, String lastEventId) {
 
+
+        Boolean emitterCheck = emitterRepository.findById(Id);
 // 1
-        String id = Id+"_" + System.currentTimeMillis();
+        if(emitterCheck)
+        {
+           emitterRepository.deleteById(Id);
+        }
         // emitter 생성, 유효 시간만큼 sse 연결 유지, 만료시 자동으로 클라이언트에서 재요청
         SseEmitter emitter =new SseEmitter(DEFAULT_TIMEOUT);
 
-        emitterRepository.save(id,emitter);
+        emitterRepository.save(Id,emitter);
         // 비동기 요청이 완료될 때
         // 시간초과, 네트워크 오류를 포함한 어던 이유로든 비동기 요청이 완료-> 레퍼지토리 삭제
-        emitter.onCompletion(()->emitterRepository.deleteById(id));
+        emitter.onCompletion(()->emitterRepository.deleteById(Id));
         //비동기 요청 시간이 초과 -> 레퍼지토리 삭제
         emitter.onTimeout(() -> {
-            emitterRepository.deleteById(id);
-            log.info("Emitter : {} 만료",id);
+            emitterRepository.deleteById(Id);
+            log.info("Emitter : {} 만료", Id);
             emitter.complete();
             throw new CustomException(ErrorCode.WRONG_FILE_TYPE);
         });
         log.info("emitter 생성");
         // sseEmitter의 유효시간동안 데이터 전송이 없으면-> 503에러
         // 맨 처음 연결을 진행한다면 dummy데이터 전송
-        sendNotification(emitter, id, "EventStream Created. userId = " + id);
+        sendNotification(emitter, Id, "EventStream Created. userId = " + Id);
 
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 event 유실 예방
