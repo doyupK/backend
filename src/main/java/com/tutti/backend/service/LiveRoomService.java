@@ -147,7 +147,7 @@ public class LiveRoomService {
 
             liveRoom.setOnAir(false);
             Long num = ho.delete(artist, artist);
-            usernameCount.getAndDelete(artist+2);
+            usernameCount.getAndDelete(artist+"2");
             log.info(num.toString());
         }else {
             throw new CustomException(ErrorCode.WRONG_USER);

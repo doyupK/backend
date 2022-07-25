@@ -1,7 +1,10 @@
 package com.tutti.backend.config;
 
+import com.tutti.backend.dto.chatDto.messageChannel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.messaging.Message;
@@ -16,13 +19,15 @@ import org.springframework.stereotype.Component;
 public class StompHandler implements ChannelInterceptor {
     @Autowired
     private StringRedisTemplate canversationTemplate;
-
+    @Autowired
+    private RedisTemplate<String, messageChannel> conversationTemplate;
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         // username과 인원수 저장 < K , V > -> < username, count >
         ValueOperations<String, String> usernameCount = canversationTemplate.opsForValue();
         // sessionId와 username 저장  < K, V > -> < sessionId, username > 이렇게 맵핑
         ValueOperations<String, String> sessionUsername = canversationTemplate.opsForValue();
+        HashOperations<String, String, messageChannel> hashOperations = conversationTemplate.opsForHash();
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         String sessionId = accessor.getSessionId(); // 해당 유저의 세션 아이디
 
@@ -36,6 +41,9 @@ public class StompHandler implements ChannelInterceptor {
             String username = sessionUsername.getAndDelete(sessionId); // sessionId로 username 가져온 뒤 삭제
             // 인원수 한명 감소
             usernameCount.decrement(username+2);
+            if(Integer.parseInt(usernameCount.get(username+2)) < 1 ){
+                usernameCount.getAndDelete(username+2);
+            }
         }
         return message;
     }
