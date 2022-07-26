@@ -4,6 +4,7 @@ package com.tutti.backend.controller;
 import com.tutti.backend.dto.chatDto.Status;
 import com.tutti.backend.dto.chatDto.messageChannel;
 import com.tutti.backend.dto.chatDto.Message;
+import com.tutti.backend.security.UserDetailsImpl;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
@@ -43,7 +45,7 @@ public class MessageController {
     @MessageMapping({"/message","/message/{username}"}) // /app/message 이리로 보내면  (공개대화방 )
 //    @SendTo("/chatroom/public") // 처리를 마친 후 이리로 메세지를 보내겠다. 이리로 다 보내라?
     @Timed(value = "Message", description = "Time to Send and Save Message")
-    public Message receiveMessage(@Payload Message message, @DestinationVariable String username){
+    public Message receiveMessage(@Payload Message message, @DestinationVariable String username, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
         ValueOperations<String, String> usernameCount = canversationTemplate.opsForValue();
@@ -62,7 +64,7 @@ public class MessageController {
         }
         else { // 데이터가 없을때
 
-            if(message.getStatus() == Status.JOIN && !message.getSenderName().contains(username)){
+            if(message.getStatus() == Status.JOIN && !userDetails.getUser().getArtist().contains(username)){
 //                messageChannel messageChannel = ho.get(username, username);
 //                List<Message> messages = messageChannel.getMessageList();
 //                simpMessagingTemplate.convertAndSend("/chatroom/public"+username,messages);
