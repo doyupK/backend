@@ -116,6 +116,8 @@ public class LiveRoomService {
                         ,emptyMessageList);
         Message message = new Message();
         message.setMessage("방송을 시작합니다.");
+        message.setSenderName(userDetails.getUser().getArtist());
+        message.setProfileImage(userDetails.getUser().getProfileUrl());
         newMessageChannel.getMessageList().add(message);
 
         ho.put(userDetails.getUser().getArtist(), userDetails.getUser().getArtist(), newMessageChannel);
