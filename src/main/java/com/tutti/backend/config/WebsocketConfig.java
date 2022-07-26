@@ -23,7 +23,7 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/wss").setAllowedOriginPatterns("*").setAllowedOriginPatterns("**")
+        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").setAllowedOriginPatterns("**")
                 .setAllowedOrigins("https://tuttimusic.shop","https://localhost:3000").withSockJS(); // SockJS = 웹소켓을지원하지 않는브라우저환경에는 비슷한경험제공
     }
 
