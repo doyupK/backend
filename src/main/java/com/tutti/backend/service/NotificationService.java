@@ -69,6 +69,7 @@ public class NotificationService {
         // 맨 처음 연결을 진행한다면 dummy데이터 전송
         sendNotification(emitter, Id, "EventStream Created. userId = " + Id);
 
+
         return emitter;
 
     }
