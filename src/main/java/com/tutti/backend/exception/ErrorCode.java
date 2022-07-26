@@ -26,7 +26,7 @@ public enum ErrorCode {
     NOT_EXISTS_KAKAOEMAIL(HttpStatus.BAD_REQUEST, "400_12", "카카오 이메일이 존재하지 않습니다."),
     ENOUGH_LIVE_ROOM(HttpStatus.BAD_REQUEST, "400_13", "라이브 채널은 하나만 켜주세요."),
     NOT_AUTH_EMAIL(HttpStatus.BAD_REQUEST,"400_14","이메일 인증이 완료되지 않았습니다."),
-    AlREADY_SENT_AUTH_EMAIL(HttpStatus.BAD_REQUEST,"400_14","이미 이메일 인증이 발송된 이메일입니다."),
+    AlREADY_SENT_AUTH_EMAIL(HttpStatus.BAD_REQUEST,"400_15","이미 이메일 인증이 발송된 이메일입니다."),
     // 404 Not Found
     NOT_FOUND_FEED(HttpStatus.NOT_FOUND, "404_1", "해당 피드가 존재하지 않습니다."),
     NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "404_2", "해당 댓글이 존재하지 않습니다."),
