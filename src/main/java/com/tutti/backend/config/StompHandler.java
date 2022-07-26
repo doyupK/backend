@@ -36,10 +36,12 @@ public class StompHandler implements ChannelInterceptor {
 
         if (SimpMessageType.SUBSCRIBE == accessor.getMessageType()) {
             String fullDestination = accessor.getDestination(); // /chatroom/public{username} 추출
-            String username = fullDestination.substring(16); // {username}인 nugget만 추출
-            sessionUsername.set(sessionId, username);
-            // 인원수 한명 추가
-            usernameCount.increment(username+2);
+            if(fullDestination.substring(0,2).contains("/c")){
+                String username = fullDestination.substring(16); // {username}인 nugget만 추출
+                sessionUsername.set(sessionId, username);
+                // 인원수 한명 추가
+                usernameCount.increment(username+2);
+            }
         } else if (SimpMessageType.DISCONNECT == accessor.getMessageType()) {
             String username = sessionUsername.getAndDelete(sessionId); // sessionId로 username 가져온 뒤 삭제
             // 인원수 한명 감소
