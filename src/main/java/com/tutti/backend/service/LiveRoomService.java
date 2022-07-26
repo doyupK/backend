@@ -35,10 +35,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class LiveRoomService {
-    private final UserRepository userRepository;
     private final S3Service service;
-    private final HeaderTokenExtractor headerTokenExtractor;
-    private final JwtDecoder jwtDecoder;
     private final LiveRoomRepository liveRoomRepository;
     private final LiveRoomMessageRepository liveRoomMessageRepository;
     private final static String defaultThumbnailImageUrl =
@@ -52,10 +49,7 @@ public class LiveRoomService {
 
     @Autowired
     public LiveRoomService(
-                       UserRepository userRepository,
                        S3Service service,
-                       HeaderTokenExtractor headerTokenExtractor,
-                       JwtDecoder jwtDecoder,
                        LiveRoomRepository liveRoomRepository,
                        RedisTemplate<String, messageChannel> conversationTemplate,
                        StringRedisTemplate canversationTemplate,
@@ -63,10 +57,7 @@ public class LiveRoomService {
                        LiveRoomMessageRepository liveRoomMessageRepository,
                        FollowRepository followRepository
     ) {
-        this.userRepository = userRepository;
         this.service = service;
-        this.headerTokenExtractor = headerTokenExtractor;
-        this.jwtDecoder = jwtDecoder;
         this.liveRoomRepository = liveRoomRepository;
         this.conversationTemplate = conversationTemplate;
         this.canversationTemplate = canversationTemplate;
@@ -121,9 +112,7 @@ public class LiveRoomService {
         message.setSenderName(userDetails.getUser().getArtist());
         message.setProfileImage(userDetails.getUser().getProfileUrl());
         newMessageChannel.getMessageList().add(message);
-
         ho.put(userDetails.getUser().getArtist(), userDetails.getUser().getArtist(), newMessageChannel);
-
         return ResponseEntity.ok().body("라이브 생성 완료");
     }
 
@@ -148,23 +137,16 @@ public class LiveRoomService {
 
     //방송 종료
     public void liveRoomDelete(String artist, User user) {
-
         LiveRoom liveRoom = liveRoomRepository.findByUserAndOnAirTrue(user);
-
         if (artist.equals(liveRoom.getUser().getArtist())) {
             HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
             ValueOperations<String, String> usernameCount = canversationTemplate.opsForValue();
-
             messageChannel messageChannel = ho.get(artist, artist);
-
             List<Message> messageList = messageChannel.getMessageList();
-
-
             for (Message message : messageList) {
                 LiveRoomMessage liveRoomMessage = new LiveRoomMessage(message, liveRoom);
                 liveRoomMessageRepository.save(liveRoomMessage);
             }
-
             liveRoom.setOnAir(false);
             Long num = ho.delete(artist, artist);
             usernameCount.getAndDelete(artist+"2");

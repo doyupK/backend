@@ -42,7 +42,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
     private final ConfirmationTokenRepository confirmationTokenRepository;
-    private final HeartRepository heartRepository;
     private final HeaderTokenExtractor headerTokenExtractor;
     private final JwtDecoder jwtDecoder;
     private final FeedRepository feedRepository;
@@ -55,7 +54,6 @@ public class UserService {
                        PasswordEncoder passwordEncoder,
                        ConfirmationTokenService confirmationTokenService,
                        ConfirmationTokenRepository confirmationTokenRepository,
-                       HeartRepository heartRepository,
                        HeaderTokenExtractor headerTokenExtractor,
                        JwtDecoder jwtDecoder,
                        FeedRepository feedRepository) {
@@ -65,7 +63,6 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
         this.confirmationTokenService = confirmationTokenService;
         this.confirmationTokenRepository = confirmationTokenRepository;
-        this.heartRepository = heartRepository;
         this.headerTokenExtractor = headerTokenExtractor;
         this.jwtDecoder = jwtDecoder;
         this.feedRepository = feedRepository;
@@ -75,12 +72,12 @@ public class UserService {
     @Transactional
     public ResponseEntity<?> registerUser(SignupRequestDto signupRequestDto, MultipartFile file) {
         //이메일 인증 로직
-        ConfirmationToken confirmationToken =
-                confirmationTokenRepository
-                        .findByUserEmail(signupRequestDto.getEmail());
-        if (!confirmationToken.isConfirm()){
-            throw new CustomException(ErrorCode.NOT_AUTH_EMAIL);
-        }
+//        ConfirmationToken confirmationToken =
+//                confirmationTokenRepository
+//                        .findByUserEmail(signupRequestDto.getEmail());
+//        if (!confirmationToken.isConfirm()){
+//            throw new CustomException(ErrorCode.NOT_AUTH_EMAIL);
+//        }
 
 
         ResponseDto signupResponseDto = new ResponseDto();
@@ -135,37 +132,13 @@ public class UserService {
     public void confirmEmail(String token) {
         ConfirmationToken findConfirmationToken = confirmationTokenService
                 .findByIdAndExpirationDateAfterAndExpired(token);
-//        Optional<User> findUserInfo = userRepository.findByEmail(findConfirmationToken.getUserEmail());
         findConfirmationToken.useToken();    // 토큰 만료
         findConfirmationToken.confirm();
 
-//        if (!findUserInfo.isPresent()) {
-//            throw new CustomException(ErrorCode.NOT_FOUND_TOKEN);
-//        }
-
-        // User Confirm 정보 'OK' 로 변경
-//        findUserInfo.get().setUserConfirmEnum(UserConfirmEnum.OK_CONFIRM);
     }
     // 팔로잉
     public ResponseEntity<?> followArtist(String artist, UserDetailsImpl userDetails) {
         ResponseDto responseDto = new ResponseDto();
-//        // 로그인 정보에서 User객체 추출 (로그인 유저)
-//        Optional<User> findLoginUser = userRepository.findByEmail(userDetails.getUser().getEmail());
-//        // artist User 객체 추출 (로그인 유저가 팔로우 할 Artist)
-//        Optional<User> findArtist = userRepository.findByArtist(artist);
-//
-//        if(!findLoginUser.isPresent()){
-//            throw new CustomException(ErrorCode.WRONG_USER);
-//        }
-//        if(!findArtist.isPresent()){
-//            throw new CustomException(ErrorCode.NOT_EXISTS_USERNAME);
-//        }
-//
-//        User user = findLoginUser.get();
-//        User findArtistResult = findArtist.get();
-//        Follow follow = new Follow(user, findArtistResult);
-//
-//        followRepository.save(follow);
         Follow follow = followRepository.findByUserAndFollowingUser_Artist(userDetails.getUser(), artist);
         if (follow != null) {
             followRepository.delete(follow);
@@ -295,9 +268,6 @@ public class UserService {
                 user.getFavoriteGenre3(),
                 user.getFavoriteGenre4()
         };
-//        List<Heart> heartList = heartRepository.findAllByUserAndIsHeartTrue(user);
-//
-//        List<MainPageFeedDto> likeListDto = new ArrayList<>();
 
 
         UserInfoDto userInfoDto = new UserInfoDto(
@@ -310,12 +280,6 @@ public class UserService {
                 user.getProfileText(),
                 user.getInstagramUrl(),
                 user.getYoutubeUrl());
-//        for(Heart heart : heartList) {
-//            MainPageFeedDto mainPageFeedDto = new MainPageFeedDto(heart.getFeed(),user);
-//            likeListDto.add(mainPageFeedDto);
-//        }
-
-//        List<FollowingDtoMapping> followingList = followRepository.findByUser(user);
 
         userinfoResponseFeedDto.setUserInfoDto(userInfoDto);
         userinfoResponseFeedDto.setLikeList(

@@ -35,9 +35,6 @@ import java.util.UUID;
 public class KakaoUserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    private final JWTAuthProvider jwtAuthProvider;
-
-
 
     public KakaoUserResponseDto kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
         String accessToken = getAccessToken(code);
@@ -128,8 +125,6 @@ public class KakaoUserService {
                 throw new CustomException(ErrorCode.NOT_EXISTS_KAKAOEMAIL);
             }
             // role: 일반 사용자
-
-
             kakaoUser = new User(email, encodedPassword, nickname, kakaoId);
             userRepository.save(kakaoUser);
         }
