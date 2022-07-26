@@ -62,7 +62,7 @@ public class MessageController {
         }
         else { // 데이터가 없을때
 
-            if(message.getStatus() == Status.JOIN){
+            if(message.getStatus() == Status.JOIN && !message.getSenderName().contains(username)){
 //                messageChannel messageChannel = ho.get(username, username);
 //                List<Message> messages = messageChannel.getMessageList();
 //                simpMessagingTemplate.convertAndSend("/chatroom/public"+username,messages);
@@ -71,7 +71,9 @@ public class MessageController {
             List<Message> emptyMessageList = new ArrayList<>();
             messageChannel newMessageChannel =
                     new messageChannel(UUID.randomUUID().toString(),username,username,emptyMessageList);
+            message.setMessage("방송을 시작합니다.");
             newMessageChannel.getMessageList().add(message);
+
             ho.put(username, username, newMessageChannel);
 
         }
