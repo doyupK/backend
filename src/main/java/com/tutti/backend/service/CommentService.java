@@ -21,11 +21,9 @@ import javax.transaction.Transactional;
 @RequiredArgsConstructor
 @Service
 public class CommentService {
-
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final FeedRepository feedRepository;
-
     // 코멘트 작성
     @Transactional
     public Object writeComment(Long feedId,  CommentRequestDto commentRequestDto, UserDetailsImpl userDetails) {
@@ -70,7 +68,6 @@ public class CommentService {
     // 코멘트 삭제
     public Object deleteComment(Long feedId, Long commentId, UserDetailsImpl userDetails) {
         ResponseDto commentResponseDto = new ResponseDto();
-
         // 댓글을 삭제할 꺼면 해당 유저인지 검사하자
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_COMMENT)
@@ -79,10 +76,8 @@ public class CommentService {
             throw new CustomException(ErrorCode.WRONG_USER);
         }
         commentRepository.deleteById(commentId);
-
         commentResponseDto.setSuccess(200);
         commentResponseDto.setMessage("삭제 완료!");
-
         return commentResponseDto;
     }
 }

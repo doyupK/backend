@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RestController
 public class CommentController {
@@ -20,7 +22,7 @@ public class CommentController {
     @PostMapping("/feeds/{feedId}")
     @Timed(value = "Write Comment", description = "Time to Comment write")
     public ResponseEntity<Object> writeComment (@PathVariable(name = "feedId") Long feedId,
-                                                @RequestBody CommentRequestDto commentRequestDto,
+                                                @RequestBody @Valid CommentRequestDto commentRequestDto,
                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok().body(commentService.writeComment(feedId,commentRequestDto ,userDetails));
     }

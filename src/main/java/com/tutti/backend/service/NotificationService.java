@@ -31,17 +31,6 @@ public class NotificationService {
     private static final Long DEFAULT_TIMEOUT=60L*1000 *2;
     private final ExecutorService sseMvcExecutor = Executors.newSingleThreadExecutor();
 
-//    @PostConstruct
-//    public void init() {
-//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-//            executor.shutdown();
-//            try {
-//                executor.awaitTermination(1, TimeUnit.SECONDS);
-//            } catch (InterruptedException e) {
-//                log.error(e.toString());
-//            }
-//        }));
-//    }
 
     private final EmitterRepository emitterRepository;
     private final NotificationRepository notificationRepository;
@@ -52,7 +41,7 @@ public class NotificationService {
     }
 // ------------------------- SSE 연결 -----------------------------
 
-    public SseEmitter subscribe(String Id, String lastEventId) {
+    public SseEmitter subscribe(String Id) {
 
 
         Boolean emitterCheck = emitterRepository.findById(Id);
@@ -81,29 +70,10 @@ public class NotificationService {
         sendNotification(emitter, Id, "EventStream Created. userId = " + Id);
 
 
-        // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 event 유실 예방
-//        if(!lastEventId.isEmpty()){
-//            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(id);
-//            events.entrySet().stream()
-//                    .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
-//                    .forEach(entry -> sendNotification(emitter, entry.getKey(), entry.getValue()));
-//
-////            sendLostData(lastEventId,id,emitter);
-//        }
         return emitter;
 
     }
 
-//    private void sendLostData(String lastEventId, String id, SseEmitter emitter) {
-//
-//        Map<String,Object>eventCaches=emitterRepository.findAllEventCacheStartWithId(String.valueOf(id));
-//
-//        eventCaches.entrySet().stream()
-//                .filter(entry->lastEventId.compareTo(entry.getKey())<0)
-//                .forEach(entry->sendNotification(emitter, entry.getKey(),entry.getValue()));
-//        log.info("잃은 데이터 갖고와");
-//
-//    }
 
 
 
@@ -121,8 +91,6 @@ public class NotificationService {
                 log.info("활성 스레드 : {}", coreCount);
             }catch (IOException exception){
                 emitterRepository.deleteById(eventId);
-    //            log.error("연결오류",exception);
-//                throw new RuntimeException("연결 오류");
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -140,19 +108,16 @@ public class NotificationService {
                 content,
                 "/live/"+liveRoom.getUser().getArtist(),
                 false);
-//        Notification notification = createNotification(receiver, liveRoom, content);
         String id =receiver.getArtist();
 
 
         notificationRepository.save(notification);
-//        NotificationCacheDto notificationCacheDto = new NotificationCacheDto(notification);
 
 
         Map<String,SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
         log.info("이미터 이벤트 생성");
         sseEmitters.forEach(
                 (key,emitter)->{
-//                    emitterRepository.saveEventCache(key,notificationCacheDto);
                     sendNotification(emitter,key,new NotificationDetailsDto(notification));
 
                 }

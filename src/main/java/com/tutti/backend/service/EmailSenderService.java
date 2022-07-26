@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 public class EmailSenderService {
 
     private final JavaMailSender javaMailSender;
-
     @Async
     public void sendEmail(SimpleMailMessage email) {
         javaMailSender.send(email);

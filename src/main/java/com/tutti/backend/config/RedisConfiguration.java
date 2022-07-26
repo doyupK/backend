@@ -24,7 +24,7 @@ public class RedisConfiguration {
 
     @Value("${spring.redis.password}")
     private String password;
-//
+
 
 
 
