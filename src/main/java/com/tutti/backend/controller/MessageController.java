@@ -45,7 +45,7 @@ public class MessageController {
     @MessageMapping({"/message","/message/{username}"}) // /app/message 이리로 보내면  (공개대화방 )
 //    @SendTo("/chatroom/public") // 처리를 마친 후 이리로 메세지를 보내겠다. 이리로 다 보내라?
     @Timed(value = "Message", description = "Time to Send and Save Message")
-    public Message receiveMessage(@Payload Message message, @DestinationVariable String username, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public Message receiveMessage(@Payload Message message, @DestinationVariable String username){
 
         HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
         ValueOperations<String, String> usernameCount = canversationTemplate.opsForValue();
@@ -63,21 +63,13 @@ public class MessageController {
             ho.put(username, username, messageChannel);
         }
         else { // 데이터가 없을때
-
-            if(message.getStatus() == Status.JOIN && !userDetails.getUser().getArtist().contains(username)){
+//            if(message.getStatus() == Status.JOIN){
 //                messageChannel messageChannel = ho.get(username, username);
 //                List<Message> messages = messageChannel.getMessageList();
 //                simpMessagingTemplate.convertAndSend("/chatroom/public"+username,messages);
-                return message;
-            }
-            List<Message> emptyMessageList = new ArrayList<>();
-            messageChannel newMessageChannel =
-                    new messageChannel(UUID.randomUUID().toString(),username,username,emptyMessageList);
-            message.setMessage("방송을 시작합니다.");
-            newMessageChannel.getMessageList().add(message);
-
-            ho.put(username, username, newMessageChannel);
-
+//                return message;
+//            }
+            return message;
         }
         simpMessagingTemplate.convertAndSend("/chatroom/public"+username,message);
         return message;
