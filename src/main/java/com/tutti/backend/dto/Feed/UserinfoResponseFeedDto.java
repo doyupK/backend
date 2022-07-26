@@ -1,6 +1,7 @@
 package com.tutti.backend.dto.Feed;
 
 import com.tutti.backend.dto.user.FollowingDtoMapping;
+import com.tutti.backend.dto.user.GetFollowingDto;
 import com.tutti.backend.dto.user.response.UserInfoDto;
 import com.tutti.backend.dto.user.response.UserPageFeedDtoMapping;
 import lombok.Getter;
@@ -14,10 +15,10 @@ import java.util.List;
 @NoArgsConstructor
 public class UserinfoResponseFeedDto {
     UserInfoDto userInfoDto;
-    List<UserPageFeedDtoMapping> likeList;
-    List<UserPageFeedDtoMapping> likeVideoList;
-    List<FollowingDtoMapping> followingList;
-    List<UserPageFeedDtoMapping> uploadList;
-    List<UserPageFeedDtoMapping> uploadVideoList;
+    List<GetUserPageListDto> likeList;
+    List<GetUserPageListDto> likeVideoList;
+    List<GetFollowingDto> followingList;
+    List<GetUserPageListDto> uploadList;
+    List<GetUserPageListDto> uploadVideoList;
 
 }

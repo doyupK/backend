@@ -243,19 +243,24 @@ public class UserService {
 
         userinfoResponseFeedDto.setUserInfoDto(userInfoDto);
         userinfoResponseFeedDto.setLikeList(feedRepository
-                .findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(
-                        "audio",user)); // 유저의 좋아요[음악] List를 최신순으로 6개만 가져오기
+//                .findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(
+//                        "audio",user)); // 유저의 좋아요[음악] List를 최신순으로 6개만 가져오기
+        .getTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc("audio",user));
         userinfoResponseFeedDto.setLikeVideoList(feedRepository
-                .findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(
-                        "video",user)); // 유저의 좋아요[영상] List를 최신순으로 6개만 가져오기
+//                .findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(
+//                        "video",user)); // 유저의 좋아요[영상] List를 최신순으로 6개만 가져오기
+                .getTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc2("video",user));
         userinfoResponseFeedDto.setFollowingList(followRepository
-                .findTop7ByUserOrderById(user)); // 유저가 팔로우 한 리스트 7개
+//                .findTop7ByUserOrderById(user)); // 유저가 팔로우 한 리스트 7개
+                        .getTop7ByUserOrderById(user));
         userinfoResponseFeedDto.setUploadList(feedRepository
-                .findTop6ByPostTypeAndUserOrderByIdDesc(
-                        "audio",user)); // 유저가 업로드[노래] 한 리스트 6개
+//                .findTop6ByPostTypeAndUserOrderByIdDesc(
+//                        "audio",user)); // 유저가 업로드[노래] 한 리스트 6개
+        .getTop6ByPostTypeAndUserOrderByIdDesc("audio",user));
         userinfoResponseFeedDto.setUploadVideoList(feedRepository
-                .findTop6ByPostTypeAndUserOrderByIdDesc(
-                        "video",user)); // 유저가 업로드[영상] 한 리스트 6개
+//                .findTop6ByPostTypeAndUserOrderByIdDesc(
+//                        "video",user)); // 유저가 업로드[영상] 한 리스트 6개
+        .getTop6ByPostTypeAndUserOrderByIdDesc2("video",user));
         userInfoResponseDto.setSuccess(200);
         userInfoResponseDto.setMessage("성공");
         userInfoResponseDto.setData(userinfoResponseFeedDto);
@@ -319,19 +324,30 @@ public class UserService {
 
         userinfoResponseFeedDto.setUserInfoDto(userInfoDto);
         userinfoResponseFeedDto.setLikeList(
-                feedRepository.findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(
-                        "audio",user)); // 유저의 좋아요[음악] List를 최신순으로 6개만 가져오기
+                feedRepository
+//                        .findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(
+//                        "audio",user)); // 유저의 좋아요[음악] List를 최신순으로 6개만 가져오기
+                        .getTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc("audio",user));
         userinfoResponseFeedDto.setLikeVideoList(
-                feedRepository.findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(
-                        "video",user)); // 유저의 좋아요[영상] List를 최신순으로 6개만 가져오기
+                feedRepository
+//                .findTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(
+//                        "video",user)); // 유저의 좋아요[영상] List를 최신순으로 6개만 가져오기
+                        .getTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc2("video",user));
+
         userinfoResponseFeedDto.setFollowingList(
-                followRepository.findTop7ByUserOrderById(user)); // 유저가 팔로우 한 리스트 7개
+                followRepository
+//                        .findTop7ByUserOrderById(user)); // 유저가 팔로우 한 리스트 7개
+        .getTop7ByUserOrderById(user));
         userinfoResponseFeedDto.setUploadList(
-                feedRepository.findTop6ByPostTypeAndUserOrderByIdDesc(
-                        "audio",user)); // 유저가 업로드[노래] 한 리스트 6개
+                feedRepository
+//                        .findTop6ByPostTypeAndUserOrderByIdDesc(
+//                        "audio",user)); // 유저가 업로드[노래] 한 리스트 6개
+                        .getTop6ByPostTypeAndUserOrderByIdDesc("audio",user));
         userinfoResponseFeedDto.setUploadVideoList(
-                feedRepository.findTop6ByPostTypeAndUserOrderByIdDesc(
-                        "video",user)); // 유저가 업로드[영상] 한 리스트 6개
+                feedRepository
+//                        .findTop6ByPostTypeAndUserOrderByIdDesc(
+//                        "video",user)); // 유저가 업로드[영상] 한 리스트 6개
+                        .getTop6ByPostTypeAndUserOrderByIdDesc2("video",user));
         userInfoResponseDto.setSuccess(200);
         userInfoResponseDto.setMessage("성공");
         userInfoResponseDto.setIsFollow(isFollow);

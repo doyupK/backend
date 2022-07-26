@@ -7,10 +7,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.tutti.backend.domain.Feed;
-import com.tutti.backend.domain.QFeed;
-import com.tutti.backend.domain.QHeart;
-import com.tutti.backend.domain.QUser;
+import com.tutti.backend.domain.*;
 import com.tutti.backend.dto.Feed.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -266,6 +263,84 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                 .where(feed.postType.eq("audio"))
                 .orderBy()
                 .fetch();*/
+    }
+
+    @Override
+    public List<GetUserPageListDto> getTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc(String postType, User currentUser) {
+        return queryFactory
+                .select(new QGetUserPageListDto(
+                        feed.id,
+                        feed.title,
+                        feed.user.artist,
+                        feed.genre,
+                        feed.albumImageUrl.as("albumImageUrl"),
+                        user.profileUrl
+                ))
+                .from(feed)
+                .join(feed.hearts,heart)
+                .join(heart.user,user)
+                .where(feed.postType.eq(postType).and(heart.isHeart.eq(true)).and(user.artist.eq(currentUser.getArtist())))
+                .orderBy(heart.id.desc())
+                .limit(6)
+                .fetch();
+    }
+
+    @Override
+    public List<GetUserPageListDto> getTop6ByPostTypeAndHearts_UserAndHearts_IsHeartTrueOrderByHearts_IdDesc2(String postType, User currentUser) {
+        return queryFactory
+                .select(new QGetUserPageListDto(
+                        feed.id,
+                        feed.title,
+                        feed.user.artist,
+                        feed.genre,
+                        feed.albumImageUrl.as("albumImageUrl"),
+                        user.profileUrl
+                ))
+                .from(feed)
+                .join(feed.hearts,heart)
+                .join(heart.user,user)
+                .where(feed.postType.eq(postType).and(heart.isHeart.eq(true)).and(user.artist.eq(currentUser.getArtist())))
+                .orderBy(heart.id.desc())
+                .limit(4)
+                .fetch();
+    }
+
+    @Override
+    public List<GetUserPageListDto> getTop6ByPostTypeAndUserOrderByIdDesc(String postType, User currentUser) {
+        return queryFactory
+                .select(new QGetUserPageListDto(
+                        feed.id,
+                        feed.title,
+                        user.artist,
+                        feed.genre,
+                        feed.albumImageUrl.as("albumImageUrl"),
+                        user.profileUrl
+                ))
+                .from(feed)
+                .join(feed.user,user)
+                .where(feed.postType.eq(postType).and(user.artist.eq(currentUser.getArtist())))
+                .orderBy(feed.id.desc())
+                .limit(6)
+                .fetch();
+    }
+
+    @Override
+    public List<GetUserPageListDto> getTop6ByPostTypeAndUserOrderByIdDesc2(String postType, User currentUser) {
+        return queryFactory
+                .select(new QGetUserPageListDto(
+                        feed.id,
+                        feed.title,
+                        user.artist,
+                        feed.genre,
+                        feed.albumImageUrl.as("albumImageUrl"),
+                        user.profileUrl
+                ))
+                .from(feed)
+                .join(feed.user,user)
+                .where(feed.postType.eq(postType).and(user.artist.eq(currentUser.getArtist())))
+                .orderBy(feed.id.desc())
+                .limit(4)
+                .fetch();
     }
 
     private BooleanExpression categoryEq(String category,String keyword) {

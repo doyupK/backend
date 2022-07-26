@@ -77,9 +77,9 @@ dependencies {
 
     //로그
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
-    // slf4j & logback
-    implementation('org.slf4j:jcl-over-slf4j')
-    implementation('ch.qos.logback:logback-classic')
+//    // slf4j & logback
+//    implementation('org.slf4j:jcl-over-slf4j')
+//    implementation('ch.qos.logback:logback-classic')
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-aop
     // Method Run Time Metrics
