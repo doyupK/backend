@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Transactional
 @Slf4j
@@ -76,6 +77,7 @@ public class LiveRoomService {
 
     @Transactional
     public Object add(AddRoomRequestDto addRoomRequestDto, MultipartFile thumbNailImage, UserDetailsImpl userDetails) {
+        HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
         User user = userDetails.getUser();
 
         List<LiveRoom> liveRooms = liveRoomRepository.findAllByUserAndOnAirTrue(user);
@@ -100,9 +102,25 @@ public class LiveRoomService {
         List<Follow>followList=followRepository.findAllByFollowingUser(user);
         if(followList.size()!=0) {
             for (Follow follower : followList) {
-                notificationService.send(follower.getUser(), saveLiveRoom, user.getArtist() + "님이 Live를 시작했습니다.");
+                notificationService.send(
+                        follower.getUser()
+                        , saveLiveRoom
+                        , user.getArtist() + "님이 Live를 시작했습니다.");
             }
         }
+        List<Message> emptyMessageList = new ArrayList<>();
+        messageChannel newMessageChannel =
+                new messageChannel(UUID.randomUUID().toString()
+                        ,userDetails.getUser().getArtist()
+                        ,userDetails.getUser().getArtist()
+                        ,emptyMessageList);
+        Message message = new Message();
+        message.setMessage("방송을 시작합니다.");
+        message.setSenderName(userDetails.getUser().getArtist());
+        message.setProfileImage(userDetails.getUser().getProfileUrl());
+        newMessageChannel.getMessageList().add(message);
+
+        ho.put(userDetails.getUser().getArtist(), userDetails.getUser().getArtist(), newMessageChannel);
 
         return ResponseEntity.ok().body("라이브 생성 완료");
     }
@@ -133,7 +151,7 @@ public class LiveRoomService {
 
         if (artist.equals(liveRoom.getUser().getArtist())) {
             HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
-            ValueOperations<String, String> sessionUsername = canversationTemplate.opsForValue();
+            ValueOperations<String, String> usernameCount = canversationTemplate.opsForValue();
 
             messageChannel messageChannel = ho.get(artist, artist);
 
@@ -147,7 +165,7 @@ public class LiveRoomService {
 
             liveRoom.setOnAir(false);
             Long num = ho.delete(artist, artist);
-            sessionUsername.getAndDelete(artist);
+            usernameCount.getAndDelete(artist+"2");
             log.info(num.toString());
         }else {
             throw new CustomException(ErrorCode.WRONG_USER);

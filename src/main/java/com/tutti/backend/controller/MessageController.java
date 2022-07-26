@@ -4,16 +4,21 @@ package com.tutti.backend.controller;
 import com.tutti.backend.dto.chatDto.Status;
 import com.tutti.backend.dto.chatDto.messageChannel;
 import com.tutti.backend.dto.chatDto.Message;
+import com.tutti.backend.security.UserDetailsImpl;
 import io.micrometer.core.annotation.Timed;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.messaging.handler.MessagingAdviceBean;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
@@ -23,6 +28,7 @@ import java.util.UUID;
 
 
 @Controller
+@Slf4j
 public class MessageController {
     HashMap<String, messageChannel> hashMap = new HashMap<>();
 
@@ -47,26 +53,36 @@ public class MessageController {
 
         if (ho.hasKey(username, username)) { // 데이터가 있을때
             if(message.getStatus() == Status.JOIN){
-                messageChannel messageChannel = ho.get(username, username);
-                List<Message> messages = messageChannel.getMessageList();
-                simpMessagingTemplate.convertAndSend("/chatroom/public"+username,messages);
+//                messageChannel messageChannel = ho.get(username, username);
+//                List<Message> messages = messageChannel.getMessageList();
+//                simpMessagingTemplate.convertAndSend("/chatroom/public"+username,messages);
                 return message;
             }
             messageChannel messageChannel = ho.get(username, username);
             messageChannel.getMessageList().add(message);
             ho.put(username, username, messageChannel);
         }
-
         else { // 데이터가 없을때
-            List<Message> emptyMessageList = new ArrayList<>();
-            messageChannel newMessageChannel =
-                    new messageChannel(UUID.randomUUID().toString(),username,username,emptyMessageList);
-            newMessageChannel.getMessageList().add(message);
-            ho.put(username, username, newMessageChannel);
-
+//            if(message.getStatus() == Status.JOIN){
+//                messageChannel messageChannel = ho.get(username, username);
+//                List<Message> messages = messageChannel.getMessageList();
+//                simpMessagingTemplate.convertAndSend("/chatroom/public"+username,messages);
+//                return message;
+//            }
+            return message;
         }
         simpMessagingTemplate.convertAndSend("/chatroom/public"+username,message);
         return message;
+    }
+    @SubscribeMapping("/subscribe/{username}")
+    public List<Message> subscribeMessage(@DestinationVariable String username){
+        HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
+        log.info("subscribe");
+        log.info(username);
+        messageChannel messageChannel = ho.get(username, username);
+        List<Message> messages = messageChannel.getMessageList();
+
+        return messages;
     }
 
 }
