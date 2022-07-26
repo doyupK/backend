@@ -46,43 +46,28 @@ public class MessageController {
 //    @SendTo("/chatroom/public") // 처리를 마친 후 이리로 메세지를 보내겠다. 이리로 다 보내라?
     @Timed(value = "Message", description = "Time to Send and Save Message")
     public Message receiveMessage(@Payload Message message, @DestinationVariable String username){
-
         HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
         ValueOperations<String, String> usernameCount = canversationTemplate.opsForValue();
         message.setCount(String.valueOf(usernameCount.get(username+2)));
 
         if (ho.hasKey(username, username)) { // 데이터가 있을때
-            if(message.getStatus() == Status.JOIN){
-//                messageChannel messageChannel = ho.get(username, username);
-//                List<Message> messages = messageChannel.getMessageList();
-//                simpMessagingTemplate.convertAndSend("/chatroom/public"+username,messages);
-                return message;
-            }
+            // 메시지 타입이 JOIN이면 메시지 송신 X
+            if(message.getStatus() == Status.JOIN){ return message; }
+
             messageChannel messageChannel = ho.get(username, username);
             messageChannel.getMessageList().add(message);
             ho.put(username, username, messageChannel);
         }
-        else { // 데이터가 없을때
-//            if(message.getStatus() == Status.JOIN){
-//                messageChannel messageChannel = ho.get(username, username);
-//                List<Message> messages = messageChannel.getMessageList();
-//                simpMessagingTemplate.convertAndSend("/chatroom/public"+username,messages);
-//                return message;
-//            }
-            return message;
-        }
+        // 데이터가 없을때 + 방송을 종료 했을때 Message Send 막기
+        else { return message; }
         simpMessagingTemplate.convertAndSend("/chatroom/public"+username,message);
         return message;
     }
-    @SubscribeMapping("/subscribe/{username}")
+    @SubscribeMapping("/subscribe/{username}") // Subscripbe 할 때 메시지 이력 읽어오기
     public List<Message> subscribeMessage(@DestinationVariable String username){
         HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
-        log.info("subscribe");
-        log.info(username);
         messageChannel messageChannel = ho.get(username, username);
-        List<Message> messages = messageChannel.getMessageList();
-
-        return messages;
+        return messageChannel.getMessageList();
     }
 
 }

@@ -108,6 +108,8 @@ public class LiveRoomService {
                         , user.getArtist() + "님이 Live를 시작했습니다.");
             }
         }
+
+        // 방 생성 시 Redis 첫번째 메시지 Set "방송을 시작합니다"
         List<Message> emptyMessageList = new ArrayList<>();
         messageChannel newMessageChannel =
                 new messageChannel(UUID.randomUUID().toString()
