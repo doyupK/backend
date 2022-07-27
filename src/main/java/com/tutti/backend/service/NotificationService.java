@@ -68,6 +68,7 @@ public class NotificationService {
         // sseEmitter의 유효시간동안 데이터 전송이 없으면-> 503에러
         // 맨 처음 연결을 진행한다면 dummy데이터 전송
         sendNotification(emitter,
+                "Created",
                 Id,
                 new NotificationDetailsDto(
                         null,
@@ -86,13 +87,13 @@ public class NotificationService {
 
 
 
-    public void sendNotification(SseEmitter emitter, String eventId, Object data) {
+    public void sendNotification(SseEmitter emitter,String name, String eventId, Object data) {
 
         sseMvcExecutor.execute( () -> {
             try{
                 emitter.send(SseEmitter.event()
                         .id(eventId)
-                        .name("live")
+                        .name(name)
                         .data(data));
                 Thread.sleep( 1000);
                 log.info("실제 전송 메서드: {}", data);
@@ -127,7 +128,7 @@ public class NotificationService {
         log.info("이미터 이벤트 생성");
         sseEmitters.forEach(
                 (key,emitter)->{
-                    sendNotification(emitter,key,new NotificationDetailsDto(notification));
+                    sendNotification(emitter,"live",key,new NotificationDetailsDto(notification));
 
                 }
         );
