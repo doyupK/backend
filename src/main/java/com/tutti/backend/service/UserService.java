@@ -72,12 +72,12 @@ public class UserService {
     @Transactional
     public ResponseEntity<?> registerUser(SignupRequestDto signupRequestDto, MultipartFile file) {
         //이메일 인증 로직
-//        ConfirmationToken confirmationToken =
-//                confirmationTokenRepository
-//                        .findByUserEmail(signupRequestDto.getEmail());
-//        if (!confirmationToken.isConfirm()){
-//            throw new CustomException(ErrorCode.NOT_AUTH_EMAIL);
-//        }
+        ConfirmationToken confirmationToken =
+                confirmationTokenRepository
+                        .findByUserEmail(signupRequestDto.getEmail());
+        if (!confirmationToken.isConfirm()){
+            throw new CustomException(ErrorCode.NOT_AUTH_EMAIL);
+        }
 
 
         ResponseDto signupResponseDto = new ResponseDto();
