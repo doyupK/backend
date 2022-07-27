@@ -4,6 +4,7 @@ package com.tutti.backend.service;
 import com.tutti.backend.domain.Comment;
 import com.tutti.backend.domain.Feed;
 import com.tutti.backend.domain.User;
+import com.tutti.backend.dto.comment.CommentPutResponseDto;
 import com.tutti.backend.dto.comment.CommentRequestDto;
 import com.tutti.backend.dto.comment.CommentResponseDto;
 import com.tutti.backend.dto.user.ResponseDto;
@@ -67,7 +68,7 @@ public class CommentService {
 
     // 코멘트 삭제
     public Object deleteComment(Long feedId, Long commentId, UserDetailsImpl userDetails) {
-        ResponseDto commentResponseDto = new ResponseDto();
+        CommentPutResponseDto commentPutResponseDto = new CommentPutResponseDto();
         // 댓글을 삭제할 꺼면 해당 유저인지 검사하자
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_COMMENT)
@@ -75,9 +76,10 @@ public class CommentService {
         if (!comment.getUser().getId().equals(userDetails.getUser().getId())) {
             throw new CustomException(ErrorCode.WRONG_USER);
         }
-        commentRepository.deleteById(commentId);
-        commentResponseDto.setSuccess(200);
-        commentResponseDto.setMessage("삭제 완료!");
-        return commentResponseDto;
+        commentPutResponseDto.setSuccess(200);
+        commentPutResponseDto.setMessage("수정 완료!");
+        commentPutResponseDto.setComment(comment.getComment());
+        return commentPutResponseDto;
+
     }
 }
