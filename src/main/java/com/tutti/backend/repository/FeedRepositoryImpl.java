@@ -106,6 +106,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                 .from(feed)
                 .join(feed.user,user)
                 .where(feed.postType.eq(audio).and(feed.genre.eq(recommend)))
+                .limit(12)
                 .fetch();
     }
 
@@ -208,6 +209,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                 .from(feed)
                 .join(feed.user,user)
                 .where(feed.postType.eq(audio))
+                .limit(12)
                 .orderBy(feed.createdAt.desc())
                 .fetch();
     }
@@ -225,6 +227,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                 .from(feed)
                 .join(feed.user,user)
                 .where(feed.postType.eq(video))
+                .limit(12)
                 .orderBy(feed.createdAt.desc())
                 .fetch();
     }
@@ -242,6 +245,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom{
                 .from(feed)
                 .join(feed.user,user)
                 .where(feed.postType.eq(audio).and(feed.genre.eq(genre)))
+                .limit(12)
                 .orderBy(feed.createdAt.desc())
                 .fetch();
     }

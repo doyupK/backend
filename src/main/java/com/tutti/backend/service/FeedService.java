@@ -204,7 +204,7 @@ public class FeedService {
 //            }
 //        }
 
-       List<SearchTitleDtoMapping> likeList= feedRepository.findAllByPostTypeOrderByLikeCountDesc("audio");
+       List<SearchTitleDtoMapping> likeList= feedRepository.findTop12ByPostTypeOrderByLikeCountDesc("audio");
        /* List<GetMainPageListDto> likeList= feedRepository.getMainPagLikeList();*/
         List<GetMainPageListDto> videoList= feedRepository.getMainPageVideoList("video");
 
@@ -272,7 +272,7 @@ public class FeedService {
 //            likeList.add(sortMap.get(nKey));
 //        }
 
-        List<SearchTitleDtoMapping> likeList= feedRepository.findAllByPostTypeOrderByLikeCountDesc("audio");
+        List<SearchTitleDtoMapping> likeList= feedRepository.findTop12ByPostTypeOrderByLikeCountDesc("audio");
         List<GetMainPageListDto> videoList= feedRepository.getMainPageVideoList("video");
 
 
@@ -318,7 +318,6 @@ public class FeedService {
     // 최신 순 전체 피드 따로 가져오기
 
     public ResponseEntity<?> getFeedPage(String postType, String genre, Pageable pageable) {
-        List<GetFeedByPostTypeDto> latestList = feedRepository.getFeedByPostType(postType,genre);
         Slice<GetFeedByPostTypeDto> latestList2 = feedRepository.getFeedByPostTypeInfiniteScroll(postType,genre,pageable);
 
         FeedPageResponseDto feedPageResponseDto = new FeedPageResponseDto();
