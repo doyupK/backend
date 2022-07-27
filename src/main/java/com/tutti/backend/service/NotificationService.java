@@ -67,7 +67,16 @@ public class NotificationService {
         log.info("emitter 생성");
         // sseEmitter의 유효시간동안 데이터 전송이 없으면-> 503에러
         // 맨 처음 연결을 진행한다면 dummy데이터 전송
-        sendNotification(emitter, Id, "EventStream Created. userId = " + Id);
+        sendNotification(emitter,
+                Id,
+                new NotificationDetailsDto(
+                        null,
+                        "Created" + Id,
+                        "https://tuttimusic.shop",
+                        false
+                )
+        );
+//        sendNotification(emitter, Id, "{EventStream Created. userId = " + Id);
 
 
         return emitter;
