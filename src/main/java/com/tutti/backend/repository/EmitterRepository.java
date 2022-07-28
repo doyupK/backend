@@ -1,7 +1,5 @@
 package com.tutti.backend.repository;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -12,8 +10,8 @@ import java.util.stream.Collectors;
 @Repository
 public class EmitterRepository {
 
-    public final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
-    private final Map<String, Object> eventCache = new ConcurrentHashMap<>();
+    public  Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private  Map<String, Object> eventCache = new ConcurrentHashMap<>();
 
 
     public void save(String id, SseEmitter sseEmitter) {
