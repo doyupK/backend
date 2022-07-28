@@ -15,4 +15,5 @@ public class SearchFeedResponseDto {
     List<GetMainPageListDto> musicArtist;
     List<GetMainPageListDto> videoTitle;
     List<GetMainPageListDto> videoArtist;
+    List<GetArtistListDto> artistList;
 }
