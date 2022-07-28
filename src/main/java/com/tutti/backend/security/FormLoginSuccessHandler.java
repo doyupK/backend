@@ -39,7 +39,6 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
         Date date = new Date(System.currentTimeMillis() + 86400*1000);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String nowTime2 = dateFormat.format(date);
-        System.out.println("3 : nowTime2 == "+nowTime2);
 
 
         loginResponseDto.setSuccess(200);
