@@ -29,7 +29,6 @@ public class NotificationService {
 
 
     private static final Long DEFAULT_TIMEOUT=60L*1000 ;
-    private final ExecutorService sseMvcExecutor = Executors.newSingleThreadExecutor();
 
 
     private final EmitterRepository emitterRepository;
@@ -58,17 +57,18 @@ public class NotificationService {
         // 비동기 요청이 완료될 때
         // 시간초과, 네트워크 오류를 포함한 어던 이유로든 비동기 요청이 완료(end)-> 레퍼지토리 삭제
         emitter.onCompletion(()-> {
-            log.info("emitter completion  "+Id);
+            log.info("emitter completion : {}, ID : {} ",emitter, Id);
             emitterRepository.deleteById(Id);
         }
         );
         //비동기 요청 시간이 초과 -> 레퍼지토리 삭제
         emitter.onTimeout(() -> {
             emitterRepository.deleteById(Id);
-            log.info("Emitter : {} 만료", Id);
+            log.info("Emitter : {} 만료, ID : {}",emitter, Id);
+//            emitter.complete();
             throw new CustomException(ErrorCode.WRONG_FILE_TYPE);
         });
-        log.info("emitter 생성 "+ Id);
+        log.info("emitter 생성 : {}, ID : {}",emitter, Id);
         // sseEmitter의 유효시간동안 데이터 전송이 없으면-> 503에러
         // 맨 처음 연결을 진행한다면 dummy데이터 전송
         sendNotification(emitter,
@@ -92,6 +92,7 @@ public class NotificationService {
 
 
     public void sendNotification(SseEmitter emitter,String name, String eventId, Object data) {
+        ExecutorService sseMvcExecutor = Executors.newSingleThreadExecutor();
 
         sseMvcExecutor.execute( () -> {
             try{
@@ -104,11 +105,13 @@ public class NotificationService {
 
             }catch (IOException exception){
                 emitterRepository.deleteById(eventId);
+                emitter.completeWithError(exception);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         });
-        emitter.complete();
+        sseMvcExecutor.shutdown();
+
     }
 
 // ------------------------- 데이터 전송 -----------------------------
@@ -134,9 +137,11 @@ public class NotificationService {
                 (key,emitter)->{
                     sendNotification(emitter,"live",key,new NotificationDetailsDto(notification));
                     log.info("receiver : {}, Streamer : {}", receiver.getArtist(), liveRoom.getUser().getArtist());
+
                 }
         );
         log.info("이벤트 송신 완료");
+
     }
 
 

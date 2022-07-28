@@ -43,7 +43,7 @@ public class S3Service {
     private String bucket;
 
     private final static String unknownImage =
-            "https://file-bucket-seyeol.s3.ap-northeast-2.amazonaws.com/36dee4b1-4672-4b18-a532-cf521811d6f8.png";
+            "https://file-bucket-seyeol.s3.ap-northeast-2.amazonaws.com/7814a52a-e48a-4554-84fe-b37762b08529.png";
 
     @PostConstruct
     public void setS3Client() {
