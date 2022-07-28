@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
 public class NotificationService {
 
 
-    private static final Long DEFAULT_TIMEOUT=60L*1000 * 2;
+    private static final Long DEFAULT_TIMEOUT=60L*1000 ;
     private final ExecutorService sseMvcExecutor = Executors.newSingleThreadExecutor();
 
 
@@ -45,9 +45,10 @@ public class NotificationService {
 
 
         Boolean emitterCheck = emitterRepository.findById(Id);
-// 1
+        log.info(emitterCheck + "이미터 체크");
         if(emitterCheck)
         {
+            log.info("중복 이미터 삭제"+Id);
            emitterRepository.deleteById(Id);
         }
         // emitter 생성, 유효 시간만큼 sse 연결 유지, 만료시 자동으로 클라이언트에서 재요청
@@ -56,7 +57,11 @@ public class NotificationService {
         emitterRepository.save(Id,emitter);
         // 비동기 요청이 완료될 때
         // 시간초과, 네트워크 오류를 포함한 어던 이유로든 비동기 요청이 완료-> 레퍼지토리 삭제
-        emitter.onCompletion(()->emitterRepository.deleteById(Id));
+        emitter.onCompletion(()-> {
+            log.info("emitter completion"+Id);
+            emitterRepository.deleteById(Id);
+        }
+        );
         //비동기 요청 시간이 초과 -> 레퍼지토리 삭제
         emitter.onTimeout(() -> {
             emitterRepository.deleteById(Id);
@@ -64,7 +69,7 @@ public class NotificationService {
             emitter.complete();
             throw new CustomException(ErrorCode.WRONG_FILE_TYPE);
         });
-        log.info("emitter 생성");
+        log.info("emitter 생성 "+ Id);
         // sseEmitter의 유효시간동안 데이터 전송이 없으면-> 503에러
         // 맨 처음 연결을 진행한다면 dummy데이터 전송
         sendNotification(emitter,
@@ -96,7 +101,7 @@ public class NotificationService {
                         .name(name)
                         .data(data));
                 Thread.sleep( 1000);
-                log.info("실제 전송 메서드: {}", data);
+                log.info("실제 전송 메서드: to : {}, data : {}",eventId, data);
                 int coreCount = Runtime.getRuntime().availableProcessors();
                 log.info("활성 스레드 : {}", coreCount);
             }catch (IOException exception){
@@ -129,7 +134,7 @@ public class NotificationService {
         sseEmitters.forEach(
                 (key,emitter)->{
                     sendNotification(emitter,"live",key,new NotificationDetailsDto(notification));
-
+                    log.info("receiver : {}, Streamer : {}", receiver.getArtist(), liveRoom.getUser().getArtist());
                 }
         );
         log.info("이벤트 송신 완료");
