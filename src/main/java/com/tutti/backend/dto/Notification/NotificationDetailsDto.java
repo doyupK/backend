@@ -23,4 +23,11 @@ public class NotificationDetailsDto {
         this.url=notification.getUrl();
         this.isRead=notification.getIsRead();
     }
+
+    public NotificationDetailsDto(Long id, String content, String url, Boolean isRead){
+        this.id= id;
+        this.content= content;
+        this.url=url;
+        this.isRead=isRead;
+    }
 }
