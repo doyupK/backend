@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
 public class NotificationService {
 
 
-    private static final Long DEFAULT_TIMEOUT=60L*1000 *30;
+    private static final Long DEFAULT_TIMEOUT=60L*1000 *10;
     private final ExecutorService sseMvcExecutor = Executors.newSingleThreadExecutor();
 
 
