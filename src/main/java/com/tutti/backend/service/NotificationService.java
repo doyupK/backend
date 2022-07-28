@@ -56,9 +56,9 @@ public class NotificationService {
 
         emitterRepository.save(Id,emitter);
         // 비동기 요청이 완료될 때
-        // 시간초과, 네트워크 오류를 포함한 어던 이유로든 비동기 요청이 완료-> 레퍼지토리 삭제
+        // 시간초과, 네트워크 오류를 포함한 어던 이유로든 비동기 요청이 완료(end)-> 레퍼지토리 삭제
         emitter.onCompletion(()-> {
-            log.info("emitter completion"+Id);
+            log.info("emitter completion  "+Id);
             emitterRepository.deleteById(Id);
         }
         );
@@ -66,7 +66,6 @@ public class NotificationService {
         emitter.onTimeout(() -> {
             emitterRepository.deleteById(Id);
             log.info("Emitter : {} 만료", Id);
-            emitter.complete();
             throw new CustomException(ErrorCode.WRONG_FILE_TYPE);
         });
         log.info("emitter 생성 "+ Id);
@@ -101,15 +100,15 @@ public class NotificationService {
                         .name(name)
                         .data(data));
                 Thread.sleep( 1000);
-                log.info("실제 전송 메서드: to : {}, data : {}",eventId, data);
-                int coreCount = Runtime.getRuntime().availableProcessors();
-                log.info("활성 스레드 : {}", coreCount);
+                log.info("실제 전송 메서드:type : {}, to : {}, data : {}", name, eventId, data);
+
             }catch (IOException exception){
                 emitterRepository.deleteById(eventId);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         });
+        emitter.complete();
     }
 
 // ------------------------- 데이터 전송 -----------------------------
