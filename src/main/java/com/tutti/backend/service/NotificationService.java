@@ -29,7 +29,7 @@ public class NotificationService extends Thread {
 
     private final ExecutorService sseMvcExecutor = Executors.newSingleThreadExecutor();
 
-    private static final Long DEFAULT_TIMEOUT=60L*1000 ;
+    private static final Long DEFAULT_TIMEOUT=60L*1000 * 30;
 
 
     private final EmitterRepository emitterRepository;
