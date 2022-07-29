@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tutti.backend.domain.User;
 import com.tutti.backend.dto.user.KakaoUserRequestDto;
 import com.tutti.backend.dto.user.KakaoUserResponseDto;
+import com.tutti.backend.dto.user.KakaoUserResponseUserDto;
 import com.tutti.backend.exception.CustomException;
 import com.tutti.backend.exception.ErrorCode;
 import com.tutti.backend.repository.UserRepository;
@@ -44,8 +45,8 @@ public class KakaoUserService {
         String accessToken = getAccessToken(code);
         log.info("3");
         KakaoUserRequestDto kakaoUserRequestDto = getKakaoUserInfo(accessToken);
-        User kakaoUser = registerKakaoUserIfNeeded(kakaoUserRequestDto);
-        return forceLoginUser(kakaoUser, response);
+        KakaoUserResponseUserDto kakaoUserResponseUserDto = registerKakaoUserIfNeeded(kakaoUserRequestDto);
+        return forceLoginUser(kakaoUserResponseUserDto.getUser(), response,kakaoUserResponseUserDto);
     }
 
     private KakaoUserRequestDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
@@ -122,18 +123,21 @@ public class KakaoUserService {
         return jsonNode.get("access_token").asText();
     }
 
-    private User registerKakaoUserIfNeeded(KakaoUserRequestDto kakaoUserRequestDto) {
+    private KakaoUserResponseUserDto registerKakaoUserIfNeeded(KakaoUserRequestDto kakaoUserRequestDto) {
         // DB 에 중복된 Kakao Id 가 있는지 확인
+        KakaoUserResponseUserDto kakaoUserResponseUserDto = new KakaoUserResponseUserDto();
+        kakaoUserResponseUserDto.setFirst("alreadyDone");
         log.info("13");
         Long kakaoId = kakaoUserRequestDto.getId();
         User kakaoUser = userRepository.findByKakaoId(kakaoId)
                 .orElse(null);
+        kakaoUserResponseUserDto.setUser(kakaoUser);
         if (kakaoUser == null) {
             log.info("14");
             // 회원가입
             // username: kakao nickname
 
-            String ranNum = UUID.randomUUID().toString().substring(0,5);
+            String ranNum = UUID.randomUUID().toString().substring(0,3);
 
             String artist = kakaoUserRequestDto.getNickname()+ranNum;
 
@@ -151,12 +155,15 @@ public class KakaoUserService {
             // role: 일반 사용자
             kakaoUser = new User(email, encodedPassword, artist,profileUrl, kakaoId,profileText);
             userRepository.save(kakaoUser);
+            kakaoUserResponseUserDto.setUser(kakaoUser);
+            kakaoUserResponseUserDto.setFirst("firstTime");
         }
+
         log.info("16");
-        return kakaoUser;
+        return kakaoUserResponseUserDto;
     }
 
-    private KakaoUserResponseDto forceLoginUser(User kakaoUser, HttpServletResponse response) {
+    private KakaoUserResponseDto forceLoginUser(User kakaoUser, HttpServletResponse response,KakaoUserResponseUserDto kakaoUserResponseUserDto) {
         log.info("17");
         UserDetailsImpl userDetails = new UserDetailsImpl(kakaoUser);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -166,7 +173,8 @@ public class KakaoUserService {
         String token ="Bearer " + JwtTokenUtils.generateJwtToken(userDetails);
         String artist = kakaoUser.getArtist();
         String profileImage = kakaoUser.getProfileUrl();
-        response.addHeader("Authorization", "Bearer " + token);
+        response.addHeader("Authorization",  token);
+        String RegisterCheck = kakaoUserResponseUserDto.getFirst();
         log.info("19");
         // 토큰의 만료시간 전달
         Date date = new Date(System.currentTimeMillis() + 86400*1000);
@@ -189,6 +197,7 @@ public class KakaoUserService {
 /*                    .result(result)*/
                     .profileUrl(profileImage)
                     .nowTime2(nowTime2)
+                    .RegisterCheck(RegisterCheck)
                     .build();
         //}
     }

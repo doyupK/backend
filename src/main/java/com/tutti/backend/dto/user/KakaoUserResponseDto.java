@@ -13,4 +13,5 @@ public class KakaoUserResponseDto {
 /*    private boolean result;*/
     private String profileUrl;
     private String nowTime2;
+    private String RegisterCheck;
 }
