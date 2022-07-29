@@ -89,7 +89,7 @@ public class KakaoUserService {
         body.add("client_id", "346b2f15b0bcf829529a506449139680");
 
 
-        body.add("redirect_uri", "https://localhost:3000/oauth/kakao/callback");
+        body.add("redirect_uri", "https://localhost:3000/oauth/callback/kakao");
         body.add("code", code);
 
         // HTTP 요청 보내기
