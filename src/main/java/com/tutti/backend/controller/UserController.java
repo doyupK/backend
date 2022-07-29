@@ -189,7 +189,9 @@ public class UserController {
         KakaoUserResponseDto kakaoUserResponseDto = kakaoUserService.kakaoLogin(code, response);
         return ResponseEntity.ok().body(kakaoUserResponseDto);
     }
-    //https://kauth.kakao.com/oauth/authorize?client_id=346b2f15b0bcf829529a506449139680&redirect_uri=http://localhost:8080/user/kakao/callback&response_type=code
+    //https://kauth.kakao.com/oauth/authorize?client_id=346b2f15b0bcf829529a506449139680&redirect_uri=https://seyeolpersonnal.shop/user/kakao/callback&response_type=code
+
+    //https://kauth.kakao.com/oauth/authorize?client_id=346b2f15b0bcf829529a506449139680&redirect_uri=https://localhost:3000/oauth/kakao/callback/kakao/callback&response_type=code
 
     // 구글 로그인
     @GetMapping("/api/user/google/callback")
