@@ -3,9 +3,7 @@ package com.tutti.backend.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tutti.backend.domain.User;
 import com.tutti.backend.dto.google.GoogleUserResponseDto;
-import com.tutti.backend.dto.user.GoogleResponseDto;
-import com.tutti.backend.dto.user.KakaoUserResponseDto;
-import com.tutti.backend.dto.user.SignupRequestDto;
+import com.tutti.backend.dto.user.*;
 import com.tutti.backend.dto.user.request.ArtistRequestDto;
 import com.tutti.backend.dto.user.request.EmailRequestDto;
 import com.tutti.backend.dto.user.request.UserUpdateRequestDto;
@@ -123,7 +121,7 @@ public class UserController {
 
     // 유저 정보 수정(myPage)
     @PutMapping("/user/mypage")
-    public ResponseEntity<?> updateUser(
+    public UpdateUserResponseDto updateUser(
             @RequestPart(required = false) MultipartFile file
             ,@RequestPart UserUpdateRequestDto updateData
             ,@AuthenticationPrincipal UserDetailsImpl userDetails){
@@ -132,11 +130,14 @@ public class UserController {
         }
         User user = userDetails.getUser();
         if(file==null){
-            userService.updateUserWithNoFile(updateData,user);
+            return new UpdateUserResponseDto(200,
+                    "마이 페이지 수정 완료",
+                    userService.updateUserWithNoFile(updateData,user));
         }else{
-            userService.updateUser(file,updateData,user);
+            return new UpdateUserResponseDto(200,
+                    "마이 페이지 수정 완료",
+                    userService.updateUser(file,updateData,user));
         }
-        return ResponseEntity.ok().body("마이 페이지 수정 완료");
     }
 
     // 다른 사람 프로필 조회
