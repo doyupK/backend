@@ -15,6 +15,7 @@ import com.tutti.backend.security.UserDetailsImpl;
 import com.tutti.backend.service.GoogleUserService;
 import com.tutti.backend.service.KakaoUserService;
 import com.tutti.backend.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+@Slf4j
 @RestController
 public class UserController {
 
@@ -186,7 +188,9 @@ public class UserController {
     public ResponseEntity<KakaoUserResponseDto> kakaoLogin(
             @RequestParam String code,
             HttpServletResponse response) throws JsonProcessingException {
+        log.info("1");
         KakaoUserResponseDto kakaoUserResponseDto = kakaoUserService.kakaoLogin(code, response);
+        log.info("21");
         return ResponseEntity.ok().body(kakaoUserResponseDto);
     }
     //https://kauth.kakao.com/oauth/authorize?client_id=346b2f15b0bcf829529a506449139680&redirect_uri=https://seyeolpersonnal.shop/user/kakao/callback&response_type=code

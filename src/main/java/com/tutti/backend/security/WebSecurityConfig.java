@@ -125,6 +125,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("POST,/user/email");
         skipPathList.add("POST,/user/artist");
         skipPathList.add("GET,/user/kakaologin");
+        skipPathList.add("GET,/user/kakao/callback");
         skipPathList.add("GET,/user/googlelogin");
         skipPathList.add("GET,/confirm-email");
         skipPathList.add("GET,/page");

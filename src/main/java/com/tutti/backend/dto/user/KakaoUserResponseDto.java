@@ -11,5 +11,7 @@ public class KakaoUserResponseDto {
     private String JWtToken;
     private String artist;
 /*    private boolean result;*/
+    private String profileUrl;
     private String nowTime2;
+    private String RegisterCheck;
 }

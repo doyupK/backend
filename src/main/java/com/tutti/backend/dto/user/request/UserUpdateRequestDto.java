@@ -6,6 +6,8 @@ import lombok.Getter;
 @Getter
 public class UserUpdateRequestDto {
 
+    String artist;
+
     String profileText;
 
     String instagramUrl;
