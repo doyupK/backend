@@ -68,9 +68,11 @@ public class KakaoUserService {
                 .get("nickname").asText();
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
+        String profileUrl = jsonNode.get("kakao_account")
+                .get("profile_image_url").asText();
         System.out.println(4);
         System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
-        return new KakaoUserRequestDto(id, nickname,email);
+        return new KakaoUserRequestDto(id, nickname,profileUrl,email);
     }
 
     private String getAccessToken(String code) throws JsonProcessingException {
@@ -84,7 +86,7 @@ public class KakaoUserService {
         body.add("client_id", "346b2f15b0bcf829529a506449139680");
 
 
-        body.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
+        body.add("redirect_uri", "https://tuttimusic.shop/user/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청 보내기
@@ -113,19 +115,19 @@ public class KakaoUserService {
         if (kakaoUser == null) {
             // 회원가입
             // username: kakao nickname
-            String nickname = kakaoUserRequestDto.getNickname();
+            String artist = kakaoUserRequestDto.getNickname();
 
             // password: random UUID
             String password = UUID.randomUUID().toString();
             String encodedPassword = passwordEncoder.encode(password);
-
+            String profileUrl = kakaoUserRequestDto.getProfileUrl();;
             // email: kakao email
             String email = kakaoUserRequestDto.getEmail();
             if(email.equals("")){
                 throw new CustomException(ErrorCode.NOT_EXISTS_KAKAOEMAIL);
             }
             // role: 일반 사용자
-            kakaoUser = new User(email, encodedPassword, nickname, kakaoId);
+            kakaoUser = new User(email, encodedPassword, artist,profileUrl, kakaoId);
             userRepository.save(kakaoUser);
         }
         return kakaoUser;
