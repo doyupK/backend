@@ -9,6 +9,7 @@ import lombok.Setter;
 @Builder
 public class KakaoUserResponseDto {
     private String JWtToken;
-    private String username;
-    private boolean result;
+    private String artist;
+/*    private boolean result;*/
+    private String nowTime2;
 }

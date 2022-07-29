@@ -11,5 +11,4 @@ public class KakaoUserRequestDto {
     private Long id;
     private String nickname;
     private String profileUrl;
-    private String email;
 }
