@@ -161,24 +161,41 @@ public class UserService {
 
     // 유저 정보 수정(myPage)
     @Transactional
-    public void updateUser(MultipartFile file, UserUpdateRequestDto userUpdateRequestDto, User currentUser) {
+    public UpdateUserResponseDataDto updateUser(MultipartFile file, UserUpdateRequestDto userUpdateRequestDto, User currentUser) {
+
         User user = userRepository.findById(
                 currentUser.getId()).orElseThrow(
                         ()->new CustomException(ErrorCode.WRONG_USER));
         if(file.isEmpty()){
             user.updateUser(userUpdateRequestDto);
+
+            /*User nowUser = userRepository.findById(
+                    currentUser.getId()).orElseThrow(
+                    ()->new CustomException(ErrorCode.WRONG_USER));*/
+            return new UpdateUserResponseDataDto(user.getArtist(), user.getProfileUrl());
         }else{
 //            s3Service.deleteImageUrl(user.getProfileUrl());
             FileRequestDto fileRequestDto = s3Service.upload(file);
             user.updateUser(fileRequestDto,userUpdateRequestDto);
+
+            /*User nowUser = userRepository.findById(
+                    currentUser.getId()).orElseThrow(
+                    ()->new CustomException(ErrorCode.WRONG_USER));*/
+
+            return new UpdateUserResponseDataDto(user.getArtist(), user.getProfileUrl());
         }
+
     }
     @Transactional
-    public void updateUserWithNoFile(UserUpdateRequestDto userUpdateRequestDto, User currentUser) {
+    public UpdateUserResponseDataDto updateUserWithNoFile(UserUpdateRequestDto userUpdateRequestDto, User currentUser) {
         User user = userRepository.findById(
                 currentUser.getId()).orElseThrow(
                 ()->new CustomException(ErrorCode.WRONG_USER));
         user.updateUser(userUpdateRequestDto);
+        /*User nowUser = userRepository.findById(
+                currentUser.getId()).orElseThrow(
+                ()->new CustomException(ErrorCode.WRONG_USER));*/
+        return new UpdateUserResponseDataDto(user.getArtist(), user.getProfileUrl());
     }
 
 
