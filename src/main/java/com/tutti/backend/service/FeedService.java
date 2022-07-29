@@ -289,6 +289,7 @@ public class FeedService {
 
     // 피드 검색
     public ResponseEntity<?> searchFeed(String keyword) {
+        String keyword_noVacant = keyword.trim();
         SearchFeedResponseDto searchFeedResponseDto = new SearchFeedResponseDto();
         /*User user = userRepository.findByArtistLike(keyword);
 
@@ -297,11 +298,11 @@ public class FeedService {
         searchFeedResponseDto.setVideo(feedRepository.findAllByTitleContainingAndPostTypeContaining(keyword,"video"));
         searchFeedResponseDto.setSuccess(200);
         searchFeedResponseDto.setMessage("성공");*/
-        searchFeedResponseDto.setMusicTitle(feedRepository.searchMusicByTitleKeyword(keyword));
-        searchFeedResponseDto.setMusicArtist(feedRepository.searchMusicByArtistKeyword(keyword));
-        searchFeedResponseDto.setVideoTitle(feedRepository.searchVideoByTitleKeyword(keyword));
-        searchFeedResponseDto.setVideoArtist(feedRepository.searchVideoByArtistKeyword(keyword));
-        searchFeedResponseDto.setArtistList(userRepository.searchArtistByArtistKeyword(keyword));
+        searchFeedResponseDto.setMusicTitle(feedRepository.searchMusicByTitleKeyword(keyword_noVacant));
+        searchFeedResponseDto.setMusicArtist(feedRepository.searchMusicByArtistKeyword(keyword_noVacant));
+        searchFeedResponseDto.setVideoTitle(feedRepository.searchVideoByTitleKeyword(keyword_noVacant));
+        searchFeedResponseDto.setVideoArtist(feedRepository.searchVideoByArtistKeyword(keyword_noVacant));
+        searchFeedResponseDto.setArtistList(userRepository.searchArtistByArtistKeyword(keyword_noVacant));
         searchFeedResponseDto.setSuccess(200);
         searchFeedResponseDto.setMessage("성공");
 
@@ -310,8 +311,9 @@ public class FeedService {
     }
 
     public ResponseEntity<?> searchMoreFeed(String keyword, String category) {
+        String keyword_noVacant = keyword.trim();
         SearchFeedAllByCategoryAndKeywordDto searchFeedAllByCategoryAndKeywordDto = new SearchFeedAllByCategoryAndKeywordDto();
-        searchFeedAllByCategoryAndKeywordDto.setResults(feedRepository.searchCategoryByKeyword(category,keyword));
+        searchFeedAllByCategoryAndKeywordDto.setResults(feedRepository.searchCategoryByKeyword(category,keyword_noVacant));
         searchFeedAllByCategoryAndKeywordDto.setSuccess(200);
         searchFeedAllByCategoryAndKeywordDto.setMessage("성공");
         return ResponseEntity.ok().body(searchFeedAllByCategoryAndKeywordDto);
