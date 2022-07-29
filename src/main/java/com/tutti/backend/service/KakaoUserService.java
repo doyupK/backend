@@ -100,7 +100,7 @@ public class KakaoUserService {
         body.add("client_id", "346b2f15b0bcf829529a506449139680");
 
         log.info("10");
-        body.add("redirect_uri", "http://localhost:3000/oauth/callback/kakao");
+        body.add("redirect_uri", "https://tuttimusic.shop/oauth/callback/kakao");
         body.add("code", code);
 
         // HTTP 요청 보내기
