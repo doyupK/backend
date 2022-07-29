@@ -494,8 +494,9 @@ public class UserService {
 
 
     public ResponseEntity<?> searchMoreArtist(String keyword) {
+        String keyword_noVacant = keyword.trim();
         SearchArtistAllByKeywordDto searchArtistAllByKeywordDto = new SearchArtistAllByKeywordDto();
-        searchArtistAllByKeywordDto.setResults(userRepository.searchArtistAllByArtistKeyword(keyword));
+        searchArtistAllByKeywordDto.setResults(userRepository.searchArtistAllByArtistKeyword(keyword_noVacant));
         searchArtistAllByKeywordDto.setSuccess(200);
         searchArtistAllByKeywordDto.setMessage("성공");
         return ResponseEntity.ok().body(searchArtistAllByKeywordDto);
