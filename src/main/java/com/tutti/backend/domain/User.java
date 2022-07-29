@@ -121,6 +121,17 @@ public class User {
         this.artist = nickname;
         this.profileUrl = profileUrl;
         this.kakaoId = kakaoId;
+        this.favoriteGenre1 = "발라드";
+        this.favoriteGenre2 = "어쿠스틱";
+        this.favoriteGenre3 = "R&B";
+        this.favoriteGenre4 = "힙합";
+        this.genreSelected1 = true;
+        this.genreSelected2 = true;
+        this.genreSelected3 = true;
+        this.genreSelected4 = true;
+        this.genreSelected5 = false;
+        this.genreSelected6 = false;
+        this.userConfirmEnum = UserConfirmEnum.OK_CONFIRM;
     }
     public User(String email,String password,String artist){
         this.email = email;
