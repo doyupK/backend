@@ -115,10 +115,11 @@ public class User {
         this.kakaoId = null;
         this.userConfirmEnum = UserConfirmEnum.BEFORE_CONFIRM;
     }
-    public User(String email, String password,String nickname, Long kakaoId) {
+    public User(String email, String password,String nickname,String profileUrl, Long kakaoId) {
         this.email = email;
         this.password = password;
         this.artist = nickname;
+        this.profileUrl = profileUrl;
         this.kakaoId = kakaoId;
     }
     public User(String email,String password,String artist){

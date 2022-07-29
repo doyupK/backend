@@ -2,6 +2,8 @@ package com.tutti.backend.service;
 
 
 import com.tutti.backend.domain.*;
+import com.tutti.backend.dto.Feed.SearchArtistAllByKeywordDto;
+import com.tutti.backend.dto.Feed.SearchFeedAllByCategoryAndKeywordDto;
 import com.tutti.backend.dto.Feed.UserinfoResponseFeedDto;
 import com.tutti.backend.dto.user.*;
 import com.tutti.backend.dto.user.request.ArtistRequestDto;
@@ -22,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -486,5 +490,14 @@ public class UserService {
 
 
         return ResponseEntity.ok().body(userDataResponseDto);
+    }
+
+
+    public ResponseEntity<?> searchMoreArtist(String keyword) {
+        SearchArtistAllByKeywordDto searchArtistAllByKeywordDto = new SearchArtistAllByKeywordDto();
+        searchArtistAllByKeywordDto.setResults(userRepository.searchArtistAllByArtistKeyword(keyword));
+        searchArtistAllByKeywordDto.setSuccess(200);
+        searchArtistAllByKeywordDto.setMessage("성공");
+        return ResponseEntity.ok().body(searchArtistAllByKeywordDto);
     }
 }
