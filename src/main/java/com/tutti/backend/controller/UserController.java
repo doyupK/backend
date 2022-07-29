@@ -114,6 +114,11 @@ public class UserController {
         return userService.getUserMyFeedVideo(userDetails);
     }
 
+    @GetMapping("/search/moreArtist")
+    public ResponseEntity<?> searchMoreArtist(@RequestParam String keyword){
+        return userService.searchMoreArtist(keyword);
+    }
+
     // 유저 정보 수정(myPage)
     @PutMapping("/user/mypage")
     public ResponseEntity<?> updateUser(

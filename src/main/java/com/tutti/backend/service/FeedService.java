@@ -301,6 +301,7 @@ public class FeedService {
         searchFeedResponseDto.setMusicArtist(feedRepository.searchMusicByArtistKeyword(keyword));
         searchFeedResponseDto.setVideoTitle(feedRepository.searchVideoByTitleKeyword(keyword));
         searchFeedResponseDto.setVideoArtist(feedRepository.searchVideoByArtistKeyword(keyword));
+        searchFeedResponseDto.setArtistList(userRepository.searchArtistByArtistKeyword(keyword));
         searchFeedResponseDto.setSuccess(200);
         searchFeedResponseDto.setMessage("성공");
 
