@@ -14,6 +14,7 @@ import com.tutti.backend.security.UserDetailsImpl;
 import com.tutti.backend.security.jwt.JwtTokenUtils;
 import com.tutti.backend.security.provider.JWTAuthProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -28,8 +29,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class KakaoUserService {
@@ -66,13 +69,13 @@ public class KakaoUserService {
         Long id = jsonNode.get("id").asLong();
         String nickname = jsonNode.get("properties")
                 .get("nickname").asText();
-        String email = jsonNode.get("kakao_account")
-                .get("email").asText();
+/*        String email = jsonNode.get("kakao_account")
+                .get("email").asText();*/
         String profileUrl = jsonNode.get("kakao_account")
                 .get("profile_image_url").asText();
-        System.out.println(4);
-        System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
-        return new KakaoUserRequestDto(id, nickname,profileUrl,email);
+        log.info("4");
+/*        System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);*/
+        return new KakaoUserRequestDto(id, nickname,profileUrl);
     }
 
     private String getAccessToken(String code) throws JsonProcessingException {
@@ -115,14 +118,17 @@ public class KakaoUserService {
         if (kakaoUser == null) {
             // 회원가입
             // username: kakao nickname
-            String artist = kakaoUserRequestDto.getNickname();
+
+            String ranNum = UUID.randomUUID().toString().substring(0,5);
+
+            String artist = kakaoUserRequestDto.getNickname()+ranNum;
 
             // password: random UUID
             String password = UUID.randomUUID().toString();
             String encodedPassword = passwordEncoder.encode(password);
-            String profileUrl = kakaoUserRequestDto.getProfileUrl();;
+            String profileUrl = kakaoUserRequestDto.getProfileUrl();
             // email: kakao email
-            String email = kakaoUserRequestDto.getEmail();
+            String email = UUID.randomUUID().toString();
             if(email.equals("")){
                 throw new CustomException(ErrorCode.NOT_EXISTS_KAKAOEMAIL);
             }
@@ -140,24 +146,29 @@ public class KakaoUserService {
 
         // JWT토큰 헤더에 생성
         String token = JwtTokenUtils.generateJwtToken(userDetails);
-        String username = kakaoUser.getEmail();
+        String artist = kakaoUser.getArtist();
         response.addHeader("Authorization", "Bearer " + token);
+        // 토큰의 만료시간 전달
+        Date date = new Date(System.currentTimeMillis() + 86400*1000);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String nowTime2 = dateFormat.format(date);
 
-        if (kakaoUser.getEmail().equals("")) {
+        /*if (kakaoUser.getEmail().equals("")) {
             boolean result = false;
             return KakaoUserResponseDto.builder()
                     .JWtToken(token)
-                    .username(username)
+                    .artist(artist)
                     .result(result)
                     .build();
 
-        } else {
-            boolean result = true;
+        } else {*//*
+            boolean result = true;*/
             return KakaoUserResponseDto.builder()
                     .JWtToken(token)
-                    .username(username)
-                    .result(result)
+                    .artist(artist)
+/*                    .result(result)*/
+                    .nowTime2(nowTime2)
                     .build();
-        }
+        //}
     }
 }
