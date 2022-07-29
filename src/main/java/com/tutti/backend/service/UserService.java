@@ -168,7 +168,7 @@ public class UserService {
         if(file.isEmpty()){
             user.updateUser(userUpdateRequestDto);
         }else{
-            s3Service.deleteImageUrl(user.getProfileUrl());
+//            s3Service.deleteImageUrl(user.getProfileUrl());
             FileRequestDto fileRequestDto = s3Service.upload(file);
             user.updateUser(fileRequestDto,userUpdateRequestDto);
         }
