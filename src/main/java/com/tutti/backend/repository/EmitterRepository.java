@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 @Repository
 public class EmitterRepository {
 
-    public  Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
-    private  Map<String, Object> eventCache = new ConcurrentHashMap<>();
+    public final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private final Map<String, Object> eventCache = new ConcurrentHashMap<>();
 
 
     public void save(String id, SseEmitter sseEmitter) {
@@ -24,12 +24,16 @@ public class EmitterRepository {
 
     public Map<String, SseEmitter> findAllStartWithById(String id) {
         return emitters.entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith(id))
+                .filter(entry -> entry.getKey().equals(id))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public Boolean findById(String id) {
         return emitters.containsKey(id);
+    }
+
+    public SseEmitter findEmitterById(String id) {
+        return emitters.get(id);
     }
 
 
