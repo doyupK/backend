@@ -115,7 +115,7 @@ public class User {
         this.kakaoId = null;
         this.userConfirmEnum = UserConfirmEnum.BEFORE_CONFIRM;
     }
-    public User(String email, String password,String nickname,String profileUrl, Long kakaoId) {
+    public User(String email, String password,String nickname,String profileUrl, Long kakaoId,String profileText) {
         this.email = email;
         this.password = password;
         this.artist = nickname;
@@ -132,6 +132,7 @@ public class User {
         this.genreSelected5 = false;
         this.genreSelected6 = false;
         this.userConfirmEnum = UserConfirmEnum.OK_CONFIRM;
+        this.profileText = profileText;
     }
     public User(String email,String password,String artist){
         this.email = email;
