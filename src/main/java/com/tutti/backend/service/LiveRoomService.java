@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Transactional
 @Slf4j
@@ -40,6 +41,8 @@ public class LiveRoomService {
     private final LiveRoomMessageRepository liveRoomMessageRepository;
     private final static String defaultThumbnailImageUrl =
             "https://file-bucket-seyeol.s3.ap-northeast-2.amazonaws.com/198f9660-dc02-48a3-a851-f1b57ed2ba88.jpg";
+
+    private final static ConcurrentHashMap<String, Object> checkingMap = new ConcurrentHashMap<>();
 
     private RedisTemplate<String, messageChannel> conversationTemplate;
     private StringRedisTemplate canversationTemplate;
@@ -69,7 +72,14 @@ public class LiveRoomService {
     @Transactional
     public Object add(AddRoomRequestDto addRoomRequestDto, MultipartFile thumbNailImage, UserDetailsImpl userDetails) {
         HashOperations<String, String, messageChannel> ho = conversationTemplate.opsForHash();
+
         User user = userDetails.getUser();
+
+        if(checkingMap.containsKey(user.getArtist())){
+            throw new CustomException(ErrorCode.MAKING_LIVEROOM);
+        }
+
+        checkingMap.put(user.getArtist(),true);
 
         List<LiveRoom> liveRooms = liveRoomRepository.findAllByUserAndOnAirTrue(user);
         if (!liveRooms.isEmpty()) {
@@ -113,6 +123,9 @@ public class LiveRoomService {
         message.setProfileImage(userDetails.getUser().getProfileUrl());
         newMessageChannel.getMessageList().add(message);
         ho.put(userDetails.getUser().getArtist(), userDetails.getUser().getArtist(), newMessageChannel);
+
+        checkingMap.remove(user.getArtist());
+
         return ResponseEntity.ok().body("라이브 생성 완료");
     }
 
