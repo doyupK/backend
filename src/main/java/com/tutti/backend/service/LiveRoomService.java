@@ -39,7 +39,7 @@ public class LiveRoomService {
     private final LiveRoomRepository liveRoomRepository;
     private final LiveRoomMessageRepository liveRoomMessageRepository;
     private final static String defaultThumbnailImageUrl =
-            "https://file-bucket-seyeol.s3.ap-northeast-2.amazonaws.com/e3e0395b-8d12-4645-96ce-bc6dd2b85ab8.png";
+            "https://file-bucket-seyeol.s3.ap-northeast-2.amazonaws.com/198f9660-dc02-48a3-a851-f1b57ed2ba88.jpg";
 
     private RedisTemplate<String, messageChannel> conversationTemplate;
     private StringRedisTemplate canversationTemplate;

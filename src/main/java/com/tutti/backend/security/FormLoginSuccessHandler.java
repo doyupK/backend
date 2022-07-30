@@ -36,7 +36,7 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
 
         loginResponseDto loginResponseDto = new loginResponseDto();
         // 토큰의 만료시간 전달
-        Date date = new Date(System.currentTimeMillis() + 86400*1000);
+        Date date = new Date(System.currentTimeMillis() + 86400*1000/2);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String nowTime2 = dateFormat.format(date);
 
