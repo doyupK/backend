@@ -75,11 +75,11 @@ public class LiveRoomService {
 
         User user = userDetails.getUser();
 
-        if(checkingMap.containsKey(user.getArtist())){
-            throw new CustomException(ErrorCode.MAKING_LIVEROOM);
-        }
+//        if(checkingMap.containsKey(user.getArtist())){
+//            throw new CustomException(ErrorCode.MAKING_LIVEROOM);
+//        }
 
-        checkingMap.put(user.getArtist(),true);
+//        checkingMap.put(user.getArtist(),true);
 
         List<LiveRoom> liveRooms = liveRoomRepository.findAllByUserAndOnAirTrue(user);
         if (!liveRooms.isEmpty()) {
@@ -124,7 +124,7 @@ public class LiveRoomService {
         newMessageChannel.getMessageList().add(message);
         ho.put(userDetails.getUser().getArtist(), userDetails.getUser().getArtist(), newMessageChannel);
 
-        checkingMap.remove(user.getArtist());
+//        checkingMap.remove(user.getArtist());
 
         return ResponseEntity.ok().body("라이브 생성 완료");
     }

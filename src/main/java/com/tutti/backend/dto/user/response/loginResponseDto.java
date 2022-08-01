@@ -9,6 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class loginResponseDto {
     int success;
+    Long id;
     String message;
     String artist;
     String profileUrl;

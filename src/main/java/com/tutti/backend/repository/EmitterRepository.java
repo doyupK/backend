@@ -24,9 +24,10 @@ public class EmitterRepository {
 
     public Map<String, SseEmitter> findAllStartWithById(String id) {
         return emitters.entrySet().stream()
-                .filter(entry -> entry.getKey().equals(id))
+                .filter(entry -> entry.getKey().startsWith(id))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
+
 
     public Boolean findById(String id) {
         return emitters.containsKey(id);

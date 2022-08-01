@@ -43,6 +43,7 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
 
         loginResponseDto.setSuccess(200);
         loginResponseDto.setMessage("로그인 성공");
+        loginResponseDto.setId(userDetails.getUser().getId());
         loginResponseDto.setArtist(userDetails.getUser().getArtist());
         loginResponseDto.setProfileUrl(userDetails.getUser().getProfileUrl());
         loginResponseDto.setExpiredTime(nowTime2);
