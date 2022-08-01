@@ -42,7 +42,7 @@ public class LiveRoomService {
     private final static String defaultThumbnailImageUrl =
             "https://file-bucket-seyeol.s3.ap-northeast-2.amazonaws.com/198f9660-dc02-48a3-a851-f1b57ed2ba88.jpg";
 
-    private final static ConcurrentHashMap<String, Object> checkingMap = new ConcurrentHashMap<>();
+    private final static ConcurrentHashMap<String, Boolean> checkingMap = new ConcurrentHashMap<>();
 
     private RedisTemplate<String, messageChannel> conversationTemplate;
     private StringRedisTemplate canversationTemplate;
@@ -75,7 +75,10 @@ public class LiveRoomService {
 
         User user = userDetails.getUser();
 
-        if(checkingMap.containsKey(user.getArtist())){
+        Boolean checking = checkingMap.putIfAbsent(user.getArtist(), true);
+        
+        if(checking!=null){
+            checkingMap.remove(user.getArtist());
             throw new CustomException(ErrorCode.MAKING_LIVEROOM);
         }
 
