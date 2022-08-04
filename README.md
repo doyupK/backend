@@ -67,6 +67,19 @@ Back-End
 </details> 
 <br>
 
+## 📚 서비스 ERD
+
+![image](https://user-images.githubusercontent.com/103116643/182820672-f9e243e0-f0e6-4b5d-b3e1-761e2dd8d254.png)
+
+<br>
+
+## 📚 실시간 모니터링 Grafana
+![image](https://user-images.githubusercontent.com/103116643/182821904-0c39654a-0b74-47fc-a3f0-8baccb3606e2.png)
+
+
+
+<br>
+
 ## 🎵 tutti의 핵심 서비스 기능
 
 <details>
