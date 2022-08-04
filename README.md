@@ -54,6 +54,8 @@ Front-End
 Back-End
 </summary>
 
+![tutti_Back_End_architecture_220730](https://user-images.githubusercontent.com/103116643/182825087-08c3b472-aa6b-42d4-bc61-f4b4f07621f2.png)
+
 - Prometheus + Grafana
     - 서버의 상태를 실시간으로 모니터링해서 문제 발생 시 유지 보수 목적으로 적용
     - 시각화가 되어있어 에러 발생 시 언제, 어디에서 발생했는지 쉽게 구별이 가능
