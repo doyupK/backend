@@ -5,7 +5,6 @@
 
 ## [함께 하는 음악 생활, tutti로 가기](https://tuttimusic.shop)
 
-### [tutti 작업 노션 바로 가기](https://www.notion.so/tuttimusic/6-bb79c160d1a248c69faae0e247053204)
 
 <a href="https://www.notion.so/tuttimusic/6-bb79c160d1a248c69faae0e247053204" target="_blank">**Project tutti Notion SA Home**</a>
 
