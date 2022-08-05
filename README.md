@@ -77,6 +77,9 @@ Back-End
 
 ![image](https://user-images.githubusercontent.com/103116643/182820672-f9e243e0-f0e6-4b5d-b3e1-761e2dd8d254.png)
 
+![tutti_database_2](https://user-images.githubusercontent.com/79959576/182976495-00645639-6ee0-45fb-88ba-489428721261.jpg)
+
+
 <br>
 
 ## 📚 실시간 모니터링 Grafana
