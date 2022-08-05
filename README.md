@@ -75,7 +75,8 @@ Back-End
 
 ## 📚 서비스 ERD
 
-![tutti_database_re2](https://user-images.githubusercontent.com/79959576/182977059-76156aaf-c3c2-4f43-a041-def952e60c2a.jpg)
+
+![tutti_database_last](https://user-images.githubusercontent.com/79959576/182977171-60e75e13-129a-4621-8748-8fa515352512.jpg)
 
 
 
